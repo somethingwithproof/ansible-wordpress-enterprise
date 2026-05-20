@@ -11,11 +11,11 @@ wordpress_site_url: "https://{{ ansible_fqdn }}"
 wordpress_site_title: "Enterprise WordPress Site"
 
 # WordPress admin user
-# NOTE: For production, override passwords in group_vars or use ansible-vault
-# The /dev/null lookup generates a new password each run (not idempotent).
-# For idempotent passwords, use: lookup('password', 'credentials/admin_password length=32')
+# Passwords are generated once and persisted under credentials/<host>/ on the
+# Ansible controller so repeated runs stay idempotent. For production, override
+# them explicitly in group_vars or with ansible-vault.
 wordpress_admin_user: "wpadmin"
-wordpress_admin_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+wordpress_admin_password: "{{ lookup('password', 'credentials/' ~ inventory_hostname ~ '/admin_password length=32 chars=ascii_letters,digits') }}"
 wordpress_admin_email: "admin@{{ ansible_domain | default('example.com') }}"
 
 # ============================================================================
@@ -25,14 +25,14 @@ wordpress_db_host: "localhost"
 wordpress_db_port: 3306
 wordpress_db_name: "wordpress"
 wordpress_db_user: "wordpress"
-wordpress_db_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+wordpress_db_password: "{{ lookup('password', 'credentials/' ~ inventory_hostname ~ '/db_password length=32 chars=ascii_letters,digits') }}"
 wordpress_db_charset: "utf8mb4"
 wordpress_db_collate: "utf8mb4_unicode_ci"
 wordpress_db_table_prefix: "wp_"
 
 # Database engine choice: mysql or mariadb
 wordpress_db_engine: "mariadb"
-wordpress_db_root_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+wordpress_db_root_password: "{{ lookup('password', 'credentials/' ~ inventory_hostname ~ '/db_root_password length=32 chars=ascii_letters,digits') }}"
 
 # ============================================================================
 # Web Server Configuration
@@ -82,15 +82,15 @@ wordpress_letsencrypt_email: "{{ wordpress_admin_email }}"
 # ============================================================================
 # WordPress Security Configuration
 # ============================================================================
-# WordPress salts and keys (auto-generated)
-wordpress_auth_key: "{{ lookup('password', '/dev/null length=64 chars=ascii_letters,digits,punctuation') }}"
-wordpress_secure_auth_key: "{{ lookup('password', '/dev/null length=64 chars=ascii_letters,digits,punctuation') }}"
-wordpress_logged_in_key: "{{ lookup('password', '/dev/null length=64 chars=ascii_letters,digits,punctuation') }}"
-wordpress_nonce_key: "{{ lookup('password', '/dev/null length=64 chars=ascii_letters,digits,punctuation') }}"
-wordpress_auth_salt: "{{ lookup('password', '/dev/null length=64 chars=ascii_letters,digits,punctuation') }}"
-wordpress_secure_auth_salt: "{{ lookup('password', '/dev/null length=64 chars=ascii_letters,digits,punctuation') }}"
-wordpress_logged_in_salt: "{{ lookup('password', '/dev/null length=64 chars=ascii_letters,digits,punctuation') }}"
-wordpress_nonce_salt: "{{ lookup('password', '/dev/null length=64 chars=ascii_letters,digits,punctuation') }}"
+# WordPress salts and keys (generated once, then persisted per host)
+wordpress_auth_key: "{{ lookup('password', 'credentials/' ~ inventory_hostname ~ '/auth_key length=64 chars=ascii_letters,digits') }}"
+wordpress_secure_auth_key: "{{ lookup('password', 'credentials/' ~ inventory_hostname ~ '/secure_auth_key length=64 chars=ascii_letters,digits') }}"
+wordpress_logged_in_key: "{{ lookup('password', 'credentials/' ~ inventory_hostname ~ '/logged_in_key length=64 chars=ascii_letters,digits') }}"
+wordpress_nonce_key: "{{ lookup('password', 'credentials/' ~ inventory_hostname ~ '/nonce_key length=64 chars=ascii_letters,digits') }}"
+wordpress_auth_salt: "{{ lookup('password', 'credentials/' ~ inventory_hostname ~ '/auth_salt length=64 chars=ascii_letters,digits') }}"
+wordpress_secure_auth_salt: "{{ lookup('password', 'credentials/' ~ inventory_hostname ~ '/secure_auth_salt length=64 chars=ascii_letters,digits') }}"
+wordpress_logged_in_salt: "{{ lookup('password', 'credentials/' ~ inventory_hostname ~ '/logged_in_salt length=64 chars=ascii_letters,digits') }}"
+wordpress_nonce_salt: "{{ lookup('password', 'credentials/' ~ inventory_hostname ~ '/nonce_salt length=64 chars=ascii_letters,digits') }}"
 
 # Security hardening
 wordpress_disable_file_edit: true

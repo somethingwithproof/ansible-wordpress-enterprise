@@ -46,7 +46,7 @@ RUN if [ -f /etc/debian_version ]; then \
 
 # Install Ansible and required collections
 RUN pip3 install --no-cache-dir \
-        ansible>=2.14 \
+        'ansible>=2.15' \
         ansible-lint \
         molecule \
         molecule-plugins[docker] \

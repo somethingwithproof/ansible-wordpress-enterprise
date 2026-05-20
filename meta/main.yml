@@ -2,6 +2,7 @@
 galaxy_info:
   role_name: wordpress_enterprise
   namespace: thomasvincent
+  version: "1.0.0"
   author: Thomas Vincent
   description: Enterprise-grade WordPress installation and configuration for RHEL and Ubuntu
   company: Open Source

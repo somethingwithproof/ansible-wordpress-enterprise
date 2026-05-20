@@ -1,23 +1,6 @@
 ---
 # WordPress Installation Tasks
-
-- name: Create WordPress system user
-  ansible.builtin.user:
-    name: "{{ wordpress_system_user }}"
-    group: "{{ wordpress_system_group }}"
-    system: true
-    shell: /bin/bash
-    home: "{{ wordpress_install_dir }}"
-    create_home: false
-    state: present
-  become: true
-
-- name: Create WordPress system group
-  ansible.builtin.group:
-    name: "{{ wordpress_system_group }}"
-    system: true
-    state: present
-  become: true
+# The WordPress system user and group are created in prerequisites.yml.
 
 - name: Create WordPress installation directory
   ansible.builtin.file:
@@ -169,7 +152,7 @@
 
 - name: Download and install latest WP-CLI
   ansible.builtin.get_url:
-    url: "https://raw.githubusercontent.com/wp-cli/wp-cli/v2/utils/wp-cli.phar"
+    url: "https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
     dest: /usr/local/bin/wp
     mode: '0755'
     owner: root

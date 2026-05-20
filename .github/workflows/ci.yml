@@ -254,7 +254,7 @@ jobs:
       - name: Get version from meta
         id: get_version
         run: |
-          VERSION=$(grep 'version:' meta/main.yml | head -1 | awk '{print $2}' | tr -d '"')
+          VERSION=$(grep -E '^[[:space:]]+version:' meta/main.yml | head -1 | awk '{print $2}' | tr -d '"')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Check if tag exists

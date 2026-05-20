@@ -1,14 +1,7 @@
 ---
 # WordPress Configuration Tasks
-
-- name: Generate WordPress salts if not defined
-  ansible.builtin.uri:
-    url: https://api.wordpress.org/secret-key/1.1/salt/
-    return_content: true
-  register: wordpress_salts_api
-  when:
-    - wordpress_auth_key is not defined or wordpress_auth_key == ""
-    - not wordpress_installed.stat.exists
+# WordPress salts/keys are provided by the wordpress_*_key / wordpress_*_salt
+# variables (see defaults/main.yml), which persist per host across runs.
 
 - name: Create wp-config.php from template
   ansible.builtin.template:
@@ -66,7 +59,7 @@
     - { option: "default_ping_status", value: "closed" }
     - { option: "comment_moderation", value: "1" }
     - { option: "require_name_email", value: "1" }
-    - { option: "comment_whitelist", value: "1" }
+    - { option: "comment_previously_approved", value: "1" }
   when: wordpress_install_wpcli | bool
   changed_when: false
 
@@ -269,6 +262,7 @@
   when:
     - wordpress_enable_redis | bool
     - wordpress_enable_object_cache | bool
+    - wordpress_install_wpcli | bool
 
 - name: Configure WordPress debugging and logging
   ansible.builtin.blockinfile:
