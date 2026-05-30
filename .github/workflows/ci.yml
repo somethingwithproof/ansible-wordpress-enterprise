@@ -45,6 +45,25 @@ jobs:
       - name: Run ansible-lint
         run: ansible-lint
 
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Skip on PRs from forks, where the SONAR_TOKEN secret is not available.
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          # Full history so SonarCloud can assign issues to the right authors/dates.
+          fetch-depth: 0
+
+      - name: SonarCloud scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: https://sonarcloud.io
+
   test-ubuntu-22:
     name: Test - Ubuntu 22.04
     runs-on: [self-hosted, linux, x64]
