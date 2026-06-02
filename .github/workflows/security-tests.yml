@@ -43,8 +43,21 @@ jobs:
 
     - name: Install system dependencies
       run: |
-        sudo apt-get update
-        sudo apt-get install -y jq bc curl
+        missing=""
+        for tool in jq bc curl; do
+          command -v "$tool" >/dev/null 2>&1 || missing="$missing $tool"
+        done
+        if [ -z "$missing" ]; then
+          echo "jq, bc, curl already present; skipping apt install"
+          exit 0
+        fi
+        if command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
+          sudo apt-get update
+          sudo apt-get install -y$missing
+        else
+          echo "::error::Missing tools ($missing) and passwordless sudo unavailable on this runner"
+          exit 1
+        fi
 
     - name: Install Python dependencies
       run: |
