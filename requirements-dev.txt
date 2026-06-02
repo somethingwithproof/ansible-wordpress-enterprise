@@ -3,8 +3,8 @@
 -r requirements.txt
 
 # Additional dev tools
-black>=23.0.0
-flake8>=6.0.0
+black>=26.3.1
+flake8>=7.3.0
 pre-commit>=3.0.0
 tox>=4.55.0
 coverage>=7.14.1
