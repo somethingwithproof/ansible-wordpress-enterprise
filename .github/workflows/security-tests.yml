@@ -10,22 +10,14 @@ on:
     - cron: '0 2 * * *'
   workflow_dispatch:
 
-permissions:
-  contents: read
-
 env:
   ANSIBLE_FORCE_COLOR: 1
   PYTEST_ADDOPTS: --color=yes
-
-concurrency:
-  group: security-tests-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   security-hardening-tests:
     name: Security Hardening Tests
     runs-on: [self-hosted, linux, x64]
-    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -34,15 +26,15 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      uses: actions/checkout@v6
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python-version }}
 
     - name: Cache pip dependencies
-      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+      uses: actions/cache@v5
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
@@ -66,10 +58,10 @@ jobs:
         ansible-galaxy collection install ansible.posix
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@0d103c3126aa41d772a8362f6aa67afac040f80c # v3
+      uses: docker/setup-buildx-action@v4
 
     - name: Cache Docker layers
-      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+      uses: actions/cache@v5
       with:
         path: /tmp/.buildx-cache
         key: ${{ runner.os }}-buildx-${{ github.sha }}
@@ -97,7 +89,7 @@ jobs:
       if: always()
 
     - name: Upload test reports
-      uses: actions/upload-artifact@834a144ee995460fba8ed112a2fc961b36a5ec5a # v4
+      uses: actions/upload-artifact@v7
       if: always()
       with:
         name: security-test-reports-${{ matrix.platform }}-py${{ matrix.python-version }}
@@ -107,7 +99,7 @@ jobs:
         retention-days: 30
 
     - name: Upload coverage reports
-      uses: actions/upload-artifact@834a144ee995460fba8ed112a2fc961b36a5ec5a # v4
+      uses: actions/upload-artifact@v7
       if: always()
       with:
         name: coverage-reports-${{ matrix.platform }}-py${{ matrix.python-version }}
@@ -115,7 +107,7 @@ jobs:
         retention-days: 30
 
     - name: Comment PR with coverage
-      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
+      uses: actions/github-script@v9
       if: github.event_name == 'pull_request' && always()
       with:
         script: |
@@ -171,14 +163,13 @@ jobs:
     runs-on: [self-hosted, linux, x64]
     needs: security-hardening-tests
     if: always()
-    timeout-minutes: 15
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      uses: actions/checkout@v6
 
     - name: Download all coverage reports
-      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+      uses: actions/download-artifact@v8
       with:
         pattern: coverage-reports-*
         path: ./coverage-reports
@@ -231,15 +222,14 @@ jobs:
   security-regression-test:
     name: Security Regression Test
     runs-on: [self-hosted, linux, x64]
-    timeout-minutes: 30
     if: github.event_name == 'schedule'
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      uses: actions/checkout@v6
 
     - name: Set up Python
-      uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      uses: actions/setup-python@v6
       with:
         python-version: '3.11'
 
@@ -289,7 +279,7 @@ jobs:
 
     - name: Notify on regression
       if: failure()
-      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
+      uses: actions/github-script@v9
       with:
         script: |
           const issue = await github.rest.issues.create({
