@@ -15,7 +15,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
-
 permissions:
   contents: read
 
@@ -26,10 +25,10 @@ jobs:
     timeout-minutes: 15  # Prevent hung jobs
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -45,17 +44,31 @@ jobs:
       - name: Run ansible-lint
         run: ansible-lint
 
-  test-ubuntu-22:
-    name: Test - Ubuntu 22.04
+  molecule-test:
+    name: Molecule Test (${{ matrix.name }})
     runs-on: [self-hosted, linux, x64]
     timeout-minutes: 20  # Prevent hung jobs
     needs: lint
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - scenario: default
+            name: Ubuntu 22.04
+          - scenario: ubuntu
+            name: Ubuntu 24.04
+          - scenario: debian
+            name: Debian (11, 12)
+          - scenario: default  # rocky uses default
+            name: Rocky Linux 9
+          - scenario: rhel
+            name: RHEL (8, 9)
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: '3.11'
 
@@ -70,132 +83,8 @@ jobs:
           ansible-galaxy collection install community.mysql
           ansible-galaxy collection install ansible.posix
 
-      - name: Run Molecule test (default scenario)
-        run: molecule test --scenario-name default
-        env:
-          PY_COLORS: '1'
-          ANSIBLE_FORCE_COLOR: '1'
-
-  test-ubuntu-24:
-    name: Test - Ubuntu 24.04
-    runs-on: [self-hosted, linux, x64]
-    timeout-minutes: 20  # Prevent hung jobs
-    needs: lint
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.11'
-
-      - name: Install Molecule and dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Install Ansible collections
-        run: |
-          ansible-galaxy collection install community.general
-          ansible-galaxy collection install community.mysql
-          ansible-galaxy collection install ansible.posix
-
-      - name: Run Molecule test (Ubuntu scenario)
-        run: molecule test --scenario-name ubuntu
-        env:
-          PY_COLORS: '1'
-          ANSIBLE_FORCE_COLOR: '1'
-
-  test-debian:
-    name: Test - Debian (11, 12)
-    runs-on: [self-hosted, linux, x64]
-    timeout-minutes: 20  # Prevent hung jobs
-    needs: lint
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.11'
-
-      - name: Install Molecule and dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Install Ansible collections
-        run: |
-          ansible-galaxy collection install community.general
-          ansible-galaxy collection install community.mysql
-          ansible-galaxy collection install ansible.posix
-
-      - name: Run Molecule test (Debian scenario)
-        run: molecule test --scenario-name debian
-        env:
-          PY_COLORS: '1'
-          ANSIBLE_FORCE_COLOR: '1'
-
-  test-rocky-9:
-    name: Test - Rocky Linux 9
-    runs-on: [self-hosted, linux, x64]
-    timeout-minutes: 20  # Prevent hung jobs
-    needs: lint
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.11'
-
-      - name: Install Molecule and dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Install Ansible collections
-        run: |
-          ansible-galaxy collection install community.general
-          ansible-galaxy collection install community.mysql
-          ansible-galaxy collection install ansible.posix
-
-      - name: Run Molecule test (default scenario)
-        run: molecule test --scenario-name default
-        env:
-          PY_COLORS: '1'
-          ANSIBLE_FORCE_COLOR: '1'
-
-  test-rhel:
-    name: Test - RHEL (8, 9)
-    runs-on: [self-hosted, linux, x64]
-    timeout-minutes: 20  # Prevent hung jobs
-    needs: lint
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.11'
-
-      - name: Install Molecule and dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Install Ansible collections
-        run: |
-          ansible-galaxy collection install community.general
-          ansible-galaxy collection install community.mysql
-          ansible-galaxy collection install ansible.posix
-
-      - name: Run Molecule test (RHEL scenario)
-        run: molecule test --scenario-name rhel
+      - name: Run Molecule test (${{ matrix.scenario }} scenario)
+        run: molecule test --scenario-name ${{ matrix.scenario }}
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
@@ -204,16 +93,16 @@ jobs:
     name: Integration Test
     runs-on: [self-hosted, linux, x64]
     timeout-minutes: 15  # Prevent hung jobs
-    needs: [test-ubuntu-22, test-ubuntu-24, test-debian, test-rocky-9, test-rhel]
+    needs: [molecule-test]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
+        uses: docker/setup-buildx-action@0d103c3126aa41d772a8362f6aa67afac040f80c # v3
 
       - name: Build test image
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@ca877d9245402d1537745e0e3563b6a5408e6e4d # v6
         with:
           context: .
           file: ./Dockerfile
@@ -237,12 +126,12 @@ jobs:
       contents: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: '3.11'
 
@@ -268,7 +157,7 @@ jobs:
 
       - name: Create Release
         if: steps.check_tag.outputs.exists == 'false'
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@de2c0eb89ae2a093354c5cb36e48c5e2b1c5d3e0 # v2
         with:
           tag_name: v${{ steps.get_version.outputs.version }}
           name: Release v${{ steps.get_version.outputs.version }}
