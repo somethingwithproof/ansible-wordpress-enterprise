@@ -12,12 +12,13 @@ permissions:
 jobs:
   dependabot-auto-merge:
     runs-on: [self-hosted, linux, x64]
+    timeout-minutes: 5
     if: ${{ github.actor == 'dependabot[bot]' }}
     
     steps:
       - name: Dependabot metadata
         id: metadata
-        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98  # v2
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v2
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
 
