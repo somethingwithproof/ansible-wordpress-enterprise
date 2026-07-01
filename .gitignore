@@ -1,6 +1,7 @@
 # Ansible
 *.retry
 .cache/
+.ansible/roles/
 
 # Molecule
 .molecule/

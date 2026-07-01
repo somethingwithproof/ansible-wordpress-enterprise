@@ -42,6 +42,11 @@ jobs:
       - name: Run yamllint
         run: yamllint .
 
+      - name: Link role for ansible-lint
+        run: |
+          mkdir -p .ansible/roles
+          ln -s "$GITHUB_WORKSPACE" .ansible/roles/ansible-wordpress-enterprise
+
       - name: Run ansible-lint
         run: ansible-lint
 

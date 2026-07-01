@@ -67,10 +67,15 @@
             temp_wp_path: "/nonexistent/wordpress/path"
 
         - name: Test security tasks with missing directory
-          ansible.builtin.include_tasks: ../../tasks/security_hardening.yml
-          vars:
-            wordpress_path: "{{ temp_wp_path }}"
-          failed_when: false
+          block:
+            - name: Include security tasks with missing directory
+              ansible.builtin.include_tasks: ../../tasks/security_hardening.yml
+              vars:
+                wordpress_path: "{{ temp_wp_path }}"
+          rescue:
+            - name: Record expected missing directory handling
+              ansible.builtin.debug:
+                msg: "Security tasks handled missing directory scenario"
 
         - name: Verify graceful handling of missing directories
           ansible.builtin.debug:
@@ -109,14 +114,24 @@
     - name: Edge Case 4 - Test platform security when not available
       block:
         - name: Test SELinux tasks on non-SELinux system
-          ansible.builtin.include_tasks: ../../tasks/selinux.yml
-          when: ansible_os_family != "RedHat"
-          failed_when: false
+          block:
+            - name: Include SELinux tasks on non-SELinux system
+              ansible.builtin.include_tasks: ../../tasks/selinux.yml
+              when: ansible_os_family != "RedHat"
+          rescue:
+            - name: Record expected SELinux platform handling
+              ansible.builtin.debug:
+                msg: "SELinux tasks handled unsupported platform scenario"
 
         - name: Test AppArmor tasks on non-AppArmor system
-          ansible.builtin.include_tasks: ../../tasks/apparmor.yml
-          when: ansible_os_family != "Debian"
-          failed_when: false
+          block:
+            - name: Include AppArmor tasks on non-AppArmor system
+              ansible.builtin.include_tasks: ../../tasks/apparmor.yml
+              when: ansible_os_family != "Debian"
+          rescue:
+            - name: Record expected AppArmor platform handling
+              ansible.builtin.debug:
+                msg: "AppArmor tasks handled unsupported platform scenario"
 
         - name: Verify platform detection works correctly
           ansible.builtin.debug:
@@ -229,10 +244,15 @@
           failed_when: false
 
         - name: Test security operations with reduced available space
-          ansible.builtin.include_tasks: ../../tasks/security_hardening.yml
-          vars:
-            wordpress_security_status_script: false  # Skip to save space
-          failed_when: false
+          block:
+            - name: Include security tasks with reduced available space
+              ansible.builtin.include_tasks: ../../tasks/security_hardening.yml
+              vars:
+                wordpress_security_status_script: false  # Skip to save space
+          rescue:
+            - name: Record expected reduced-space handling
+              ansible.builtin.debug:
+                msg: "Security tasks handled reduced available space scenario"
 
         - name: Cleanup large test file
           ansible.builtin.file:
@@ -380,10 +400,15 @@
             - /tmp/wordpress2/wp-content/uploads
 
         - name: Test security hardening on multiple installations
-          ansible.builtin.include_tasks: ../../tasks/security_hardening.yml
-          vars:
-            wordpress_path: /tmp/wordpress2
-          failed_when: false
+          block:
+            - name: Include security hardening for second installation
+              ansible.builtin.include_tasks: ../../tasks/security_hardening.yml
+              vars:
+                wordpress_path: /tmp/wordpress2
+          rescue:
+            - name: Record expected multi-installation handling
+              ansible.builtin.debug:
+                msg: "Security tasks handled multiple installation scenario"
 
         - name: Cleanup second WordPress directory
           ansible.builtin.file:
