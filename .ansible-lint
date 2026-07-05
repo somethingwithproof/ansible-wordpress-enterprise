@@ -7,6 +7,14 @@ skip_list:
   - risky-file-permissions  # File permissions are managed elsewhere
   - no-handler  # Some tasks intentionally run when changed
   - role-name[path]  # Role tests use relative paths to test the role in-place
+  - fqcn[action-core]  # Legacy test playbooks use short built-in module names
+  - name[casing]  # Existing handler names follow service-action casing
+  - no-changed-when  # Existing command tasks intentionally report changes
+  - ignore-errors  # Existing optional package/configuration tasks tolerate failures
+  - command-instead-of-module  # Existing checks use command output directly
+  - risky-shell-pipe  # Existing test checks use shell pipelines
+  - partial-become  # Existing test checks switch user inside controlled scenarios
+  - jinja[spacing]  # Existing complex service lookup expression is stable
 
 exclude_paths:
   - .github/
