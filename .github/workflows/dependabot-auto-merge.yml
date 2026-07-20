@@ -1,6 +1,7 @@
+---
 name: Dependabot Auto-Merge
 
-on:
+"on":
   pull_request_target:
     types: [opened, synchronize, reopened, ready_for_review]
   schedule:
@@ -18,7 +19,9 @@ concurrency:
 
 jobs:
   merge:
-    if: github.event_name != 'pull_request_target' || github.actor == 'dependabot[bot]'
+    if: >-
+      github.event_name != 'pull_request_target' ||
+      github.actor == 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Merge Dependabot pull requests with successful checks
@@ -33,7 +36,9 @@ jobs:
             --state open \
             --author "app/dependabot" \
             --json number,isDraft,mergeable \
-            --jq '.[] | select(.isDraft == false and .mergeable == "MERGEABLE") | .number' |
+            --jq '.[] |
+              select(.isDraft == false and .mergeable == "MERGEABLE") |
+              .number' |
           while read -r pr; do
             [ -n "$pr" ] || continue
 
@@ -45,7 +50,9 @@ jobs:
             # Fail closed when a repository has no CI checks.
             [ -n "$states" ] || continue
 
-            if grep -Eq '^(PENDING|QUEUED|IN_PROGRESS|FAILURE|ERROR|CANCELLED|STALE|ACTION_REQUIRED)$' <<<"$states"; then
+            blocked='^(PENDING|QUEUED|IN_PROGRESS|FAILURE|ERROR|CANCELLED|'
+            blocked+='STALE|ACTION_REQUIRED)$'
+            if grep -Eq "$blocked" <<<"$states"; then
               continue
             fi
 
