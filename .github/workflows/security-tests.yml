@@ -10,6 +10,10 @@ on:
     - cron: '0 2 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pull-requests: write
+
 env:
   ANSIBLE_FORCE_COLOR: 1
   PYTEST_ADDOPTS: --color=yes
