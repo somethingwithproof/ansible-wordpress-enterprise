@@ -27,7 +27,7 @@ COMPOSE_FILE="$PROJECT_DIR/docker-compose.test.yml"
 UBUNTU_TESTS=true
 CENTOS_TESTS=true
 CLEANUP_AFTER=true
-VERBOSE=false
+VERBOSE="${VERBOSE:-false}"
 SPECIFIC_TEST=""
 SKIP_BUILD=false
 
