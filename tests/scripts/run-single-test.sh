@@ -27,7 +27,7 @@ COMPOSE_FILE="$PROJECT_DIR/docker-compose.test.yml"
 TARGET=""
 SCENARIO=""
 INVENTORY=""
-VERBOSE=false
+VERBOSE="${VERBOSE:-false}"
 NO_CLEANUP=false
 SKIP_BUILD=false
 
