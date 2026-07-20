@@ -1,30 +1,66 @@
+---
 name: Dependabot Auto-Merge
 
-on:
-  pull_request:
+"on":
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
+  schedule:
+    - cron: "17,47 * * * *"
   workflow_dispatch:
-    branches: [ main ]
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
+  checks: read
+
+concurrency:
+  group: dependabot-auto-merge
+  cancel-in-progress: false
 
 jobs:
-  dependabot-auto-merge:
-    runs-on: [self-hosted, linux, x64]
-    timeout-minutes: 5
-    if: ${{ github.actor == 'dependabot[bot]' }}
-    
+  merge:
+    if: >-
+      github.event_name != 'pull_request_target' ||
+      github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: read
     steps:
-      - name: Dependabot metadata
-        id: metadata
-        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v2
-        with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
-
-      - name: Auto-merge PR
-        if: ${{ steps.metadata.outputs.update-type == 'version-update:semver-patch' || steps.metadata.outputs.update-type == 'version-update:semver-minor' }}
-        run: gh pr merge --auto --squash "$PR_URL"
+      - name: Merge Dependabot pull requests with successful checks
+        shell: bash
         env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          gh pr list \
+            --repo "$GITHUB_REPOSITORY" \
+            --state open \
+            --author "app/dependabot" \
+            --json number,isDraft,mergeable \
+            --jq '.[] |
+              select(.isDraft == false and .mergeable == "MERGEABLE") |
+              .number' |
+          while read -r pr; do
+            [ -n "$pr" ] || continue
+
+            states=$(gh pr checks "$pr" \
+              --repo "$GITHUB_REPOSITORY" \
+              --json state \
+              --jq '.[].state' 2>/dev/null || true)
+
+            # Fail closed when a repository has no CI checks.
+            [ -n "$states" ] || continue
+
+            blocked='^(PENDING|QUEUED|IN_PROGRESS|FAILURE|ERROR|CANCELLED|'
+            blocked+='STALE|ACTION_REQUIRED)$'
+            if grep -Eq "$blocked" <<<"$states"; then
+              continue
+            fi
+
+            gh pr merge "$pr" \
+              --repo "$GITHUB_REPOSITORY" \
+              --squash \
+              --delete-branch
+          done

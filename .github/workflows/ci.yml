@@ -54,13 +54,9 @@ jobs:
       matrix:
         include:
           - scenario: default
-            name: Ubuntu 22.04
-          - scenario: ubuntu
-            name: Ubuntu 24.04
+            name: Ubuntu 22/24 and Rocky 9
           - scenario: debian
             name: Debian (11, 12)
-          - scenario: default  # rocky uses default
-            name: Rocky Linux 9
           - scenario: rhel
             name: RHEL (8, 9)
     steps:
