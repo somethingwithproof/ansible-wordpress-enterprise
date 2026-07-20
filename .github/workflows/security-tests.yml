@@ -19,6 +19,8 @@ env:
   PYTEST_ADDOPTS: --color=yes
   MIN_FEATURE_COVERAGE: 75
   MIN_SCENARIO_COVERAGE: 90
+  # Preserve Docker build output so CI failures remain actionable.
+  VERBOSE: "true"
 
 jobs:
   security-hardening-tests:
