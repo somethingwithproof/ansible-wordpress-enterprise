@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
     git \
     openssh-client \
     sshpass \
+    sudo \
     jq \
     docker.io \
     docker-compose \
@@ -24,7 +25,7 @@ RUN apt-get update && apt-get install -y \
 
 # Install Ansible and testing dependencies
 RUN pip3 install --no-cache-dir \
-    ansible>=8.0.0 \
+    "ansible>=8.0.0" \
     ansible-lint \
     yamllint \
     molecule \

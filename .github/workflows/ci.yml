@@ -30,7 +30,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: '3.11'
+          python-version: '3.12'
           cache: 'pip'
 
       - name: Install dependencies
@@ -40,6 +40,11 @@ jobs:
 
       - name: Run yamllint
         run: yamllint .
+
+      - name: Link role for ansible-lint
+        run: |
+          mkdir -p .ansible/roles
+          ln -s "$GITHUB_WORKSPACE" .ansible/roles/ansible-wordpress-enterprise
 
       - name: Run ansible-lint
         run: ansible-lint
@@ -66,7 +71,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: '3.11'
+          python-version: '3.12'
 
       - name: Install Molecule and dependencies
         run: |
@@ -129,7 +134,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: '3.11'
+          python-version: '3.12'
 
       - name: Install dependencies
         run: |

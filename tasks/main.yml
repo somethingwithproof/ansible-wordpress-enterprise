@@ -1,6 +1,10 @@
 ---
 # Main tasks file for ansible-wordpress-enterprise
 
+- name: Load operating system variables
+  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
+  tags: [always]
+
 - name: Include prerequisite tasks
   ansible.builtin.include_tasks: prerequisites.yml
   tags: [always, prerequisites]
