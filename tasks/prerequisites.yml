@@ -36,6 +36,7 @@
       - ca-certificates
       - gnupg2
     state: present
+    allowerasing: true
   when: ansible_os_family == "RedHat"
 
 - name: Create WordPress system user

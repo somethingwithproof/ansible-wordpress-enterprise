@@ -126,24 +126,24 @@ parse_args() {
                 ;;
         esac
     done
-    
+
     # Validate required arguments
     if [[ -z "$TARGET" ]]; then
         print_error "Target system is required. Use -t ubuntu or -t centos"
         usage
     fi
-    
+
     if [[ -z "$SCENARIO" ]]; then
         print_error "Test scenario is required. Use -s with a scenario file name"
         usage
     fi
-    
+
     # Validate target
     if [[ "$TARGET" != "ubuntu" && "$TARGET" != "centos" ]]; then
         print_error "Invalid target: $TARGET. Use 'ubuntu' or 'centos'"
         exit 1
     fi
-    
+
     # Auto-detect inventory if not specified
     if [[ -z "$INVENTORY" ]]; then
         case "$TARGET" in
@@ -155,13 +155,13 @@ parse_args() {
                 ;;
         esac
     fi
-    
+
     # Validate scenario file exists
     if [[ ! -f "$TEST_DIR/scenarios/$SCENARIO" ]]; then
         print_error "Scenario file not found: $TEST_DIR/scenarios/$SCENARIO"
         exit 1
     fi
-    
+
     # Validate inventory file exists
     if [[ ! -f "$TEST_DIR/inventories/$INVENTORY" ]]; then
         print_error "Inventory file not found: $TEST_DIR/inventories/$INVENTORY"
@@ -172,28 +172,28 @@ parse_args() {
 # Function to check prerequisites
 check_prerequisites() {
     print_header "Checking Prerequisites"
-    
+
     # Check if Docker is running
     if ! docker info >/dev/null 2>&1; then
         print_error "Docker is not running. Please start Docker and try again."
         exit 1
     fi
     print_success "Docker is running"
-    
+
     # Check if docker-compose is available
     if ! command -v docker-compose >/dev/null 2>&1; then
         print_error "docker-compose is not installed or not in PATH"
         exit 1
     fi
     print_success "docker-compose is available"
-    
+
     # Check if test compose file exists
     if [[ ! -f "$COMPOSE_FILE" ]]; then
         print_error "Test compose file not found: $COMPOSE_FILE"
         exit 1
     fi
     print_success "Test compose file found"
-    
+
     # Create reports directory
     mkdir -p "$REPORTS_DIR"
     print_success "Reports directory ready: $REPORTS_DIR"
@@ -205,42 +205,42 @@ build_images() {
         print_warning "Skipping Docker image build"
         return
     fi
-    
+
     print_header "Building Docker Images"
-    
+
     print_status "Building test environment images..."
     cd "$PROJECT_DIR"
-    
+
     if [[ "$VERBOSE" == "true" ]]; then
         docker-compose -f "$COMPOSE_FILE" build --no-cache
     else
         docker-compose -f "$COMPOSE_FILE" build --no-cache >/dev/null 2>&1
     fi
-    
+
     print_success "Docker images built successfully"
 }
 
 # Function to start test environment
 start_environment() {
     print_header "Starting Test Environment"
-    
+
     cd "$PROJECT_DIR"
-    
+
     # Stop any existing containers
     docker-compose -f "$COMPOSE_FILE" down --remove-orphans >/dev/null 2>&1 || true
-    
+
     print_status "Starting services..."
     if [[ "$VERBOSE" == "true" ]]; then
         docker-compose -f "$COMPOSE_FILE" up -d
     else
         docker-compose -f "$COMPOSE_FILE" up -d >/dev/null 2>&1
     fi
-    
+
     # Wait for services to be healthy
     print_status "Waiting for services to be ready..."
     local max_wait=120
     local count=0
-    
+
     while [[ $count -lt $max_wait ]]; do
         if docker-compose -f "$COMPOSE_FILE" ps | grep -q "Up (healthy)"; then
             break
@@ -251,15 +251,15 @@ start_environment() {
             print_status "Still waiting for services... ($count/${max_wait}s)"
         fi
     done
-    
+
     if [[ $count -ge $max_wait ]]; then
         print_error "Services failed to become healthy within $max_wait seconds"
         docker-compose -f "$COMPOSE_FILE" ps
         exit 1
     fi
-    
+
     print_success "Test environment is ready"
-    
+
     # Show service status
     if [[ "$VERBOSE" == "true" ]]; then
         docker-compose -f "$COMPOSE_FILE" ps
@@ -271,18 +271,18 @@ wait_for_ssh() {
     local target_host=$1
     local max_wait=60
     local count=0
-    
+
     print_status "Waiting for SSH connectivity to $target_host..."
-    
+
     while [[ $count -lt $max_wait ]]; do
-        if docker exec wp-test-runner ssh -o ConnectTimeout=5 -o BatchMode=yes root@$target_host echo "SSH OK" >/dev/null 2>&1; then
+        if docker exec wp-test-runner sshpass -p testroot123 ssh -o ConnectTimeout=5 root@"$target_host" echo "SSH OK" >/dev/null 2>&1; then
             print_success "SSH connectivity to $target_host established"
             return 0
         fi
         sleep 2
         ((count += 2))
     done
-    
+
     print_error "Failed to establish SSH connectivity to $target_host"
     return 1
 }
@@ -290,7 +290,7 @@ wait_for_ssh() {
 # Function to run the test scenario
 run_test() {
     print_header "Running Test Scenario"
-    
+
     # Determine target hostname
     local target_host
     case "$TARGET" in
@@ -301,27 +301,27 @@ run_test() {
             target_host="wp-test-centos"
             ;;
     esac
-    
+
     local log_file="$REPORTS_DIR/${TEST_RUN_ID}_${TARGET}_${SCENARIO}.log"
     local report_file="$REPORTS_DIR/${TEST_RUN_ID}_${TARGET}_${SCENARIO}_report.json"
-    
+
     print_status "Target: $TARGET ($target_host)"
     print_status "Scenario: $SCENARIO"
     print_status "Inventory: $INVENTORY"
     print_status "Log file: $log_file"
     print_status "Report file: $report_file"
-    
+
     # Wait for SSH connectivity
     if ! wait_for_ssh "$target_host"; then
         return 1
     fi
-    
+
     # Run the test
     local start_time=$(date +%s)
     local test_result=0
-    
+
     print_status "Executing Ansible playbook..."
-    
+
     if [[ "$VERBOSE" == "true" ]]; then
         docker exec wp-test-runner ansible-playbook \
             -i "tests/inventories/$INVENTORY" \
@@ -337,10 +337,10 @@ run_test() {
             >"$log_file" 2>&1
         test_result=$?
     fi
-    
+
     local end_time=$(date +%s)
     local duration=$((end_time - start_time))
-    
+
     # Create test report
     cat > "$report_file" << EOF
 {
@@ -357,7 +357,7 @@ run_test() {
   "timestamp": "$(date -Iseconds)"
 }
 EOF
-    
+
     if [[ $test_result -eq 0 ]]; then
         print_success "Test completed successfully! ($duration seconds)"
         print_status "Report saved to: $report_file"
@@ -380,18 +380,18 @@ cleanup_environment() {
         print_status "cd $PROJECT_DIR && docker-compose -f docker-compose.test.yml down --remove-orphans --volumes"
         return
     fi
-    
+
     print_header "Cleaning Up Test Environment"
-    
+
     cd "$PROJECT_DIR"
-    
+
     print_status "Stopping and removing containers..."
     if [[ "$VERBOSE" == "true" ]]; then
         docker-compose -f "$COMPOSE_FILE" down --remove-orphans --volumes
     else
         docker-compose -f "$COMPOSE_FILE" down --remove-orphans --volumes >/dev/null 2>&1
     fi
-    
+
     print_success "Test environment cleaned up"
 }
 
@@ -399,27 +399,27 @@ cleanup_environment() {
 main() {
     print_header "WordPress Enterprise Single Test Runner"
     print_status "Test Run ID: $TEST_RUN_ID"
-    
+
     parse_args "$@"
     check_prerequisites
     build_images
     start_environment
-    
+
     # Run test and capture exit code
     local test_exit_code=0
     run_test || test_exit_code=$?
-    
+
     cleanup_environment
-    
+
     print_header "Test Complete"
     if [[ $test_exit_code -eq 0 ]]; then
         print_success "Test passed! 🎉"
     else
         print_error "Test failed. Check the log file for details."
     fi
-    
+
     print_status "Reports available in: $REPORTS_DIR"
-    
+
     exit $test_exit_code
 }
 
