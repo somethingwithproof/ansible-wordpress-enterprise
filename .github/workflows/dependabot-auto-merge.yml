@@ -9,8 +9,7 @@ name: Dependabot Auto-Merge
   workflow_dispatch:
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
   checks: read
 
 concurrency:
@@ -23,6 +22,10 @@ jobs:
       github.event_name != 'pull_request_target' ||
       github.actor == 'dependabot[bot]'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: read
     steps:
       - name: Merge Dependabot pull requests with successful checks
         shell: bash
