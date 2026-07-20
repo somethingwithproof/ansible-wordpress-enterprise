@@ -19,7 +19,7 @@
   when: not wordpress_use_external_db | bool
 
 - name: Set MySQL/MariaDB root password (first time)
-  community.mysql.mysql_user:
+  ansible.mysql.mysql_user:
     name: root
     password: "{{ wordpress_db_root_password }}"
     login_unix_socket: >-
@@ -44,7 +44,7 @@
   when: not wordpress_use_external_db | bool
 
 - name: Remove anonymous MySQL users
-  community.mysql.mysql_user:
+  ansible.mysql.mysql_user:
     name: ""
     host_all: true
     state: absent
@@ -54,7 +54,7 @@
   when: not wordpress_use_external_db | bool
 
 - name: Remove MySQL test database
-  community.mysql.mysql_db:
+  ansible.mysql.mysql_db:
     name: test
     state: absent
     login_user: root
@@ -63,7 +63,7 @@
   when: not wordpress_use_external_db | bool
 
 - name: Remove remote root user access
-  community.mysql.mysql_user:
+  ansible.mysql.mysql_user:
     name: root
     host: "{{ item }}"
     state: absent
@@ -81,7 +81,7 @@
   failed_when: false
 
 - name: Create WordPress database
-  community.mysql.mysql_db:
+  ansible.mysql.mysql_db:
     name: "{{ wordpress_db_name }}"
     state: present
     encoding: "{{ wordpress_db_charset }}"
@@ -91,7 +91,7 @@
   become: true
 
 - name: Create WordPress database user
-  community.mysql.mysql_user:
+  ansible.mysql.mysql_user:
     name: "{{ wordpress_db_user }}"
     password: "{{ wordpress_db_password }}"
     priv: "{{ wordpress_db_name }}.*:ALL"
@@ -175,7 +175,7 @@
     - wordpress_logrotate_enabled | bool
 
 - name: Secure MySQL installation - reload privilege tables
-  community.mysql.mysql_query:
+  ansible.mysql.mysql_query:
     query: "FLUSH PRIVILEGES"
     login_user: root
     login_password: "{{ wordpress_db_root_password }}"
@@ -183,7 +183,7 @@
   when: not wordpress_use_external_db | bool
 
 - name: Test database connection
-  community.mysql.mysql_query:
+  ansible.mysql.mysql_query:
     query: "SELECT 1"
     login_host: "{{ wordpress_db_host }}"
     login_port: "{{ wordpress_db_port }}"
@@ -199,7 +199,7 @@
   when: db_connection_test is succeeded
 
 - name: Enable slow query log
-  community.mysql.mysql_query:
+  ansible.mysql.mysql_query:
     query: |
       SET GLOBAL slow_query_log = 'ON';
       SET GLOBAL slow_query_log_file = '/var/log/mysql/slow.log';

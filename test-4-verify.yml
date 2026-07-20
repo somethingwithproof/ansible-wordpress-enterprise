@@ -56,13 +56,13 @@
       include_tasks: tasks/php.yml
 
     - name: Install and configure web server
-      include_tasks: tasks/webserver.yml
+      include_tasks: tasks/webserver_apache.yml
 
     - name: Install WordPress
       include_tasks: tasks/wordpress_install.yml
 
     - name: Configure WordPress
-      include_tasks: tasks/wordpress_config.yml
+      include_tasks: tasks/wordpress_configure.yml
 
     - name: Verify WordPress Installation
       block:

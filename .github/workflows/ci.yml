@@ -26,12 +26,12 @@ jobs:
     timeout-minutes: 15  # Prevent hung jobs
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
-          python-version: '3.11'
+          python-version: '3.12'
           cache: 'pip'
 
       - name: Install dependencies
@@ -41,6 +41,11 @@ jobs:
 
       - name: Run yamllint
         run: yamllint .
+
+      - name: Link role for ansible-lint
+        run: |
+          mkdir -p .ansible/roles
+          ln -s "$GITHUB_WORKSPACE" .ansible/roles/ansible-wordpress-enterprise
 
       - name: Run ansible-lint
         run: ansible-lint
@@ -52,12 +57,12 @@ jobs:
     needs: lint
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
-          python-version: '3.11'
+          python-version: '3.12'
 
       - name: Install Molecule and dependencies
         run: |
@@ -83,12 +88,12 @@ jobs:
     needs: lint
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
-          python-version: '3.11'
+          python-version: '3.12'
 
       - name: Install Molecule and dependencies
         run: |
@@ -114,12 +119,12 @@ jobs:
     needs: lint
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
-          python-version: '3.11'
+          python-version: '3.12'
 
       - name: Install Molecule and dependencies
         run: |
@@ -145,12 +150,12 @@ jobs:
     needs: lint
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
-          python-version: '3.11'
+          python-version: '3.12'
 
       - name: Install Molecule and dependencies
         run: |
@@ -176,12 +181,12 @@ jobs:
     needs: lint
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
-          python-version: '3.11'
+          python-version: '3.12'
 
       - name: Install Molecule and dependencies
         run: |
@@ -207,7 +212,7 @@ jobs:
     needs: [test-ubuntu-22, test-ubuntu-24, test-debian, test-rocky-9, test-rhel]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -237,14 +242,14 @@ jobs:
       contents: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
-          python-version: '3.11'
+          python-version: '3.12'
 
       - name: Install dependencies
         run: |
