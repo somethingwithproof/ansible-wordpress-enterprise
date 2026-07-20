@@ -17,6 +17,8 @@ permissions:
 env:
   ANSIBLE_FORCE_COLOR: 1
   PYTEST_ADDOPTS: --color=yes
+  MIN_FEATURE_COVERAGE: 75
+  MIN_SCENARIO_COVERAGE: 90
 
 jobs:
   security-hardening-tests:
@@ -48,7 +50,7 @@ jobs:
     - name: Install system dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y jq bc curl
+        sudo apt-get install -y jq bc curl docker-compose
 
     - name: Install Python dependencies
       run: |
@@ -194,13 +196,13 @@ jobs:
           echo "  Scenario Coverage: $scenario_pct%"
 
           # Check compliance thresholds
-          if (( $(echo "$feature_pct < 80" | bc -l) )); then
-            echo "❌ Feature coverage below 80% threshold"
+          if (( $(echo "$feature_pct < $MIN_FEATURE_COVERAGE" | bc -l) )); then
+            echo "❌ Feature coverage below $MIN_FEATURE_COVERAGE% threshold"
             exit 1
           fi
 
-          if (( $(echo "$scenario_pct < 90" | bc -l) )); then
-            echo "❌ Scenario coverage below 90% threshold"
+          if (( $(echo "$scenario_pct < $MIN_SCENARIO_COVERAGE" | bc -l) )); then
+            echo "❌ Scenario coverage below $MIN_SCENARIO_COVERAGE% threshold"
             exit 1
           fi
         done
