@@ -1,3 +1,8 @@
+# docker compose v2 ships as a docker plugin; the standalone v1 binary was
+# removed from the GitHub runner images, which broke check-test-prereqs.
+# Prefer v2 and fall back to v1 so existing local setups keep working.
+COMPOSE := $(shell if docker compose version >/dev/null 2>&1; then echo 'docker compose'; else echo 'docker-compose'; fi)
+
 .PHONY: help build test lint clean docker-test install galaxy-install test-all test-ubuntu test-centos test-single analyze reports clean-test
 
 # Variables
@@ -68,15 +73,15 @@ test:
 
 docker-build:
 	@echo "Building Docker images..."
-	docker-compose build ubuntu-22 ubuntu-24 rocky-9
+	$(COMPOSE) build ubuntu-22 ubuntu-24 rocky-9
 
 docker-test:
 	@echo "Running tests in Docker..."
-	docker-compose run --rm molecule
+	$(COMPOSE) run --rm molecule
 
 docker-dev:
 	@echo "Starting development environment..."
-	docker-compose up -d wordpress-dev mysql redis mailhog
+	$(COMPOSE) up -d wordpress-dev mysql redis mailhog
 	@echo ""
 	@echo "Services available:"
 	@echo "  WordPress: http://localhost:8080"
@@ -85,17 +90,17 @@ docker-dev:
 	@echo "  MailHog: http://localhost:8025"
 	@echo ""
 	@echo "To access WordPress container:"
-	@echo "  docker-compose exec wordpress-dev bash"
+	@echo "  $(COMPOSE) exec wordpress-dev bash"
 
 docker-logs:
-	docker-compose logs -f wordpress-dev
+	$(COMPOSE) logs -f wordpress-dev
 
 docker-stop:
-	docker-compose down
+	$(COMPOSE) down
 
 docker-clean:
 	@echo "Cleaning Docker resources..."
-	docker-compose down -v
+	$(COMPOSE) down -v
 	docker system prune -f
 
 clean:
@@ -114,20 +119,20 @@ stop: docker-stop
 logs: docker-logs
 
 shell:
-	docker-compose exec wordpress-dev bash
+	$(COMPOSE) exec wordpress-dev bash
 
 mysql-shell:
-	docker-compose exec mysql mysql -uroot -proot wordpress
+	$(COMPOSE) exec mysql mysql -uroot -proot wordpress
 
 redis-cli:
-	docker-compose exec redis redis-cli
+	$(COMPOSE) exec redis redis-cli
 
 # End-to-End Test Automation Commands
 check-test-prereqs:
 	@echo "$(BLUE)Checking test prerequisites...$(NC)"
 	@command -v docker >/dev/null 2>&1 || { echo "$(RED)Error: Docker is not installed$(NC)"; exit 1; }
 	@docker info >/dev/null 2>&1 || { echo "$(RED)Error: Docker is not running$(NC)"; exit 1; }
-	@command -v docker-compose >/dev/null 2>&1 || { echo "$(RED)Error: docker-compose is not installed$(NC)"; exit 1; }
+	@$(COMPOSE) version >/dev/null 2>&1 || { echo "$(RED)Error: docker compose is not available$(NC)"; exit 1; }
 	@command -v jq >/dev/null 2>&1 || { echo "$(RED)Error: jq is not installed (brew install jq)$(NC)"; exit 1; }
 	@test -f docker-compose.test.yml || { echo "$(RED)Error: docker-compose.test.yml not found$(NC)"; exit 1; }
 	@echo "$(GREEN)✅ All test prerequisites are met$(NC)"
