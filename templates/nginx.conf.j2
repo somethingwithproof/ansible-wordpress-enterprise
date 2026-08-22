@@ -18,8 +18,9 @@ http {
     tcp_nodelay on;
     keepalive_timeout {{ wordpress_nginx_keepalive_timeout | default('65') }};
     types_hash_max_size 2048;
+
     server_tokens {{ 'on' if wordpress_nginx_server_tokens | default(false) else 'off' }};
-    
+
     # server_names_hash_bucket_size 64;
     # server_name_in_redirect off;
 
@@ -38,7 +39,7 @@ http {
     log_format main '$remote_addr - $remote_user [$time_local] "$request" '
                     '$status $body_bytes_sent "$http_referer" '
                     '"$http_user_agent" "$http_x_forwarded_for"';
-                    
+
     access_log {{ wordpress_nginx_access_log | default('/var/log/nginx/access.log') }} main;
     error_log {{ wordpress_nginx_error_log | default('/var/log/nginx/error.log') }};
 

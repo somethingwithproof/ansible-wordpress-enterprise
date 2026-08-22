@@ -71,3 +71,15 @@
     - "{{ wordpress_install_dir }}/wp-content/themes"
     - "{{ wordpress_install_dir }}/wp-content/plugins"
     - /var/log/wordpress
+
+# wordpress_enable_ssl defaults true while no certificate source does, so the
+# web server config would reference a file that never exists and fail its own
+# config test. Emit the TLS blocks only once a certificate is actually there.
+- name: Check whether the configured TLS certificate exists
+  ansible.builtin.stat:
+    path: "{{ wordpress_ssl_certificate }}"
+  register: wordpress_ssl_certificate_stat
+
+- name: Record whether TLS can be served
+  ansible.builtin.set_fact:
+    wordpress_ssl_ready: "{{ (wordpress_enable_ssl | bool) and wordpress_ssl_certificate_stat.stat.exists }}"

@@ -59,12 +59,15 @@
 
 - name: Create Nginx cache directory
   ansible.builtin.file:
-    path: /var/cache/nginx
+    path: "{{ item }}"
     state: directory
     owner: www-data
     group: www-data
     mode: '0755'
   become: true
+  loop:
+    - /var/cache/nginx
+    - /var/cache/nginx/wordpress
   when: wordpress_enable_nginx_cache | default(true)
 
 - name: Test Nginx configuration

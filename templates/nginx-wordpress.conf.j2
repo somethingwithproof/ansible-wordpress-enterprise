@@ -6,7 +6,7 @@ upstream php-fpm {
     server unix:{{ wordpress_php_fpm_listen }};
 }
 
-{% if wordpress_enable_ssl %}
+{% if wordpress_ssl_ready | default(false) %}
 # HTTP to HTTPS redirect
 server {
     listen {{ wordpress_http_port }};
@@ -27,7 +27,7 @@ server {
 
 # Main server block
 server {
-{% if wordpress_enable_ssl %}
+{% if wordpress_ssl_ready | default(false) %}
     listen {{ wordpress_https_port }} ssl http2;
     listen [::]:{{ wordpress_https_port }} ssl http2;
 
@@ -127,7 +127,7 @@ server {
         fastcgi_busy_buffers_size 256k;
         fastcgi_temp_file_write_size 256k;
 
-{% if wordpress_enable_redis or wordpress_enable_memcached %}
+{% if wordpress_enable_nginx_cache | default(true) %}
         # Caching headers
         fastcgi_cache_bypass $skip_cache;
         fastcgi_no_cache $skip_cache;
@@ -195,7 +195,7 @@ server {
         deny all;
     }
 
-{% if wordpress_enable_redis or wordpress_enable_memcached %}
+{% if wordpress_enable_nginx_cache | default(true) %}
     # Skip cache for specific conditions
     set $skip_cache 0;
 
