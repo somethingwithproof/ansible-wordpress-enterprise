@@ -132,7 +132,7 @@ check-test-prereqs:
 	@echo "$(BLUE)Checking test prerequisites...$(NC)"
 	@command -v docker >/dev/null 2>&1 || { echo "$(RED)Error: Docker is not installed$(NC)"; exit 1; }
 	@docker info >/dev/null 2>&1 || { echo "$(RED)Error: Docker is not running$(NC)"; exit 1; }
-	@$(COMPOSE) version >/dev/null 2>&1 || { echo "$(RED)Error: docker compose is not available$(NC)"; exit 1; }
+	@$(COMPOSE) version >/dev/null 2>&1 || { echo "$(RED)Error: $(COMPOSE) is not available$(NC)"; exit 1; }
 	@command -v jq >/dev/null 2>&1 || { echo "$(RED)Error: jq is not installed (brew install jq)$(NC)"; exit 1; }
 	@test -f docker-compose.test.yml || { echo "$(RED)Error: docker-compose.test.yml not found$(NC)"; exit 1; }
 	@echo "$(GREEN)✅ All test prerequisites are met$(NC)"

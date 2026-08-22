@@ -10,6 +10,18 @@ repos:
       - id: check-merge-conflict
       - id: detect-private-key
 
+  # ansible-lint resolves the test playbooks' `role: ansible-wordpress-enterprise`
+  # by name. CI creates this symlink as a workflow step, so without it here the
+  # mandatory syntax-check rule fails for anyone running the hooks locally.
+  - repo: local
+    hooks:
+      - id: ansible-role-selflink
+        name: Resolve the role by name for ansible-lint
+        entry: bash -c 'mkdir -p .ansible/roles && ln -sfn ../.. .ansible/roles/ansible-wordpress-enterprise'
+        language: system
+        pass_filenames: false
+        always_run: true
+
   - repo: https://github.com/ansible/ansible-lint
     rev: v26.6.0
     hooks:
