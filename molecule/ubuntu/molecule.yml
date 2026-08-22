@@ -9,18 +9,22 @@ driver:
 
 platforms:
   - name: ubuntu-22.04
-    image: ubuntu:22.04
-    dockerfile: ../default/Dockerfile.j2
-    pre_build_image: false
-    command: sleep infinity
-    privileged: false
-  
+    image: geerlingguy/docker-ubuntu2204-ansible:latest
+    command: /sbin/init
+    pre_build_image: true
+    privileged: true
+    cgroupns_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+
   - name: ubuntu-24.04
-    image: ubuntu:24.04
-    dockerfile: ../default/Dockerfile.j2
-    pre_build_image: false
-    command: sleep infinity
-    privileged: false
+    image: geerlingguy/docker-ubuntu2404-ansible:latest
+    command: /sbin/init
+    pre_build_image: true
+    privileged: true
+    cgroupns_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
 
 provisioner:
   name: ansible
@@ -33,8 +37,10 @@ provisioner:
     host_vars:
       ubuntu-22.04:
         ansible_python_interpreter: /usr/bin/python3
+        wordpress_php_version: "8.1"
       ubuntu-24.04:
         ansible_python_interpreter: /usr/bin/python3
+        wordpress_php_version: "8.3"
   playbooks:
     prepare: prepare.yml
     converge: ${MOLECULE_PLAYBOOK:-converge.yml}

@@ -9,18 +9,22 @@ driver:
 
 platforms:
   - name: rhel-8
-    image: rockylinux:8
-    dockerfile: ../default/Dockerfile.j2
-    pre_build_image: false
-    command: sleep infinity
-    privileged: false
-  
+    image: geerlingguy/docker-rockylinux8-ansible:latest
+    command: /sbin/init
+    pre_build_image: true
+    privileged: true
+    cgroupns_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+
   - name: rhel-9
-    image: rockylinux:9
-    dockerfile: ../default/Dockerfile.j2
-    pre_build_image: false
-    command: sleep infinity
-    privileged: false
+    image: geerlingguy/docker-rockylinux9-ansible:latest
+    command: /sbin/init
+    pre_build_image: true
+    privileged: true
+    cgroupns_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
 
 provisioner:
   name: ansible

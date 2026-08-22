@@ -9,25 +9,31 @@ driver:
 
 platforms:
   - name: ubuntu-22
-    image: ubuntu:22.04
-    dockerfile: ../default/Dockerfile.j2
-    pre_build_image: false
-    command: sleep infinity
-    privileged: false
-  
+    image: geerlingguy/docker-ubuntu2204-ansible:latest
+    command: /sbin/init
+    pre_build_image: true
+    privileged: true
+    cgroupns_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+
   - name: ubuntu-24
-    image: ubuntu:24.04
-    dockerfile: ../default/Dockerfile.j2
-    pre_build_image: false
-    command: sleep infinity
-    privileged: false
-  
+    image: geerlingguy/docker-ubuntu2404-ansible:latest
+    command: /sbin/init
+    pre_build_image: true
+    privileged: true
+    cgroupns_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+
   - name: rocky-9
-    image: rockylinux:9
-    dockerfile: ../default/Dockerfile.j2
-    pre_build_image: false
-    command: sleep infinity
-    privileged: false
+    image: geerlingguy/docker-rockylinux9-ansible:latest
+    command: /sbin/init
+    pre_build_image: true
+    privileged: true
+    cgroupns_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
 
 provisioner:
   name: ansible
@@ -40,8 +46,10 @@ provisioner:
     host_vars:
       ubuntu-22:
         ansible_python_interpreter: /usr/bin/python3
+        wordpress_php_version: "8.1"
       ubuntu-24:
         ansible_python_interpreter: /usr/bin/python3
+        wordpress_php_version: "8.3"
       rocky-9:
         ansible_python_interpreter: /usr/bin/python3
   playbooks:

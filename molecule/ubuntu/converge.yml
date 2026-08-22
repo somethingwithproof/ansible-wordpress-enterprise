@@ -2,7 +2,7 @@
 - name: Converge
   hosts: all
   become: true
-  
+
   vars:
     # Basic WordPress configuration for testing
     wordpress_server_name: "test-ubuntu.example.com"
@@ -10,16 +10,16 @@
     wordpress_admin_user: "admin"
     wordpress_admin_email: "admin@example.com"
     wordpress_admin_password: "TestPass123!"
-    
+
     # Database configuration
-    wordpress_db_engine: "mysql"
+    wordpress_db_engine: "mariadb"
     wordpress_db_name: "wordpress_test"
     wordpress_db_user: "wp_user"
     wordpress_db_password: "DbPass123!"
     wordpress_db_root_password: "RootPass123!"
     wordpress_db_host: "localhost"
     wordpress_use_external_db: false
-    
+
     # Disable features that require external services
     wordpress_enable_ssl: false
     wordpress_use_letsencrypt: false
@@ -32,21 +32,20 @@
     wordpress_enable_security: false
     wordpress_enable_caching: false
     wordpress_enable_logging: false
-    
+
     # Simple testing configuration
     wordpress_web_server: "apache"
-    wordpress_php_version: "8.2"
     wordpress_enable_redis: false
     wordpress_enable_memcached: false
-    
+
     # Set paths
     wordpress_install_dir: "/var/www/wordpress"
-    
+
   pre_tasks:
     - name: Update apt cache
       ansible.builtin.apt:
         update_cache: true
         cache_valid_time: 3600
-  
+
   roles:
     - role: ansible-wordpress-enterprise
