@@ -19,7 +19,7 @@
   when: not wordpress_use_external_db | bool
 
 - name: Set MySQL/MariaDB root password (first time)
-  ansible.mysql.mysql_user:
+  community.mysql.mysql_user:
     name: root
     password: "{{ wordpress_db_root_password }}"
     login_unix_socket: >-
@@ -44,7 +44,7 @@
   when: not wordpress_use_external_db | bool
 
 - name: Remove anonymous MySQL users
-  ansible.mysql.mysql_user:
+  community.mysql.mysql_user:
     name: ""
     host_all: true
     state: absent
@@ -54,7 +54,7 @@
   when: not wordpress_use_external_db | bool
 
 - name: Remove MySQL test database
-  ansible.mysql.mysql_db:
+  community.mysql.mysql_db:
     name: test
     state: absent
     login_user: root
@@ -63,7 +63,7 @@
   when: not wordpress_use_external_db | bool
 
 - name: Remove remote root user access
-  ansible.mysql.mysql_user:
+  community.mysql.mysql_user:
     name: root
     host: "{{ item }}"
     state: absent
@@ -81,7 +81,7 @@
   failed_when: false
 
 - name: Create WordPress database
-  ansible.mysql.mysql_db:
+  community.mysql.mysql_db:
     name: "{{ wordpress_db_name }}"
     state: present
     encoding: "{{ wordpress_db_charset }}"
@@ -91,7 +91,7 @@
   become: true
 
 - name: Create WordPress database user
-  ansible.mysql.mysql_user:
+  community.mysql.mysql_user:
     name: "{{ wordpress_db_user }}"
     password: "{{ wordpress_db_password }}"
     priv: "{{ wordpress_db_name }}.*:ALL"
@@ -104,9 +104,7 @@
 - name: Configure MySQL/MariaDB for WordPress
   ansible.builtin.template:
     src: mysql-wordpress.cnf.j2
-    dest: >-
-      {{ '/etc/mysql/mysql.conf.d/wordpress.cnf' if ansible_os_family == 'Debian'
-         else '/etc/my.cnf.d/wordpress.cnf' }}
+    dest: "{{ wordpress_db_config_dir[wordpress_db_engine] }}/wordpress.cnf"
     owner: root
     group: root
     mode: '0644'
@@ -120,9 +118,7 @@
     src: >-
       {{ 'mysql-optimization.cnf.j2' if wordpress_db_engine == 'mysql'
          else 'mariadb-optimization.cnf.j2' }}
-    dest: >-
-      {{ '/etc/mysql/mysql.conf.d/optimization.cnf' if ansible_os_family == 'Debian'
-         else '/etc/my.cnf.d/optimization.cnf' }}
+    dest: "{{ wordpress_db_config_dir[wordpress_db_engine] }}/optimization.cnf"
     owner: root
     group: root
     mode: '0644'
@@ -175,7 +171,7 @@
     - wordpress_logrotate_enabled | bool
 
 - name: Secure MySQL installation - reload privilege tables
-  ansible.mysql.mysql_query:
+  community.mysql.mysql_query:
     query: "FLUSH PRIVILEGES"
     login_user: root
     login_password: "{{ wordpress_db_root_password }}"
@@ -183,7 +179,7 @@
   when: not wordpress_use_external_db | bool
 
 - name: Test database connection
-  ansible.mysql.mysql_query:
+  community.mysql.mysql_query:
     query: "SELECT 1"
     login_host: "{{ wordpress_db_host }}"
     login_port: "{{ wordpress_db_port }}"
@@ -199,7 +195,7 @@
   when: db_connection_test is succeeded
 
 - name: Enable slow query log
-  ansible.mysql.mysql_query:
+  community.mysql.mysql_query:
     query: |
       SET GLOBAL slow_query_log = 'ON';
       SET GLOBAL slow_query_log_file = '/var/log/mysql/slow.log';

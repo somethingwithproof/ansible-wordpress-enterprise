@@ -55,7 +55,11 @@ wordpress_db_service:
   mysql: "mysqld"
   mariadb: "mariadb"
 
-wordpress_php_fpm_service: "php{{ wordpress_php_version }}-fpm"
+wordpress_db_config_dir:
+  mysql: "/etc/my.cnf.d"
+  mariadb: "/etc/my.cnf.d"
+
+wordpress_php_fpm_service: "php-fpm"
 wordpress_redis_service: "redis"
 wordpress_memcached_service: "memcached"
 

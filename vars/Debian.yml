@@ -61,6 +61,10 @@ wordpress_db_service:
   mysql: "mysql"
   mariadb: "mariadb"
 
+wordpress_db_config_dir:
+  mysql: "/etc/mysql/mysql.conf.d"
+  mariadb: "/etc/mysql/mariadb.conf.d"
+
 wordpress_php_fpm_service: "php{{ wordpress_php_version }}-fpm"
 wordpress_redis_service: "redis-server"
 wordpress_memcached_service: "memcached"

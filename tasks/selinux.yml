@@ -148,7 +148,7 @@
   changed_when: true
 
 - name: Configure SELinux booleans for WordPress
-  ansible.posix.sebool:
+  ansible.posix.seboolean:
     name: "{{ item.name }}"
     state: "{{ item.state }}"
     persistent: true
@@ -177,7 +177,7 @@
   become: true
 
 - name: Configure additional SELinux booleans for caching
-  ansible.posix.sebool:
+  ansible.posix.seboolean:
     name: "{{ item.name }}"
     state: "{{ item.state }}"
     persistent: true
