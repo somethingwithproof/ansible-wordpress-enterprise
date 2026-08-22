@@ -51,7 +51,9 @@ LogLevel {{ wordpress_apache_log_level | default('warn') }}
 </IfModule>
 
 <IfModule mime_module>
-    TypesConfig conf/mime.types
+    # RHEL ships mime.types in the mailcap package at /etc/mime.types, not
+    # under ServerRoot as upstream Apache does.
+    TypesConfig /etc/mime.types
     AddType application/x-compress .Z
     AddType application/x-gzip .gz .tgz
 </IfModule>
