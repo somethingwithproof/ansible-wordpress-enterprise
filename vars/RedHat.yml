@@ -55,6 +55,8 @@ wordpress_db_service:
   mysql: "mysqld"
   mariadb: "mariadb"
 
+wordpress_php_fpm_listen: "/run/php-fpm/www.sock"
+
 wordpress_db_socket: "/var/lib/mysql/mysql.sock"
 
 wordpress_db_config_dir:
@@ -78,7 +80,6 @@ wordpress_apache_sites_available: "{{ wordpress_apache_conf_path }}/conf.d"
 wordpress_apache_sites_enabled: "{{ wordpress_apache_conf_path }}/conf.d"
 
 # PHP-FPM socket/listen
-wordpress_php_fpm_listen_rhel: "/var/run/php-fpm/www.sock"
 
 # Firewall
 wordpress_firewall_service: "firewalld"
@@ -105,5 +106,3 @@ wordpress_epel_repo_url: >-
   ansible_distribution_major_version }}.noarch.rpm
 
 # System user defaults
-wordpress_php_fpm_user_rhel: "nginx"
-wordpress_php_fpm_group_rhel: "nginx"

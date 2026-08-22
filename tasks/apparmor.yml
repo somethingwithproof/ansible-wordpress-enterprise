@@ -2,17 +2,18 @@
 # WordPress Enterprise - AppArmor Configuration Tasks
 # Configures AppArmor profiles for WordPress security hardening on Ubuntu/Debian
 
+# securityfs exposes this only when the kernel has AppArmor active. It answers
+# the question without apparmor-utils being installed first, and is correctly
+# false in a container, where the LSM belongs to the host.
 - name: Check if AppArmor is available
-  ansible.builtin.command: aa-status
+  ansible.builtin.stat:
+    path: /sys/kernel/security/apparmor
   register: apparmor_status
-  failed_when: false
-  changed_when: false
   when: ansible_os_family == "Debian"
 
 - name: Set AppArmor facts
   ansible.builtin.set_fact:
-    apparmor_enabled: "{{ apparmor_status.rc == 0 }}"
-    apparmor_profiles_loaded: "{{ apparmor_status.stdout | regex_findall('profiles are loaded') | length > 0 if apparmor_status.rc == 0 else false }}"
+    apparmor_enabled: "{{ apparmor_status.stat.exists | default(false) }}"
   when: ansible_os_family == "Debian"
 
 - name: Display AppArmor status
@@ -41,6 +42,7 @@
   when:
     - ansible_os_family == "Debian"
     - wordpress_apparmor_install | default(true)
+    - apparmor_enabled | default(false)
   become: true
 
 - name: Create AppArmor profile directory for WordPress
