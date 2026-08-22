@@ -194,10 +194,10 @@
 
 - name: Enable slow query log
   ansible.mysql.mysql_query:
-    query: |
-      SET GLOBAL slow_query_log = 'ON';
-      SET GLOBAL slow_query_log_file = '/var/log/mysql/slow.log';
-      SET GLOBAL long_query_time = 2;
+    query:
+      - "SET GLOBAL slow_query_log = 'ON'"
+      - "SET GLOBAL slow_query_log_file = '{{ wordpress_mysql_slow_query_log_file | default('/var/log/mysql/slow.log') }}'"
+      - "SET GLOBAL long_query_time = {{ wordpress_mysql_long_query_time | default(2) }}"
     login_user: root
     login_password: "{{ wordpress_db_root_password }}"
   become: true

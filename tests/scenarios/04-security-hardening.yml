@@ -3,7 +3,7 @@
 # Tests comprehensive security hardening including SELinux (RHEL/CentOS) and AppArmor (Ubuntu/Debian)
 
 - name: WordPress Enterprise Security Hardening Test
-  hosts: all
+  hosts: wordpress_servers
   become: true
   gather_facts: true
 

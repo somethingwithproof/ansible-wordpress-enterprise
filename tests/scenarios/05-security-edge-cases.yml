@@ -3,7 +3,7 @@
 # Tests edge cases, error conditions, and boundary scenarios for security hardening
 
 - name: WordPress Enterprise Security Edge Cases Test
-  hosts: all
+  hosts: wordpress_servers
   become: true
   gather_facts: true
 

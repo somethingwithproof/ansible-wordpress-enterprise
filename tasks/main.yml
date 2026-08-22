@@ -5,6 +5,26 @@
   ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
   tags: [always]
 
+# The generated defaults use lookup('password', '/dev/null ...), which returns
+# a new value on every evaluation because nothing is persisted. Referencing one
+# twice yields two different secrets: the database password that gets set is not
+# the one written to wp-config.php. Resolve each once here and reuse the result.
+- name: Resolve generated credentials once for this run
+  ansible.builtin.set_fact:
+    wordpress_db_root_password: "{{ wordpress_db_root_password }}"
+    wordpress_db_password: "{{ wordpress_db_password }}"
+    wordpress_admin_password: "{{ wordpress_admin_password }}"
+    wordpress_auth_key: "{{ wordpress_auth_key }}"
+    wordpress_secure_auth_key: "{{ wordpress_secure_auth_key }}"
+    wordpress_logged_in_key: "{{ wordpress_logged_in_key }}"
+    wordpress_nonce_key: "{{ wordpress_nonce_key }}"
+    wordpress_auth_salt: "{{ wordpress_auth_salt }}"
+    wordpress_secure_auth_salt: "{{ wordpress_secure_auth_salt }}"
+    wordpress_logged_in_salt: "{{ wordpress_logged_in_salt }}"
+    wordpress_nonce_salt: "{{ wordpress_nonce_salt }}"
+  no_log: true
+  tags: [always]
+
 - name: Include prerequisite tasks
   ansible.builtin.include_tasks: prerequisites.yml
   tags: [always, prerequisites]
