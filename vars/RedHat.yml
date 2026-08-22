@@ -57,6 +57,11 @@ wordpress_db_service:
 
 wordpress_php_fpm_listen: "/run/php-fpm/www.sock"
 
+wordpress_security_tools:
+  - "fail2ban"
+  - "logwatch"
+  - "rkhunter"
+
 wordpress_db_socket: "/var/lib/mysql/mysql.sock"
 
 wordpress_db_config_dir:

@@ -131,11 +131,7 @@
       ansible.builtin.package:
         name: "{{ item }}"
         state: present
-      loop:
-        - fail2ban
-        - logwatch
-        - rkhunter
-        - chkrootkit
+      loop: "{{ wordpress_security_tools }}"
       become: true
       when: wordpress_install_security_tools | default(true)
 

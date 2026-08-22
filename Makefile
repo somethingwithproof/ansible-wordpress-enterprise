@@ -194,9 +194,12 @@ test-scenario-05: check-test-prereqs
 	@echo "$(BLUE)Running security edge cases test...$(NC)"
 	@$(TEST_SCRIPTS_DIR)/run-all-tests.sh --test 05
 
-test-security-unit:
+# The suite asserts on a provisioned host (installed scripts, LSM state,
+# firewall, cron), so it has to run inside a target the role has configured,
+# not on the machine driving the tests.
+test-security-unit: check-test-prereqs
 	@echo "$(BLUE)Running security unit tests...$(NC)"
-	@$(TEST_SCRIPTS_DIR)/security-unit-tests.sh
+	@docker exec wp-test-ubuntu bash /ansible-workspace/tests/scripts/security-unit-tests.sh
 
 test-security-all: check-test-prereqs
 	@echo "$(BLUE)Running all security tests (scenarios + unit tests)...$(NC)"
