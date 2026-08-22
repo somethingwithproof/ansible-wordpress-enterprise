@@ -10,7 +10,7 @@
   vars:
     # Test configuration
     test_run_id: "{{ test_run_id | default('security_test') }}"
-    wordpress_path: "/var/www/html/wordpress"
+    wordpress_install_dir: "/var/www/html/wordpress"
     wordpress_db_name: "wordpress_security_test"
     wordpress_db_user: "wp_security_user"
     wordpress_db_password: "SecureTestPass123!"
@@ -117,7 +117,7 @@
       block:
         - name: Check WordPress directory permissions
           ansible.builtin.stat:
-            path: "{{ wordpress_path }}"
+            path: "{{ wordpress_install_dir }}"
           register: wp_dir_stat
 
         - name: Verify WordPress directory ownership and permissions
@@ -130,7 +130,7 @@
             success_msg: "WordPress directory has correct permissions"
 
         - name: Check SELinux contexts on WordPress files (RHEL/CentOS)
-          ansible.builtin.command: ls -laZ {{ wordpress_path }}
+          ansible.builtin.command: ls -laZ {{ wordpress_install_dir }}
           register: wp_selinux_context
           changed_when: false
           when: ansible_os_family == "RedHat"
@@ -394,7 +394,7 @@
       block:
         - name: Check uploads directory protection (Apache)
           ansible.builtin.stat:
-            path: "{{ wordpress_path }}/wp-content/uploads/.htaccess"
+            path: "{{ wordpress_install_dir }}/wp-content/uploads/.htaccess"
           register: htaccess_protection
           when: wordpress_web_server == "apache"
 
@@ -408,7 +408,7 @@
 
         - name: Check wp-config.php permissions
           ansible.builtin.stat:
-            path: "{{ wordpress_path }}/wp-config.php"
+            path: "{{ wordpress_install_dir }}/wp-config.php"
           register: wp_config_stat
 
         - name: Verify wp-config.php has secure permissions
@@ -474,7 +474,7 @@
     - name: Test - Verify security system handles edge cases
       block:
         - name: Test file context restoration (SELinux)
-          ansible.builtin.command: restorecon -R -v -n {{ wordpress_path }}
+          ansible.builtin.command: restorecon -R -v -n {{ wordpress_install_dir }}
           register: restorecon_test
           changed_when: false
           failed_when: false

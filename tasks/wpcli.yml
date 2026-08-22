@@ -99,7 +99,7 @@
 
 - name: Verify WP-CLI installation
   ansible.builtin.command:
-    cmd: wp --version
+    cmd: "{{ wordpress_wpcli_bin }} --version"
   register: wpcli_final_check
   changed_when: false
   become: true
@@ -112,7 +112,7 @@
 
 - name: Test WP-CLI with WordPress installation
   ansible.builtin.command:
-    cmd: wp core version --path={{ wordpress_install_dir }}
+    cmd: "{{ wordpress_wpcli_bin }} core version --path={{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"
   register: wp_core_test
@@ -132,7 +132,7 @@
 
 - name: Install WP-CLI packages
   ansible.builtin.command:
-    cmd: wp package install {{ item }}
+    cmd: "{{ wordpress_wpcli_bin }} package install {{ item }}"
   loop: "{{ wordpress_wpcli_packages | default([]) }}"
   become: true
   become_user: "{{ wordpress_system_user }}"

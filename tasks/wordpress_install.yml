@@ -147,7 +147,7 @@
 
 - name: Verify WP-CLI installation
   ansible.builtin.command:
-    cmd: wp --info
+    cmd: "{{ wordpress_wpcli_bin }} --info"
   become: true
   become_user: "{{ wordpress_system_user }}"
   register: wpcli_info

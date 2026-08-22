@@ -18,7 +18,7 @@
 - name: Install WordPress plugins from repository
   ansible.builtin.command:
     cmd: >-
-      wp plugin install {{ item.name }}
+      {{ wordpress_wpcli_bin }} plugin install {{ item.name }}
       {% if item.version is defined and item.version != 'latest' %}--version={{ item.version }}{% endif %}
       {% if item.force | default(false) %}--force{% endif %}
       --path={{ wordpress_install_dir }}
@@ -49,7 +49,7 @@
     - name: Install custom plugins via WP-CLI
       ansible.builtin.command:
         cmd: >-
-          wp plugin install /tmp/{{ item.name }}.zip
+          {{ wordpress_wpcli_bin }} plugin install /tmp/{{ item.name }}.zip
           {% if item.force | default(false) %}--force{% endif %}
           --path={{ wordpress_install_dir }}
       loop: "{{ wordpress_custom_plugins | default([]) }}"
@@ -70,7 +70,7 @@
 
 - name: Activate WordPress plugins
   ansible.builtin.command:
-    cmd: wp plugin activate {{ item.name }} --path={{ wordpress_install_dir }}
+    cmd: "{{ wordpress_wpcli_bin }} plugin activate {{ item.name }} --path={{ wordpress_install_dir }}"
   loop: "{{ (wordpress_plugins | default([])) + (wordpress_custom_plugins | default([])) }}"
   when:
     - item.state | default('present') == 'present'
@@ -83,7 +83,7 @@
 
 - name: Deactivate WordPress plugins
   ansible.builtin.command:
-    cmd: wp plugin deactivate {{ item.name }} --path={{ wordpress_install_dir }}
+    cmd: "{{ wordpress_wpcli_bin }} plugin deactivate {{ item.name }} --path={{ wordpress_install_dir }}"
   loop: "{{ (wordpress_plugins | default([])) + (wordpress_custom_plugins | default([])) }}"
   when:
     - item.state | default('present') == 'present'
@@ -96,7 +96,7 @@
 
 - name: Update WordPress plugins
   ansible.builtin.command:
-    cmd: wp plugin update {{ item.name }} --path={{ wordpress_install_dir }}
+    cmd: "{{ wordpress_wpcli_bin }} plugin update {{ item.name }} --path={{ wordpress_install_dir }}"
   loop: "{{ (wordpress_plugins | default([])) + (wordpress_custom_plugins | default([])) }}"
   when:
     - item.state | default('present') == 'present'
@@ -109,7 +109,7 @@
 
 - name: Uninstall WordPress plugins
   ansible.builtin.command:
-    cmd: wp plugin uninstall {{ item.name }} --path={{ wordpress_install_dir }}
+    cmd: "{{ wordpress_wpcli_bin }} plugin uninstall {{ item.name }} --path={{ wordpress_install_dir }}"
   loop: "{{ (wordpress_plugins | default([])) + (wordpress_custom_plugins | default([])) }}"
   when: item.state | default('present') == 'absent'
   become: true
@@ -120,7 +120,7 @@
 
 - name: Get list of installed plugins
   ansible.builtin.command:
-    cmd: wp plugin list --format=json --path={{ wordpress_install_dir }}
+    cmd: "{{ wordpress_wpcli_bin }} plugin list --format=json --path={{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"
   register: installed_plugins

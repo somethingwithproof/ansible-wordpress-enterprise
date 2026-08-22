@@ -8,7 +8,7 @@
 
 - name: Verify WordPress core files
   ansible.builtin.command:
-    cmd: "wp core verify-checksums --path={{ wordpress_install_dir }}"
+    cmd: "{{ wordpress_wpcli_bin }} core verify-checksums --path={{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"
   register: wp_core_verify
@@ -27,7 +27,7 @@
 
 - name: Check WordPress version
   ansible.builtin.command:
-    cmd: "wp core version --path={{ wordpress_install_dir }}"
+    cmd: "{{ wordpress_wpcli_bin }} core version --path={{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"
   register: wp_version_check
@@ -46,7 +46,7 @@
 
 - name: Test database connection
   ansible.builtin.command:
-    cmd: "wp db check --path={{ wordpress_install_dir }}"
+    cmd: "{{ wordpress_wpcli_bin }} db check --path={{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"
   register: wp_db_check
@@ -252,7 +252,7 @@
 
 - name: Check WordPress plugins status
   ansible.builtin.command:
-    cmd: "wp plugin list --status=active --path={{ wordpress_install_dir }}"
+    cmd: "{{ wordpress_wpcli_bin }} plugin list --status=active --path={{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"
   register: wp_plugins_check
@@ -273,7 +273,7 @@
 
 - name: Check WordPress themes status
   ansible.builtin.command:
-    cmd: "wp theme list --status=active --path={{ wordpress_install_dir }}"
+    cmd: "{{ wordpress_wpcli_bin }} theme list --status=active --path={{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"
   register: wp_themes_check
@@ -296,7 +296,7 @@
 
 - name: Check WordPress updates
   ansible.builtin.command:
-    cmd: "wp core check-update --path={{ wordpress_install_dir }}"
+    cmd: "{{ wordpress_wpcli_bin }} core check-update --path={{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"
   register: wp_updates_check

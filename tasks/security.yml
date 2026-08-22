@@ -245,7 +245,7 @@
 - name: Install WordPress security plugins via WP-CLI
   ansible.builtin.command:
     cmd: >
-      wp plugin install {{ item }}
+      {{ wordpress_wpcli_bin }} plugin install {{ item }}
       --activate
       --path="{{ wordpress_install_dir }}"
   become: true

@@ -26,7 +26,7 @@
 # may still be absent, and every later wp command fails if they are.
 - name: Check whether WordPress core is installed
   ansible.builtin.command:
-    cmd: wp core is-installed --path={{ wordpress_install_dir }}
+    cmd: "{{ wordpress_wpcli_bin }} core is-installed --path={{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"
   register: wp_core_installed
@@ -37,7 +37,7 @@
 - name: Install WordPress using WP-CLI (if not already installed)
   ansible.builtin.command:
     cmd: >
-      wp core install
+      {{ wordpress_wpcli_bin }} core install
       --url="{{ wordpress_site_url }}"
       --title="{{ wordpress_site_title }}"
       --admin_user="{{ wordpress_admin_user }}"
@@ -63,7 +63,7 @@
 - name: Configure WordPress options via WP-CLI
   ansible.builtin.command:
     cmd: >
-      wp option update {{ item.option }} "{{ item.value }}"
+      {{ wordpress_wpcli_bin }} option update {{ item.option }} "{{ item.value }}"
       --path="{{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"
@@ -85,7 +85,7 @@
 - name: Configure WordPress permalink structure
   ansible.builtin.command:
     cmd: >
-      wp rewrite structure "/%postname%/"
+      {{ wordpress_wpcli_bin }} rewrite structure "/%postname%/"
       --hard
       --path="{{ wordpress_install_dir }}"
   become: true
@@ -96,7 +96,7 @@
 - name: Update WordPress timezone
   ansible.builtin.command:
     cmd: >
-      wp option update timezone_string "{{ ansible_date_time.tz }}"
+      {{ wordpress_wpcli_bin }} option update timezone_string "{{ ansible_date_time.tz }}"
       --path="{{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"
@@ -111,7 +111,7 @@
     - name: Install WordPress multisite
       ansible.builtin.command:
         cmd: >
-          wp core multisite-install
+          {{ wordpress_wpcli_bin }} core multisite-install
           --url="{{ wordpress_site_url }}"
           --title="{{ wordpress_site_title }}"
           --admin_user="{{ wordpress_admin_user }}"
@@ -165,7 +165,7 @@
     - name: Install Redis object cache plugin
       ansible.builtin.command:
         cmd: >
-          wp plugin install redis-cache
+          {{ wordpress_wpcli_bin }} plugin install redis-cache
           --activate
           --path="{{ wordpress_install_dir }}"
       become: true
@@ -176,7 +176,7 @@
     - name: Enable Redis object cache
       ansible.builtin.command:
         cmd: >
-          wp redis enable
+          {{ wordpress_wpcli_bin }} redis enable
           --path="{{ wordpress_install_dir }}"
       become: true
       become_user: "{{ wordpress_system_user }}"
@@ -302,7 +302,7 @@
 - name: Install and activate essential plugins
   ansible.builtin.command:
     cmd: >
-      wp plugin install {{ item.name }}
+      {{ wordpress_wpcli_bin }} plugin install {{ item.name }}
       {% if item.version is defined and item.version != 'latest' %}--version={{ item.version }}{% endif %}
       {% if item.state == 'present' %}--activate{% endif %}
       --path="{{ wordpress_install_dir }}"
@@ -318,7 +318,7 @@
 - name: Install and activate themes
   ansible.builtin.command:
     cmd: >
-      wp theme install {{ item.name }}
+      {{ wordpress_wpcli_bin }} theme install {{ item.name }}
       {% if item.version is defined and item.version != 'latest' %}--version={{ item.version }}{% endif %}
       {% if item.activate | default(false) %}--activate{% endif %}
       --path="{{ wordpress_install_dir }}"
@@ -334,7 +334,7 @@
 - name: Flush WordPress rewrite rules
   ansible.builtin.command:
     cmd: >
-      wp rewrite flush
+      {{ wordpress_wpcli_bin }} rewrite flush
       --path="{{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"
@@ -344,7 +344,7 @@
 - name: Update WordPress database (if needed)
   ansible.builtin.command:
     cmd: >
-      wp core update-db
+      {{ wordpress_wpcli_bin }} core update-db
       --path="{{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"
@@ -354,7 +354,7 @@
 - name: Verify WordPress installation
   ansible.builtin.command:
     cmd: >
-      wp core verify-checksums
+      {{ wordpress_wpcli_bin }} core verify-checksums
       --path="{{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"

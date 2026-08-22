@@ -9,7 +9,7 @@
 
   vars:
     test_run_id: "{{ test_run_id | default('security_edge_test') }}"
-    wordpress_path: "/var/www/html/wordpress"
+    wordpress_install_dir: "/var/www/html/wordpress"
 
     # Edge case configurations
     wordpress_security_hardening_enabled: true
@@ -27,7 +27,7 @@
         wordpress_install_security_tools: false
         wordpress_fail2ban_enabled: false
       - name: "custom_paths"
-        wordpress_path: "/opt/custom/wordpress"
+        wordpress_install_dir: "/opt/custom/wordpress"
         wordpress_access_log_path: "/var/log/custom/access.log"
 
   pre_tasks:
@@ -71,7 +71,7 @@
             - name: Include security tasks with missing directory
               ansible.builtin.include_tasks: ../../tasks/security_hardening.yml
               vars:
-                wordpress_path: "{{ temp_wp_path }}"
+                wordpress_install_dir: "{{ temp_wp_path }}"
           rescue:
             - name: Record expected missing directory handling
               ansible.builtin.debug:
@@ -404,7 +404,7 @@
             - name: Include security hardening for second installation
               ansible.builtin.include_tasks: ../../tasks/security_hardening.yml
               vars:
-                wordpress_path: /tmp/wordpress2
+                wordpress_install_dir: /tmp/wordpress2
           rescue:
             - name: Record expected multi-installation handling
               ansible.builtin.debug:

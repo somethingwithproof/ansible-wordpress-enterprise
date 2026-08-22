@@ -6,6 +6,7 @@
 # ============================================================================
 wordpress_version: "latest"  # Specify version like "6.4.2" or "latest"
 wordpress_install_dir: "/var/www/wordpress"
+wordpress_wpcli_bin: "/usr/local/bin/wp"
 wordpress_download_url: "https://wordpress.org/wordpress-{{ wordpress_version }}.tar.gz"
 wordpress_site_url: "https://{{ ansible_fqdn }}"
 wordpress_site_title: "Enterprise WordPress Site"

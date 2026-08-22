@@ -18,7 +18,7 @@
 - name: Install WordPress themes from repository
   ansible.builtin.command:
     cmd: >-
-      wp theme install {{ item.name }}
+      {{ wordpress_wpcli_bin }} theme install {{ item.name }}
       {% if item.version is defined and item.version != 'latest' %}--version={{ item.version }}{% endif %}
       {% if item.force | default(false) %}--force{% endif %}
       --path={{ wordpress_install_dir }}
@@ -49,7 +49,7 @@
     - name: Install custom themes via WP-CLI
       ansible.builtin.command:
         cmd: >-
-          wp theme install /tmp/{{ item.name }}.zip
+          {{ wordpress_wpcli_bin }} theme install /tmp/{{ item.name }}.zip
           {% if item.force | default(false) %}--force{% endif %}
           --path={{ wordpress_install_dir }}
       loop: "{{ wordpress_custom_themes | default([]) }}"
@@ -70,7 +70,7 @@
 
 - name: Activate WordPress theme
   ansible.builtin.command:
-    cmd: wp theme activate {{ item.name }} --path={{ wordpress_install_dir }}
+    cmd: "{{ wordpress_wpcli_bin }} theme activate {{ item.name }} --path={{ wordpress_install_dir }}"
   loop: "{{ (wordpress_themes | default([])) + (wordpress_custom_themes | default([])) }}"
   when:
     - item.state | default('present') == 'present'
@@ -83,7 +83,7 @@
 
 - name: Get currently active theme
   ansible.builtin.command:
-    cmd: wp theme list --status=active --format=json --path={{ wordpress_install_dir }}
+    cmd: "{{ wordpress_wpcli_bin }} theme list --status=active --format=json --path={{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"
   register: active_theme
@@ -91,7 +91,7 @@
 
 - name: Update WordPress themes
   ansible.builtin.command:
-    cmd: wp theme update {{ item.name }} --path={{ wordpress_install_dir }}
+    cmd: "{{ wordpress_wpcli_bin }} theme update {{ item.name }} --path={{ wordpress_install_dir }}"
   loop: "{{ (wordpress_themes | default([])) + (wordpress_custom_themes | default([])) }}"
   when:
     - item.state | default('present') == 'present'
@@ -104,7 +104,7 @@
 
 - name: Uninstall WordPress themes
   ansible.builtin.command:
-    cmd: wp theme uninstall {{ item.name }} --path={{ wordpress_install_dir }}
+    cmd: "{{ wordpress_wpcli_bin }} theme uninstall {{ item.name }} --path={{ wordpress_install_dir }}"
   loop: "{{ (wordpress_themes | default([])) + (wordpress_custom_themes | default([])) }}"
   when:
     - item.state | default('present') == 'absent'
@@ -117,7 +117,7 @@
 
 - name: Install parent theme if child theme is being used
   ansible.builtin.command:
-    cmd: wp theme install {{ item.parent_theme }} --path={{ wordpress_install_dir }}
+    cmd: "{{ wordpress_wpcli_bin }} theme install {{ item.parent_theme }} --path={{ wordpress_install_dir }}"
   loop: "{{ (wordpress_themes | default([])) + (wordpress_custom_themes | default([])) }}"
   when:
     - item.state | default('present') == 'present'
@@ -131,7 +131,7 @@
 
 - name: Get list of installed themes
   ansible.builtin.command:
-    cmd: wp theme list --format=json --path={{ wordpress_install_dir }}
+    cmd: "{{ wordpress_wpcli_bin }} theme list --format=json --path={{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"
   register: installed_themes
@@ -207,7 +207,7 @@
 
 - name: Verify active theme is properly configured
   ansible.builtin.command:
-    cmd: wp theme list --status=active --field=name --path={{ wordpress_install_dir }}
+    cmd: "{{ wordpress_wpcli_bin }} theme list --status=active --field=name --path={{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"
   register: current_active_theme
