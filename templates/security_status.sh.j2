@@ -6,7 +6,7 @@ echo "=== WordPress Enterprise Security Status Report ==="
 echo "Generated at: $(date)"
 echo "Hostname: {{ ansible_hostname }}"
 echo "Distribution: {{ ansible_distribution }} {{ ansible_distribution_version }}"
-echo "WordPress Path: {{ wordpress_path }}"
+echo "WordPress Path: {{ wordpress_install_dir }}"
 echo ""
 
 # System Security Status
@@ -33,29 +33,29 @@ echo ""
 
 # WordPress File Permissions
 echo "=== WordPress File Permissions ==="
-if [ -d "{{ wordpress_path }}" ]; then
+if [ -d "{{ wordpress_install_dir }}" ]; then
     echo "WordPress directory permissions:"
-    ls -ld {{ wordpress_path }}
-    
+    ls -ld {{ wordpress_install_dir }}
+
     echo ""
     echo "Key file permissions:"
-    if [ -f "{{ wordpress_path }}/wp-config.php" ]; then
-        ls -l {{ wordpress_path }}/wp-config.php
+    if [ -f "{{ wordpress_install_dir }}/wp-config.php" ]; then
+        ls -l {{ wordpress_install_dir }}/wp-config.php
     else
         echo "wp-config.php: Not found"
     fi
-    
-    if [ -d "{{ wordpress_path }}/wp-content/uploads" ]; then
-        ls -ld {{ wordpress_path }}/wp-content/uploads
+
+    if [ -d "{{ wordpress_install_dir }}/wp-content/uploads" ]; then
+        ls -ld {{ wordpress_install_dir }}/wp-content/uploads
     else
         echo "uploads directory: Not found"
     fi
-    
+
     echo ""
     echo "Checking for world-writable files in WordPress:"
-    find {{ wordpress_path }} -type f -perm -002 | head -10
+    find {{ wordpress_install_dir }} -type f -perm -002 | head -10
 else
-    echo "WordPress directory not found: {{ wordpress_path }}"
+    echo "WordPress directory not found: {{ wordpress_install_dir }}"
 fi
 echo ""
 
@@ -69,13 +69,13 @@ for service in "${services[@]}"; do
     else
         status="Inactive"
     fi
-    
+
     if systemctl is-enabled --quiet "$service" 2>/dev/null; then
         enabled="Enabled"
     else
         enabled="Disabled"
     fi
-    
+
     echo "$service: $status ($enabled)"
 done
 echo ""
@@ -147,14 +147,14 @@ echo "=== SELinux Security Details ==="
 if command -v getenforce >/dev/null 2>&1 && [ "$(getenforce)" != "Disabled" ]; then
     echo "SELinux Booleans (WordPress related):"
     getsebool -a 2>/dev/null | grep -E "(httpd|wordpress)" | head -10
-    
+
     echo ""
     echo "Recent SELinux denials (last 5):"
     ausearch -m avc -ts recent 2>/dev/null | grep -i wordpress | tail -5 || echo "No recent denials found"
-    
+
     echo ""
     echo "WordPress file contexts:"
-    ls -laZ {{ wordpress_path }} 2>/dev/null | head -5 || echo "Cannot read WordPress directory contexts"
+    ls -laZ {{ wordpress_install_dir }} 2>/dev/null | head -5 || echo "Cannot read WordPress directory contexts"
 else
     echo "SELinux is disabled or not available"
 fi
@@ -167,11 +167,11 @@ echo "=== AppArmor Security Details ==="
 if command -v aa-status >/dev/null 2>&1; then
     echo "WordPress AppArmor profiles:"
     aa-status 2>/dev/null | grep -i wordpress || echo "No WordPress profiles found"
-    
+
     echo ""
     echo "Recent AppArmor denials (last 5):"
     dmesg | grep -i "apparmor.*denied" | grep -i wordpress | tail -5 || echo "No recent denials found"
-    
+
     echo ""
     echo "AppArmor profile modes:"
     for profile in wordpress-php-fpm wordpress-nginx wordpress-apache wordpress-wpcli; do
@@ -188,39 +188,39 @@ echo ""
 
 # WordPress Specific Security
 echo "=== WordPress Security Analysis ==="
-if [ -d "{{ wordpress_path }}" ]; then
+if [ -d "{{ wordpress_install_dir }}" ]; then
     echo "Checking for common security issues:"
-    
+
     # Check for debug mode
-    if [ -f "{{ wordpress_path }}/wp-config.php" ]; then
-        if grep -q "WP_DEBUG.*true" {{ wordpress_path }}/wp-config.php 2>/dev/null; then
+    if [ -f "{{ wordpress_install_dir }}/wp-config.php" ]; then
+        if grep -q "WP_DEBUG.*true" {{ wordpress_install_dir }}/wp-config.php 2>/dev/null; then
             echo "⚠️  WARNING: Debug mode is enabled"
         else
             echo "✅ Debug mode is disabled"
         fi
-        
+
         # Check for security keys
-        if grep -q "AUTH_KEY\|SECURE_AUTH_KEY\|LOGGED_IN_KEY" {{ wordpress_path }}/wp-config.php 2>/dev/null; then
+        if grep -q "AUTH_KEY\|SECURE_AUTH_KEY\|LOGGED_IN_KEY" {{ wordpress_install_dir }}/wp-config.php 2>/dev/null; then
             echo "✅ Security keys are configured"
         else
             echo "⚠️  WARNING: Security keys may not be configured"
         fi
     fi
-    
+
     # Check for suspicious files
     echo ""
     echo "Scanning for potentially malicious files:"
-    suspicious_files=$(find {{ wordpress_path }} -name "*.php" -exec grep -l "eval\|base64_decode\|gzinflate" {} \; 2>/dev/null | wc -l)
+    suspicious_files=$(find {{ wordpress_install_dir }} -name "*.php" -exec grep -l "eval\|base64_decode\|gzinflate" {} \; 2>/dev/null | wc -l)
     if [ "$suspicious_files" -gt 0 ]; then
         echo "⚠️  WARNING: Found $suspicious_files potentially suspicious PHP files"
-        find {{ wordpress_path }} -name "*.php" -exec grep -l "eval\|base64_decode\|gzinflate" {} \; 2>/dev/null | head -5
+        find {{ wordpress_install_dir }} -name "*.php" -exec grep -l "eval\|base64_decode\|gzinflate" {} \; 2>/dev/null | head -5
     else
         echo "✅ No obviously suspicious files found"
     fi
-    
+
     # Check for .htaccess protection
     if [ "{{ wordpress_web_server }}" = "apache" ]; then
-        if [ -f "{{ wordpress_path }}/wp-content/uploads/.htaccess" ]; then
+        if [ -f "{{ wordpress_install_dir }}/wp-content/uploads/.htaccess" ]; then
             echo "✅ Uploads directory protected with .htaccess"
         else
             echo "⚠️  WARNING: Uploads directory not protected"
@@ -290,7 +290,7 @@ else
 fi
 {% endif %}
 
-if [ -f "{{ wordpress_path }}/wp-config.php" ] && [ "$(stat -c '%a' {{ wordpress_path }}/wp-config.php 2>/dev/null)" = "644" ]; then
+if [ -f "{{ wordpress_install_dir }}/wp-config.php" ] && [ "$(stat -c '%a' {{ wordpress_install_dir }}/wp-config.php 2>/dev/null)" = "644" ]; then
     security_score=$((security_score + 1))
     echo "✅ WordPress config has secure permissions"
 else
@@ -371,27 +371,27 @@ echo ""
 echo "=== Recommendations ==="
 if [ $security_score -lt $max_score ]; then
     echo "Consider the following improvements:"
-    
+
     if ! systemctl is-active --quiet fail2ban; then
         echo "- Install and configure fail2ban for intrusion prevention"
     fi
-    
+
     {% if ansible_os_family == "RedHat" %}
     if ! command -v getenforce >/dev/null 2>&1 || [ "$(getenforce)" != "Enforcing" ]; then
         echo "- Enable and configure SELinux in enforcing mode"
     fi
     {% endif %}
-    
+
     {% if ansible_os_family == "Debian" %}
     if ! (command -v aa-status >/dev/null 2>&1 && aa-status --enabled); then
         echo "- Install and configure AppArmor profiles"
     fi
     {% endif %}
-    
+
     if ! systemctl is-active --quiet auditd; then
         echo "- Enable audit daemon for security logging"
     fi
-    
+
     {% if ansible_os_family == "RedHat" %}
     if ! systemctl is-active --quiet firewalld; then
         echo "- Configure and enable firewalld"
@@ -401,7 +401,7 @@ if [ $security_score -lt $max_score ]; then
         echo "- Configure and enable UFW firewall"
     fi
     {% endif %}
-    
+
     echo "- Run regular security updates and scans"
     echo "- Monitor WordPress for suspicious activity"
     echo "- Keep WordPress core, plugins, and themes updated"

@@ -63,23 +63,23 @@
     setype: "{{ item.setype }}"
     state: present
   loop:
-    - path: "{{ wordpress_path }}(/.*)?"
+    - path: "{{ wordpress_install_dir }}(/.*)?"
       setype: httpd_exec_t
-    - path: "{{ wordpress_path }}/wp-content(/.*)?"
+    - path: "{{ wordpress_install_dir }}/wp-content(/.*)?"
       setype: httpd_sys_rw_content_t
-    - path: "{{ wordpress_path }}/wp-content/uploads(/.*)?"
+    - path: "{{ wordpress_install_dir }}/wp-content/uploads(/.*)?"
       setype: httpd_sys_rw_content_t
-    - path: "{{ wordpress_path }}/wp-content/cache(/.*)?"
+    - path: "{{ wordpress_install_dir }}/wp-content/cache(/.*)?"
       setype: httpd_sys_rw_content_t
-    - path: "{{ wordpress_path }}/wp-content/themes(/.*)?"
+    - path: "{{ wordpress_install_dir }}/wp-content/themes(/.*)?"
       setype: httpd_sys_content_t
-    - path: "{{ wordpress_path }}/wp-content/plugins(/.*)?"
+    - path: "{{ wordpress_install_dir }}/wp-content/plugins(/.*)?"
       setype: httpd_sys_content_t
-    - path: "{{ wordpress_path }}/wp-config.php"
+    - path: "{{ wordpress_install_dir }}/wp-config.php"
       setype: httpd_config_t
-    - path: "{{ wordpress_path }}/wp-includes(/.*)?"
+    - path: "{{ wordpress_install_dir }}/wp-includes(/.*)?"
       setype: httpd_sys_content_t
-    - path: "{{ wordpress_path }}/wp-admin(/.*)?"
+    - path: "{{ wordpress_install_dir }}/wp-admin(/.*)?"
       setype: httpd_sys_content_t
   when:
     - ansible_os_family == "RedHat"
@@ -126,7 +126,7 @@
   become: true
 
 - name: Apply SELinux contexts to WordPress files
-  ansible.builtin.command: restorecon -R {{ wordpress_path }}
+  ansible.builtin.command: restorecon -R {{ wordpress_install_dir }}
   when:
     - ansible_os_family == "RedHat"
     - selinux_enabled | default(false)
@@ -260,9 +260,9 @@
         mode: '0640'
       loop:
         - "# WordPress audit rules"
-        - "-w {{ wordpress_path }} -p wa -k wordpress_files"
+        - "-w {{ wordpress_install_dir }} -p wa -k wordpress_files"
         - "-w /var/log/audit/ -p wa -k audit_logs"
-        - "-a always,exit -F arch=b64 -S openat -F dir={{ wordpress_path }} -k wordpress_access"
+        - "-a always,exit -F arch=b64 -S openat -F dir={{ wordpress_install_dir }} -k wordpress_access"
       become: true
       notify:
         - restart auditd
@@ -297,7 +297,7 @@
       echo "SELinux Policy: $(sestatus | grep 'Policy from config file' | cut -d: -f2 | xargs)"
       echo ""
       echo "=== WordPress File Contexts ==="
-      ls -laZ {{ wordpress_path }} | head -10
+      ls -laZ {{ wordpress_install_dir }} | head -10
       echo ""
       echo "=== SELinux Booleans ==="
       getsebool -a | grep httpd | grep -E "(network|connect|script|mail)"
@@ -314,7 +314,7 @@
 - name: Validate SELinux configuration
   block:
     - name: Check SELinux contexts are applied correctly
-      ansible.builtin.command: ls -laZ {{ wordpress_path }}
+      ansible.builtin.command: ls -laZ {{ wordpress_install_dir }}
       register: selinux_contexts
       changed_when: false
 

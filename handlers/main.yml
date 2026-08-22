@@ -22,25 +22,25 @@
 
 - name: Reload apache
   ansible.builtin.systemd:
-    name: "{{ wordpress_apache_service }}"
+    name: "{{ wordpress_web_server_service['apache'] }}"
     state: reloaded
   become: true
 
 - name: Restart apache
   ansible.builtin.systemd:
-    name: "{{ wordpress_apache_service }}"
+    name: "{{ wordpress_web_server_service['apache'] }}"
     state: restarted
   become: true
 
 - name: Restart mysql
   ansible.builtin.systemd:
-    name: "{{ wordpress_mysql_service }}"
+    name: "{{ wordpress_db_service['mysql'] }}"
     state: restarted
   become: true
 
 - name: Restart mariadb
   ansible.builtin.systemd:
-    name: "{{ wordpress_mariadb_service }}"
+    name: "{{ wordpress_db_service['mariadb'] }}"
     state: restarted
   become: true
 
@@ -82,13 +82,13 @@
 
 - name: Reload apache
   ansible.builtin.systemd:
-    name: "{{ wordpress_apache_service }}"
+    name: "{{ wordpress_web_server_service['apache'] }}"
     state: reloaded
   become: true
 
 - name: Restart apache
   ansible.builtin.systemd:
-    name: "{{ wordpress_apache_service }}"
+    name: "{{ wordpress_web_server_service['apache'] }}"
     state: restarted
   become: true
 
@@ -112,7 +112,7 @@
 
 - name: "Reload apache"
   ansible.builtin.systemd:
-    name: "{{ wordpress_apache_service }}"
+    name: "{{ wordpress_web_server_service['apache'] }}"
     state: reloaded
   become: true
 
@@ -177,3 +177,37 @@
     test_command: whoami
   become: true
   when: wordpress_allow_reboot | default(false)
+
+- name: reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+  become: true
+
+- name: Reload sysctl
+  ansible.builtin.command:
+    cmd: sysctl --system
+  become: true
+  changed_when: false
+
+- name: Restart sshd
+  ansible.builtin.systemd:
+    name: "{{ 'ssh' if ansible_os_family == 'Debian' else 'sshd' }}"
+    state: restarted
+  become: true
+
+# Runs as the web user so the flush touches the same cache the site writes.
+- name: Run wp-cli cache flush
+  ansible.builtin.command:
+    cmd: /usr/local/bin/wp cache flush --path={{ wordpress_install_dir }}
+  become: true
+  become_user: "{{ wordpress_system_user }}"
+  changed_when: false
+  failed_when: false
+
+# Only handlers/main.yml is auto-loaded for a role, so anything defined in
+# handlers/security.yml never resolves; this is the one it alone carried.
+- name: restart fail2ban
+  ansible.builtin.systemd:
+    name: fail2ban
+    state: restarted
+  become: true

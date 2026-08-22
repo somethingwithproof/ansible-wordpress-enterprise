@@ -95,18 +95,18 @@
         /etc/ssl/certs/** r,
 
         # WordPress directories - read access
-        {{ wordpress_path }}/ r,
-        {{ wordpress_path }}/** r,
+        {{ wordpress_install_dir }}/ r,
+        {{ wordpress_install_dir }}/** r,
 
         # WordPress writable directories
-        {{ wordpress_path }}/wp-content/ rw,
-        {{ wordpress_path }}/wp-content/** rw,
-        {{ wordpress_path }}/wp-content/uploads/ rw,
-        {{ wordpress_path }}/wp-content/uploads/** rw,
-        {{ wordpress_path }}/wp-content/cache/ rw,
-        {{ wordpress_path }}/wp-content/cache/** rw,
-        {{ wordpress_path }}/wp-content/upgrade/ rw,
-        {{ wordpress_path }}/wp-content/upgrade/** rw,
+        {{ wordpress_install_dir }}/wp-content/ rw,
+        {{ wordpress_install_dir }}/wp-content/** rw,
+        {{ wordpress_install_dir }}/wp-content/uploads/ rw,
+        {{ wordpress_install_dir }}/wp-content/uploads/** rw,
+        {{ wordpress_install_dir }}/wp-content/cache/ rw,
+        {{ wordpress_install_dir }}/wp-content/cache/** rw,
+        {{ wordpress_install_dir }}/wp-content/upgrade/ rw,
+        {{ wordpress_install_dir }}/wp-content/upgrade/** rw,
 
         # System directories
         /proc/*/stat r,
@@ -182,8 +182,8 @@
         /etc/letsencrypt/** r,
 
         # WordPress directories - read access
-        {{ wordpress_path }}/ r,
-        {{ wordpress_path }}/** r,
+        {{ wordpress_install_dir }}/ r,
+        {{ wordpress_install_dir }}/** r,
 
         # Log files
         /var/log/nginx/ rw,
@@ -256,16 +256,16 @@
         /etc/letsencrypt/** r,
 
         # WordPress directories - read access
-        {{ wordpress_path }}/ r,
-        {{ wordpress_path }}/** r,
+        {{ wordpress_install_dir }}/ r,
+        {{ wordpress_install_dir }}/** r,
 
         # WordPress writable directories
-        {{ wordpress_path }}/wp-content/ rw,
-        {{ wordpress_path }}/wp-content/** rw,
-        {{ wordpress_path }}/wp-content/uploads/ rw,
-        {{ wordpress_path }}/wp-content/uploads/** rw,
-        {{ wordpress_path }}/wp-content/cache/ rw,
-        {{ wordpress_path }}/wp-content/cache/** rw,
+        {{ wordpress_install_dir }}/wp-content/ rw,
+        {{ wordpress_install_dir }}/wp-content/** rw,
+        {{ wordpress_install_dir }}/wp-content/uploads/ rw,
+        {{ wordpress_install_dir }}/wp-content/uploads/** rw,
+        {{ wordpress_install_dir }}/wp-content/cache/ rw,
+        {{ wordpress_install_dir }}/wp-content/cache/** rw,
 
         # Log files
         /var/log/apache2/ rw,
@@ -332,8 +332,8 @@
         /usr/bin/mysql rix,
 
         # WordPress directories - full access for WP-CLI
-        {{ wordpress_path }}/ rw,
-        {{ wordpress_path }}/** rw,
+        {{ wordpress_install_dir }}/ rw,
+        {{ wordpress_install_dir }}/** rw,
 
         # Temporary directories
         /tmp/ rw,
@@ -480,12 +480,12 @@
       echo "=== Common WordPress AppArmor Issues and Fixes ==="
       echo ""
       echo "1. PHP-FPM can't access WordPress files:"
-      echo "   - Check file permissions: ls -la {{ wordpress_path }}"
+      echo "   - Check file permissions: ls -la {{ wordpress_install_dir }}"
       echo "   - Ensure WordPress files are owned by www-data"
       echo "   - Add custom rules to /etc/apparmor.d/local/wordpress-php-fpm"
       echo ""
       echo "2. Web server can't serve static files:"
-      echo "   - Check Nginx/Apache profile allows read access to {{ wordpress_path }}"
+      echo "   - Check Nginx/Apache profile allows read access to {{ wordpress_install_dir }}"
       echo "   - Verify SSL certificate paths in profile"
       echo ""
       echo "3. WP-CLI operations failing:"

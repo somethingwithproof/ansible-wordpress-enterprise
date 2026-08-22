@@ -5,7 +5,7 @@
 echo "=== WordPress SELinux Troubleshooting ==="
 echo "Generated at: $(date)"
 echo "Hostname: {{ ansible_hostname }}"
-echo "WordPress Path: {{ wordpress_path }}"
+echo "WordPress Path: {{ wordpress_install_dir }}"
 echo ""
 
 # Check SELinux status
@@ -38,20 +38,20 @@ echo ""
 # Check file contexts
 echo "=== WordPress File Contexts ==="
 echo "WordPress directory contexts:"
-ls -laZ {{ wordpress_path }} | head -10
+ls -laZ {{ wordpress_install_dir }} | head -10
 echo ""
 
 echo "Key file contexts:"
-if [ -f "{{ wordpress_path }}/wp-config.php" ]; then
-    ls -lZ {{ wordpress_path }}/wp-config.php
+if [ -f "{{ wordpress_install_dir }}/wp-config.php" ]; then
+    ls -lZ {{ wordpress_install_dir }}/wp-config.php
 else
     echo "wp-config.php not found"
 fi
 
-if [ -d "{{ wordpress_path }}/wp-content" ]; then
+if [ -d "{{ wordpress_install_dir }}/wp-content" ]; then
     echo ""
     echo "wp-content directory contexts:"
-    ls -laZ {{ wordpress_path }}/wp-content | head -5
+    ls -laZ {{ wordpress_install_dir }}/wp-content | head -5
 fi
 echo ""
 
@@ -64,7 +64,7 @@ echo ""
 # Check if contexts need restoring
 echo "=== Context Restoration Check ==="
 echo "Checking if file contexts need to be restored..."
-restorecon -R -v -n {{ wordpress_path }} 2>/dev/null | head -10 || echo "No context changes needed"
+restorecon -R -v -n {{ wordpress_install_dir }} 2>/dev/null | head -10 || echo "No context changes needed"
 echo ""
 
 # Generate common solutions
@@ -73,7 +73,7 @@ echo ""
 echo "1. Web server can't access WordPress files:"
 echo "   Solution: setsebool -P httpd_can_network_connect on"
 echo "   Solution: setsebool -P httpd_builtin_scripting on"
-echo "   Solution: restorecon -R {{ wordpress_path }}"
+echo "   Solution: restorecon -R {{ wordpress_install_dir }}"
 echo ""
 
 echo "2. WordPress can't connect to database:"
@@ -82,14 +82,14 @@ echo "   Solution: Check database server contexts if local"
 echo ""
 
 echo "3. File upload issues:"
-echo "   Check: ls -laZ {{ wordpress_path }}/wp-content/uploads/"
-echo "   Solution: chcon -R -t httpd_sys_rw_content_t {{ wordpress_path }}/wp-content/uploads/"
-echo "   Solution: semanage fcontext -a -t httpd_sys_rw_content_t '{{ wordpress_path }}/wp-content/uploads(/.*)?'"
+echo "   Check: ls -laZ {{ wordpress_install_dir }}/wp-content/uploads/"
+echo "   Solution: chcon -R -t httpd_sys_rw_content_t {{ wordpress_install_dir }}/wp-content/uploads/"
+echo "   Solution: semanage fcontext -a -t httpd_sys_rw_content_t '{{ wordpress_install_dir }}/wp-content/uploads(/.*)?'"
 echo ""
 
 echo "4. Plugin/theme installation issues:"
 echo "   Solution: setsebool -P httpd_can_network_connect on"
-echo "   Solution: chcon -R -t httpd_sys_rw_content_t {{ wordpress_path }}/wp-content/"
+echo "   Solution: chcon -R -t httpd_sys_rw_content_t {{ wordpress_install_dir }}/wp-content/"
 echo ""
 
 echo "5. WordPress can't send emails:"
@@ -126,11 +126,11 @@ echo "Set WordPress directory to permissive (temporary):"
 echo "  semanage permissive -a httpd_t"
 echo ""
 echo "Check file contexts:"
-echo "  matchpathcon {{ wordpress_path }}/wp-config.php"
-echo "  semanage fcontext -l | grep {{ wordpress_path }}"
+echo "  matchpathcon {{ wordpress_install_dir }}/wp-config.php"
+echo "  semanage fcontext -l | grep {{ wordpress_install_dir }}"
 echo ""
 echo "Restore default contexts:"
-echo "  restorecon -R {{ wordpress_path }}"
+echo "  restorecon -R {{ wordpress_install_dir }}"
 echo ""
 echo "Enable common web server permissions:"
 echo "  setsebool -P httpd_can_network_connect on"
@@ -142,19 +142,19 @@ echo ""
 # Test basic connectivity
 echo "=== WordPress Connectivity Test ==="
 echo "Testing basic file access..."
-if [ -r "{{ wordpress_path }}/index.php" ]; then
+if [ -r "{{ wordpress_install_dir }}/index.php" ]; then
     echo "✅ WordPress index.php is readable"
 else
     echo "❌ Cannot read WordPress index.php - check file permissions and SELinux contexts"
 fi
 
-if [ -r "{{ wordpress_path }}/wp-config.php" ]; then
+if [ -r "{{ wordpress_install_dir }}/wp-config.php" ]; then
     echo "✅ wp-config.php is readable"
 else
     echo "❌ Cannot read wp-config.php - check file permissions and SELinux contexts"
 fi
 
-if [ -w "{{ wordpress_path }}/wp-content/uploads" ]; then
+if [ -w "{{ wordpress_install_dir }}/wp-content/uploads" ]; then
     echo "✅ Uploads directory is writable"
 else
     echo "❌ Uploads directory is not writable - check permissions and SELinux contexts"
@@ -176,13 +176,13 @@ echo "setsebool -P httpd_builtin_scripting on"
 echo "setsebool -P httpd_can_sendmail on"
 echo ""
 echo "# Set file contexts"
-echo "semanage fcontext -a -t httpd_sys_content_t '{{ wordpress_path }}(/.*)?'"
-echo "semanage fcontext -a -t httpd_sys_rw_content_t '{{ wordpress_path }}/wp-content(/.*)?'"
-echo "semanage fcontext -a -t httpd_sys_rw_content_t '{{ wordpress_path }}/wp-content/uploads(/.*)?'"
-echo "semanage fcontext -a -t httpd_sys_rw_content_t '{{ wordpress_path }}/wp-content/cache(/.*)?'"
+echo "semanage fcontext -a -t httpd_sys_content_t '{{ wordpress_install_dir }}(/.*)?'"
+echo "semanage fcontext -a -t httpd_sys_rw_content_t '{{ wordpress_install_dir }}/wp-content(/.*)?'"
+echo "semanage fcontext -a -t httpd_sys_rw_content_t '{{ wordpress_install_dir }}/wp-content/uploads(/.*)?'"
+echo "semanage fcontext -a -t httpd_sys_rw_content_t '{{ wordpress_install_dir }}/wp-content/cache(/.*)?'"
 echo ""
 echo "# Apply contexts"
-echo "restorecon -R {{ wordpress_path }}"
+echo "restorecon -R {{ wordpress_install_dir }}"
 echo ""
 echo "echo 'WordPress SELinux fixes applied!'"
 echo ""

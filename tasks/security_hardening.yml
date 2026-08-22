@@ -37,40 +37,40 @@
         recurse: "{{ item.recurse | default(false) }}"
         state: directory
       loop:
-        - path: "{{ wordpress_path }}"
+        - path: "{{ wordpress_install_dir }}"
           mode: '0755'
-          owner: "{{ wordpress_user }}"
-          group: "{{ wordpress_group }}"
+          owner: "{{ wordpress_system_user }}"
+          group: "{{ wordpress_system_group }}"
           recurse: true
-        - path: "{{ wordpress_path }}/wp-content"
+        - path: "{{ wordpress_install_dir }}/wp-content"
           mode: '0755'
-          owner: "{{ wordpress_user }}"
-          group: "{{ wordpress_group }}"
+          owner: "{{ wordpress_system_user }}"
+          group: "{{ wordpress_system_group }}"
           recurse: false
-        - path: "{{ wordpress_path }}/wp-content/uploads"
+        - path: "{{ wordpress_install_dir }}/wp-content/uploads"
           mode: '0755'
-          owner: "{{ wordpress_user }}"
-          group: "{{ wordpress_group }}"
+          owner: "{{ wordpress_system_user }}"
+          group: "{{ wordpress_system_group }}"
           recurse: true
-        - path: "{{ wordpress_path }}/wp-content/cache"
+        - path: "{{ wordpress_install_dir }}/wp-content/cache"
           mode: '0755'
-          owner: "{{ wordpress_user }}"
-          group: "{{ wordpress_group }}"
+          owner: "{{ wordpress_system_user }}"
+          group: "{{ wordpress_system_group }}"
           recurse: true
       become: true
 
     - name: Set secure permissions on WordPress configuration
       ansible.builtin.file:
-        path: "{{ wordpress_path }}/wp-config.php"
+        path: "{{ wordpress_install_dir }}/wp-config.php"
         mode: '0644'
-        owner: "{{ wordpress_user }}"
-        group: "{{ wordpress_group }}"
+        owner: "{{ wordpress_system_user }}"
+        group: "{{ wordpress_system_group }}"
       become: true
       when: wordpress_config_file_exists.stat.exists | default(false)
 
     - name: Remove execution permissions from uploads directory
       ansible.builtin.find:
-        paths: "{{ wordpress_path }}/wp-content/uploads"
+        paths: "{{ wordpress_install_dir }}/wp-content/uploads"
         file_type: file
         recurse: true
       register: upload_files
@@ -118,10 +118,10 @@
           <Files *.py>
           deny from all
           </Files>
-        dest: "{{ wordpress_path }}/wp-content/uploads/.htaccess"
+        dest: "{{ wordpress_install_dir }}/wp-content/uploads/.htaccess"
         mode: '0644'
-        owner: "{{ wordpress_user }}"
-        group: "{{ wordpress_group }}"
+        owner: "{{ wordpress_system_user }}"
+        group: "{{ wordpress_system_group }}"
       when:
         - wordpress_web_server == "apache"
         - wordpress_secure_uploads | default(true)
@@ -323,11 +323,11 @@
 
       # Check for suspicious files
       echo "Checking for suspicious files..."
-      find {{ wordpress_path }} -name "*.php" -exec grep -l "eval\|base64_decode\|gzinflate" {} \; 2>/dev/null
+      find {{ wordpress_install_dir }} -name "*.php" -exec grep -l "eval\|base64_decode\|gzinflate" {} \; 2>/dev/null
 
       # Check file permissions
       echo "Checking file permissions..."
-      find {{ wordpress_path }} -type f -perm -002 -ls
+      find {{ wordpress_install_dir }} -type f -perm -002 -ls
 
       # Generate security report
       echo "Generating security status report..."
@@ -379,13 +379,13 @@
   block:
     - name: Test file permissions
       ansible.builtin.stat:
-        path: "{{ wordpress_path }}/wp-config.php"
+        path: "{{ wordpress_install_dir }}/wp-config.php"
       register: wp_config_perms
       failed_when: false
 
     - name: Test directory permissions
       ansible.builtin.stat:
-        path: "{{ wordpress_path }}/wp-content/uploads"
+        path: "{{ wordpress_install_dir }}/wp-content/uploads"
       register: wp_uploads_perms
       failed_when: false
 
