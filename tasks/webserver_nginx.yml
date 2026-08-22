@@ -70,14 +70,6 @@
     - /var/cache/nginx/wordpress
   when: wordpress_enable_nginx_cache | default(true)
 
-- name: Test Nginx configuration
-  ansible.builtin.command:
-    cmd: nginx -t
-  become: true
-  register: nginx_test
-  changed_when: false
-  check_mode: false
-
 - name: Create additional Nginx directories
   ansible.builtin.file:
     path: "{{ item }}"
@@ -213,6 +205,14 @@
     line: "\tworker_connections {{ wordpress_nginx_worker_connections | default('1024') }};"
   become: true
   notify: Reload nginx
+
+- name: Test Nginx configuration
+  ansible.builtin.command:
+    cmd: nginx -t
+  become: true
+  register: nginx_test
+  changed_when: false
+  check_mode: false
 
 - name: Enable and start Nginx service
   ansible.builtin.systemd:
