@@ -14,6 +14,7 @@
     wordpress_db_name: "wordpress_security_test"
     wordpress_db_user: "wp_security_user"
     wordpress_db_password: "SecureTestPass123!"
+    wordpress_php_version: "8.1"
     wordpress_admin_user: "securityadmin"
     wordpress_admin_password: "AdminSecurePass456!"
     wordpress_admin_email: "security-admin@test.local"

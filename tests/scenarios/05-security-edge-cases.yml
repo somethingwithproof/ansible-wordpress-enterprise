@@ -10,6 +10,8 @@
   vars:
     test_run_id: "{{ test_run_id | default('security_edge_test') }}"
     wordpress_install_dir: "/var/www/html/wordpress"
+    # ubuntu:22.04 ships php8.1; the role default of 8.2 has no candidate.
+    wordpress_php_version: "8.1"
 
     # Edge case configurations
     wordpress_security_hardening_enabled: true

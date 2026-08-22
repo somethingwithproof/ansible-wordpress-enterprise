@@ -64,10 +64,11 @@ wordpress_php_max_input_vars: "5000"
 wordpress_enable_ssl: true
 wordpress_ssl_certificate: "/etc/ssl/certs/{{ wordpress_server_name }}.crt"
 wordpress_ssl_certificate_key: "/etc/ssl/private/{{ wordpress_server_name }}.key"
+wordpress_nginx_brotli_enabled: false
+
 wordpress_ssl_protocols: "TLSv1.2 TLSv1.3"
-wordpress_ssl_ciphers: >-
-  ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:
-  ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384
+wordpress_ssl_ciphers: "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:\
+  ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384"
 wordpress_ssl_prefer_server_ciphers: true
 wordpress_ssl_session_timeout: "1d"
 wordpress_ssl_session_cache: "shared:SSL:50m"
