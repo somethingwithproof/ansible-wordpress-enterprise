@@ -3,11 +3,16 @@
   hosts: all
   gather_facts: false
   tasks:
+    # raw needs no interpreter, so this has to run before any module does.
+    # Rocky 8 ships only Python 3.6, which ansible-core no longer supports on
+    # a managed node; python38 comes from appstream.
+    - name: Ensure a supported Python is present
+      ansible.builtin.raw: |
+        test -x /usr/bin/python3.8 || test -x /usr/bin/python3.9 \
+          || dnf -y install python38
+      changed_when: false
+      failed_when: false
+
     - name: Wait for system to be ready
       ansible.builtin.wait_for_connection:
         timeout: 60
-    
-    - name: Install python for Ansible
-      ansible.builtin.raw: test -e /usr/bin/python3 || (dnf -y install python3)
-      changed_when: false
-      failed_when: false

@@ -55,6 +55,8 @@ wordpress_db_service:
   mysql: "mysqld"
   mariadb: "mariadb"
 
+wordpress_db_socket: "/var/lib/mysql/mysql.sock"
+
 wordpress_db_config_dir:
   mysql: "/etc/my.cnf.d"
   mariadb: "/etc/my.cnf.d"

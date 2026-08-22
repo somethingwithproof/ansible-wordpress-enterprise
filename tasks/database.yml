@@ -22,9 +22,7 @@
   community.mysql.mysql_user:
     name: root
     password: "{{ wordpress_db_root_password }}"
-    login_unix_socket: >-
-      {{ '/var/run/mysqld/mysqld.sock' if ansible_os_family == 'Debian'
-         else '/var/lib/mysql/mysql.sock' }}
+    login_unix_socket: "{{ wordpress_db_socket }}"
     state: present
   become: true
   when:

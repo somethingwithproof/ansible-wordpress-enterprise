@@ -61,6 +61,8 @@ wordpress_db_service:
   mysql: "mysql"
   mariadb: "mariadb"
 
+wordpress_db_socket: "/var/run/mysqld/mysqld.sock"
+
 wordpress_db_config_dir:
   mysql: "/etc/mysql/mysql.conf.d"
   mariadb: "/etc/mysql/mariadb.conf.d"
