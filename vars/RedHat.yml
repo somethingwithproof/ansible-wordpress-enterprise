@@ -65,10 +65,11 @@ wordpress_php_fpm_service: "php-fpm"
 wordpress_redis_service: "redis"
 wordpress_memcached_service: "memcached"
 
-# Paths (Remi PHP uses /etc/opt/remi/phpXY/ structure on RHEL)
-wordpress_php_ini_path: "/etc/opt/remi/php{{ wordpress_php_version | replace('.', '') }}/php.ini"
-wordpress_php_fpm_conf_path: "/etc/opt/remi/php{{ wordpress_php_version | replace('.', '') }}/php-fpm.conf"
-wordpress_php_fpm_pool_path: "/etc/opt/remi/php{{ wordpress_php_version | replace('.', '') }}/php-fpm.d/www.conf"
+# tasks/php.yml installs the unversioned AppStream php/php-fpm packages, so the
+# config lives at the stock locations, not under the Remi /etc/opt/remi tree.
+wordpress_php_ini_path: "/etc/php.ini"
+wordpress_php_fpm_conf_path: "/etc/php-fpm.conf"
+wordpress_php_fpm_pool_path: "/etc/php-fpm.d/www.conf"
 wordpress_nginx_conf_path: "/etc/nginx"
 wordpress_apache_conf_path: "/etc/httpd"
 wordpress_nginx_sites_available: "{{ wordpress_nginx_conf_path }}/conf.d"
