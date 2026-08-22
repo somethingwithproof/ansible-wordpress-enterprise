@@ -37,11 +37,14 @@
         recurse: "{{ item.recurse | default(false) }}"
         state: directory
       loop:
+        # No recurse: the file module would apply this directory mode to every
+        # file too, undoing the 0644 the install pass sets and leaving PHP
+        # world-executable. Ownership below is applied to the tree separately.
         - path: "{{ wordpress_install_dir }}"
           mode: '0755'
           owner: "{{ wordpress_system_user }}"
           group: "{{ wordpress_system_group }}"
-          recurse: true
+          recurse: false
         - path: "{{ wordpress_install_dir }}/wp-content"
           mode: '0755'
           owner: "{{ wordpress_system_user }}"
@@ -51,12 +54,12 @@
           mode: '0755'
           owner: "{{ wordpress_system_user }}"
           group: "{{ wordpress_system_group }}"
-          recurse: true
+          recurse: false
         - path: "{{ wordpress_install_dir }}/wp-content/cache"
           mode: '0755'
           owner: "{{ wordpress_system_user }}"
           group: "{{ wordpress_system_group }}"
-          recurse: true
+          recurse: false
       become: true
 
     - name: Set secure permissions on WordPress configuration

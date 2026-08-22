@@ -13,7 +13,9 @@
 
 - name: Set AppArmor facts
   ansible.builtin.set_fact:
-    apparmor_enabled: "{{ apparmor_status.stat.exists | default(false) }}"
+    apparmor_enabled: >-
+      {{ (wordpress_apparmor_enabled | default(true) | bool)
+         and (apparmor_status.stat.exists | default(false)) }}
   when: ansible_os_family == "Debian"
 
 - name: Display AppArmor status

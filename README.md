@@ -188,12 +188,12 @@ git clone https://github.com/thomasvincent/ansible-wordpress-enterprise.git
 ### System Requirements
 
 - **Control Node**
-  - Ansible 2.15 or higher
-  - Python 3.8+
+  - ansible-core 2.21 or higher
+  - Python 3.12+ (ansible-core 2.21 requires it)
 
 - **Target Nodes**
   - Supported OS (see platform support)
-  - Python 3.6+
+  - Python 3.9+ (ansible-core no longer supports older managed nodes)
   - Sudo/root access
   - Minimum 2GB RAM
   - 20GB disk space

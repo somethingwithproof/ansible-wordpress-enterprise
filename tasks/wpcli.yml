@@ -4,7 +4,7 @@
 
 - name: Check if WP-CLI is already installed
   ansible.builtin.stat:
-    path: /usr/local/bin/wp
+    path: "{{ wordpress_wpcli_bin }}"
   register: wpcli_binary
 
 - name: Download WP-CLI
@@ -40,7 +40,7 @@
 - name: Install WP-CLI to system location
   ansible.builtin.copy:
     src: /tmp/wp-cli.phar
-    dest: /usr/local/bin/wp
+    dest: "{{ wordpress_wpcli_bin }}"
     mode: '0755'
     owner: root
     group: root

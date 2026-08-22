@@ -15,9 +15,9 @@ if ! mysqladmin ping --silent 2>/dev/null; then
     exit 2
 fi
 
-threads=$(mysqladmin status 2>/dev/null | grep -oE 'Threads: [0-9]+' | awk '{print $2}')
-slow=$(mysql -N -B -e "SHOW GLOBAL STATUS LIKE 'Slow_queries'" 2>/dev/null | awk '{print $2}')
+threads=$(mysqladmin status 2>/dev/null | grep -oE 'Threads: [0-9]+' | awk '{print $2}' || true)
+slow=$(mysql -N -B -e "SHOW GLOBAL STATUS LIKE 'Slow_queries'" 2>/dev/null | awk '{print $2}' || true)
 size=$(mysql -N -B -e "SELECT ROUND(SUM(data_length + index_length) / 1024 / 1024, 1) \
-    FROM information_schema.tables WHERE table_schema = '{{ wordpress_db_name }}'" 2>/dev/null)
+    FROM information_schema.tables WHERE table_schema = '{{ wordpress_db_name }}'" 2>/dev/null || true)
 
 log "OK threads=${threads:-unknown} slow_queries=${slow:-unknown} size_mb=${size:-unknown}"

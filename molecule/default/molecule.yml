@@ -9,7 +9,7 @@ driver:
 
 platforms:
   - name: ubuntu-22
-    image: geerlingguy/docker-ubuntu2204-ansible:latest
+    image: geerlingguy/docker-ubuntu2204-ansible@sha256:48a18d65f05ddbf00456c3ac463a00b78f32137d351a35ee9ce90051f440d375
     command: /sbin/init
     pre_build_image: true
     privileged: true
@@ -18,7 +18,7 @@ platforms:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
 
   - name: ubuntu-24
-    image: geerlingguy/docker-ubuntu2404-ansible:latest
+    image: geerlingguy/docker-ubuntu2404-ansible@sha256:8f71d6ef6617ce600a0c9f210a21bff095ef9cf2b7c5ac437f838e697ad5bbe5
     command: /sbin/init
     pre_build_image: true
     privileged: true
@@ -27,7 +27,7 @@ platforms:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
 
   - name: rocky-9
-    image: geerlingguy/docker-rockylinux9-ansible:latest
+    image: geerlingguy/docker-rockylinux9-ansible@sha256:5b5b69fcad35dec33d41faf6432d7c25cebc1979b4d566c26fa1c05fd3ccebe1
     command: /sbin/init
     pre_build_image: true
     privileged: true

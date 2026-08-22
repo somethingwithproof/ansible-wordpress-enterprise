@@ -77,10 +77,13 @@
   ansible.builtin.command:
     cmd: >-
       find {{ wordpress_install_dir | quote }}
-      ( -type d -exec chmod {{ wordpress_dir_permissions }} {} + )
-      -o ( -type f -exec chmod {{ wordpress_file_permissions }} {} + )
+      ( -type d ! -perm {{ wordpress_dir_permissions }} -print
+        -exec chmod {{ wordpress_dir_permissions }} {} + )
+      -o ( -type f ! -perm {{ wordpress_file_permissions }} -print
+        -exec chmod {{ wordpress_file_permissions }} {} + )
   become: true
-  changed_when: false
+  register: wordpress_permission_sweep
+  changed_when: wordpress_permission_sweep.stdout | length > 0
 
 - name: Create wp-content uploads directory
   ansible.builtin.file:
@@ -124,7 +127,7 @@
       https://github.com/wp-cli/wp-cli/releases/download/v{{
       wordpress_wpcli_version | default('2.9.0') }}/wp-cli-{{
       wordpress_wpcli_version | default('2.9.0') }}.phar
-    dest: /usr/local/bin/wp
+    dest: "{{ wordpress_wpcli_bin }}"
     mode: '0755'
     owner: root
     group: root
@@ -136,7 +139,7 @@
 - name: Download and install latest WP-CLI
   ansible.builtin.get_url:
     url: "https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
-    dest: /usr/local/bin/wp
+    dest: "{{ wordpress_wpcli_bin }}"
     mode: '0755'
     owner: root
     group: root

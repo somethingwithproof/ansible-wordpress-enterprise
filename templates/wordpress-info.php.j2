@@ -4,6 +4,12 @@
 
 require_once __DIR__ . '/wp-load.php';
 
+// Refuse to serve if this file outlives the debug flag it was written under.
+if (!defined('WP_DEBUG') || !WP_DEBUG) {
+    status_header(404);
+    exit;
+}
+
 header('Content-Type: text/plain; charset=utf-8');
 
 printf("Site URL:       %s\n", get_site_url());

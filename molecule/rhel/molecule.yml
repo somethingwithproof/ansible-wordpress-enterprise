@@ -9,7 +9,7 @@ driver:
 
 platforms:
   - name: rhel-9
-    image: geerlingguy/docker-rockylinux9-ansible:latest
+    image: geerlingguy/docker-rockylinux9-ansible@sha256:5b5b69fcad35dec33d41faf6432d7c25cebc1979b4d566c26fa1c05fd3ccebe1
     command: /sbin/init
     pre_build_image: true
     privileged: true

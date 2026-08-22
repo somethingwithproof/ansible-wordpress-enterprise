@@ -9,22 +9,22 @@
  */
 
 // ** Database settings ** //
-define( 'DB_NAME', '{{ wordpress_db_name }}' );
-define( 'DB_USER', '{{ wordpress_db_user }}' );
-define( 'DB_PASSWORD', '{{ wordpress_db_password }}' );
+define( 'DB_NAME', '{{ wordpress_db_name | replace('\\', '\\\\') | replace("'", "\\'") }}' );
+define( 'DB_USER', '{{ wordpress_db_user | replace('\\', '\\\\') | replace("'", "\\'") }}' );
+define( 'DB_PASSWORD', '{{ wordpress_db_password | replace('\\', '\\\\') | replace("'", "\\'") }}' );
 define( 'DB_HOST', '{{ wordpress_db_host }}:{{ wordpress_db_port }}' );
 define( 'DB_CHARSET', '{{ wordpress_db_charset }}' );
 define( 'DB_COLLATE', '{{ wordpress_db_collate }}' );
 
 // ** Authentication Unique Keys and Salts ** //
-define( 'AUTH_KEY',         '{{ wordpress_auth_key }}' );
-define( 'SECURE_AUTH_KEY',  '{{ wordpress_secure_auth_key }}' );
-define( 'LOGGED_IN_KEY',    '{{ wordpress_logged_in_key }}' );
-define( 'NONCE_KEY',        '{{ wordpress_nonce_key }}' );
-define( 'AUTH_SALT',        '{{ wordpress_auth_salt }}' );
-define( 'SECURE_AUTH_SALT', '{{ wordpress_secure_auth_salt }}' );
-define( 'LOGGED_IN_SALT',   '{{ wordpress_logged_in_salt }}' );
-define( 'NONCE_SALT',       '{{ wordpress_nonce_salt }}' );
+define( 'AUTH_KEY',         '{{ wordpress_auth_key | replace('\\', '\\\\') | replace("'", "\\'") }}' );
+define( 'SECURE_AUTH_KEY',  '{{ wordpress_secure_auth_key | replace('\\', '\\\\') | replace("'", "\\'") }}' );
+define( 'LOGGED_IN_KEY',    '{{ wordpress_logged_in_key | replace('\\', '\\\\') | replace("'", "\\'") }}' );
+define( 'NONCE_KEY',        '{{ wordpress_nonce_key | replace('\\', '\\\\') | replace("'", "\\'") }}' );
+define( 'AUTH_SALT',        '{{ wordpress_auth_salt | replace('\\', '\\\\') | replace("'", "\\'") }}' );
+define( 'SECURE_AUTH_SALT', '{{ wordpress_secure_auth_salt | replace('\\', '\\\\') | replace("'", "\\'") }}' );
+define( 'LOGGED_IN_SALT',   '{{ wordpress_logged_in_salt | replace('\\', '\\\\') | replace("'", "\\'") }}' );
+define( 'NONCE_SALT',       '{{ wordpress_nonce_salt | replace('\\', '\\\\') | replace("'", "\\'") }}' );
 
 // ** WordPress Database Table prefix ** //
 $table_prefix = '{{ wordpress_db_table_prefix }}';

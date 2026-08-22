@@ -198,11 +198,19 @@
 # Runs as the web user so the flush touches the same cache the site writes.
 - name: Run wp-cli cache flush
   ansible.builtin.command:
-    cmd: /usr/local/bin/wp cache flush --path={{ wordpress_install_dir }}
+    cmd: "{{ wordpress_wpcli_bin }} cache flush --path={{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"
-  changed_when: false
+  register: wordpress_cache_flush
+  changed_when: wordpress_cache_flush.rc == 0
+  # Best effort: the config can change before WordPress is installed, and a
+  # cold cache is not a deployment failure. Report it rather than hide it.
   failed_when: false
+
+- name: Report a failed wp-cli cache flush
+  ansible.builtin.debug:
+    msg: "wp cache flush exited {{ wordpress_cache_flush.rc }}: {{ wordpress_cache_flush.stderr | default('') }}"
+  when: wordpress_cache_flush.rc | default(0) != 0
 
 # Only handlers/main.yml is auto-loaded for a role, so anything defined in
 # handlers/security.yml never resolves; this is the one it alone carried.
