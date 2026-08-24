@@ -69,9 +69,7 @@ jobs:
 
     - name: Install Ansible Galaxy collections
       run: |
-        ansible-galaxy collection install community.general
-        ansible-galaxy collection install community.mysql
-        ansible-galaxy collection install ansible.posix
+        ansible-galaxy collection install -r requirements.yml
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4

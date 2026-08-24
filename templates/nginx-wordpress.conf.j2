@@ -60,6 +60,12 @@ server {
     root {{ wordpress_install_dir }};
     index index.php index.html index.htm;
 
+    # $wordpress_bad_method is set by the map in nginx-security.conf; without
+    # this the map is defined and never consulted, so TRACE/TRACK are served.
+    if ($wordpress_bad_method) {
+        return 405;
+    }
+
     # Logging
     access_log {{ wordpress_access_log }};
     error_log {{ wordpress_error_log }};

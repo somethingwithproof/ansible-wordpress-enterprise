@@ -204,7 +204,8 @@ git clone https://github.com/thomasvincent/ansible-wordpress-enterprise.git
 
 ```bash
 ansible-galaxy collection install community.general
-ansible-galaxy collection install community.mysql
+ansible-galaxy collection install ansible.mysql
+ansible-galaxy collection install community.crypto
 ansible-galaxy collection install ansible.posix
 ```
 
@@ -241,8 +242,13 @@ roles:
 
 collections:
   - name: community.general
-  - name: community.mysql
+    version: ">=8.0.0"
+  - name: ansible.mysql
+    version: ">=5.0.0"
+  - name: community.crypto
+    version: ">=2.0.0"
   - name: ansible.posix
+    version: ">=1.5.0"
 ```
 
 Install:
