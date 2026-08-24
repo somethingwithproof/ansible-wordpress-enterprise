@@ -18,16 +18,19 @@
     # Converge escalates, and sudo has failed here with a PAM account error on
     # the amd64 runner while working locally. Report the state it depends on so
     # a failure names its cause instead of the symptom.
-    # sssd cannot run in this container, so a PAM stack that consults it fails
-    # account management for every user, including root, and sudo then asks for
-    # a password it can never accept.
-    - name: Drop sssd from the PAM stack
+    # The runner's containers fail sudo's PAM account phase for root, with an
+    # identical shadow, sudoers, nsswitch and system-auth to a host where it
+    # succeeds. Converge only needs escalation because the role asks for it; we
+    # are already root, so let sudo's account phase pass rather than chase a
+    # difference that is not in the config. Test scaffolding only.
+    - name: Let sudo skip account management in the container
       ansible.builtin.raw: |
         set -e
         for f in /etc/pam.d/system-auth /etc/pam.d/password-auth; do
           [ -f "$f" ] && sed -i '/pam_sss\.so/d' "$f"
         done
         sed -i 's/^\(passwd:.*\)sss /\1/' /etc/nsswitch.conf
+        sed -i 's|^account.*system-auth|account    sufficient    pam_permit.so|' /etc/pam.d/sudo
       changed_when: false
       failed_when: false
 
@@ -38,8 +41,12 @@
         ls -l /etc/shadow /etc/sudoers
         getent passwd root
         grep -E '^(passwd|shadow)' /etc/nsswitch.conf
-        echo "--- system-auth ---"
-        grep -vE '^#|^$' /etc/pam.d/system-auth
+        echo "--- pam.d/sudo ---"
+        grep -vE '^#|^$' /etc/pam.d/sudo
+        echo "--- caps and shadow readability ---"
+        grep -E '^Cap(Eff|Bnd)' /proc/self/status
+        head -c 12 /etc/shadow >/dev/null 2>&1 && echo "shadow_readable=yes" || echo "shadow_readable=no"
+        getent shadow root | cut -d: -f1,2
       register: rhel_sudo_state
       changed_when: false
       failed_when: false
