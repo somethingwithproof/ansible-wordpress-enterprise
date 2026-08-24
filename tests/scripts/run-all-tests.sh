@@ -210,7 +210,7 @@ start_environment() {
     local count=0
 
     while [[ $count -lt $max_wait ]]; do
-        if $COMPOSE -f "$COMPOSE_FILE" ps | grep -q "Up (healthy)"; then
+        if $COMPOSE -f "$COMPOSE_FILE" ps | grep -qE '\(healthy\)'; then
             break
         fi
         sleep 2
