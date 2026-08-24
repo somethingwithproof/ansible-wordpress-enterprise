@@ -26,6 +26,11 @@
   become: true
   register: wordpress_download
   when: wordpress_version != "latest"
+  # wordpress.org rate-limits, and several hosts converging at once from one
+  # address is enough to trigger it.
+  retries: 5
+  delay: 10
+  until: wordpress_download is succeeded
 
 - name: Download latest WordPress
   ansible.builtin.get_url:
@@ -36,6 +41,9 @@
   become: true
   register: wordpress_download_latest
   when: wordpress_version == "latest"
+  retries: 5
+  delay: 10
+  until: wordpress_download_latest is succeeded
 
 - name: Extract WordPress archive
   ansible.builtin.unarchive:

@@ -14,3 +14,24 @@
     - name: Wait for system to be ready
       ansible.builtin.wait_for_connection:
         timeout: 60
+
+    # Converge escalates, and sudo has failed here with a PAM account error on
+    # the amd64 runner while working locally. Report the state it depends on so
+    # a failure names its cause instead of the symptom.
+    - name: Report sudo and PAM state
+      ansible.builtin.raw: |
+        set -x
+        id
+        sudo -n true; echo "sudo_rc=$?"
+        ls -l /etc/shadow /etc/sudoers
+        getent passwd root
+        getent shadow root | cut -d: -f1,2
+        cat /etc/nsswitch.conf | grep -E '^(passwd|shadow)'
+        cat /etc/pam.d/sudo
+      register: rhel_sudo_state
+      changed_when: false
+      failed_when: false
+
+    - name: Show sudo and PAM state
+      ansible.builtin.debug:
+        var: rhel_sudo_state.stdout_lines
