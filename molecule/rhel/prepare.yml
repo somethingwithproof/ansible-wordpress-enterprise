@@ -18,16 +18,28 @@
     # Converge escalates, and sudo has failed here with a PAM account error on
     # the amd64 runner while working locally. Report the state it depends on so
     # a failure names its cause instead of the symptom.
+    # sssd cannot run in this container, so a PAM stack that consults it fails
+    # account management for every user, including root, and sudo then asks for
+    # a password it can never accept.
+    - name: Drop sssd from the PAM stack
+      ansible.builtin.raw: |
+        set -e
+        for f in /etc/pam.d/system-auth /etc/pam.d/password-auth; do
+          [ -f "$f" ] && sed -i '/pam_sss\.so/d' "$f"
+        done
+        sed -i 's/^\(passwd:.*\)sss /\1/' /etc/nsswitch.conf
+      changed_when: false
+      failed_when: false
+
     - name: Report sudo and PAM state
       ansible.builtin.raw: |
-        set -x
         id
-        sudo -n true; echo "sudo_rc=$?"
+        sudo -n true 2>&1; echo "sudo_rc=$?"
         ls -l /etc/shadow /etc/sudoers
         getent passwd root
-        getent shadow root | cut -d: -f1,2
-        cat /etc/nsswitch.conf | grep -E '^(passwd|shadow)'
-        cat /etc/pam.d/sudo
+        grep -E '^(passwd|shadow)' /etc/nsswitch.conf
+        echo "--- system-auth ---"
+        grep -vE '^#|^$' /etc/pam.d/system-auth
       register: rhel_sudo_state
       changed_when: false
       failed_when: false
