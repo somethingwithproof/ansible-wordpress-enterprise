@@ -61,8 +61,8 @@
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
-    owner: www-data
-    group: www-data
+    owner: "{{ wordpress_system_user }}"
+    group: "{{ wordpress_system_group }}"
     mode: '0755'
   become: true
   loop:
@@ -159,8 +159,8 @@
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
-    owner: www-data
-    group: www-data
+    owner: "{{ wordpress_system_user }}"
+    group: "{{ wordpress_system_group }}"
     mode: '0755'
     recurse: true
   loop:

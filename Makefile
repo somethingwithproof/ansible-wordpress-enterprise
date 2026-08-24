@@ -210,7 +210,7 @@ test-security-all: check-test-prereqs
 	@echo "$(BLUE)Running all security tests (scenarios + unit tests)...$(NC)"
 	@$(TEST_SCRIPTS_DIR)/run-all-tests.sh --test 04
 	@$(TEST_SCRIPTS_DIR)/run-all-tests.sh --test 05
-	@$(TEST_SCRIPTS_DIR)/security-unit-tests.sh
+	@docker exec wp-test-ubuntu bash /ansible-workspace/tests/scripts/security-unit-tests.sh
 
 test-coverage-report:
 	@echo "$(BLUE)Generating comprehensive test coverage report...$(NC)"

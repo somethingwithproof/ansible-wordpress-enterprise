@@ -138,6 +138,16 @@
       become: true
       when: wordpress_install_security_tools | default(true)
 
+    # The jail and filter files below need /etc/fail2ban to exist. A consumer
+    # can drop fail2ban from wordpress_security_tools while leaving it enabled,
+    # so install it here rather than failing on a missing directory.
+    - name: Ensure fail2ban is present when enabled
+      ansible.builtin.package:
+        name: fail2ban
+        state: present
+      become: true
+      when: wordpress_fail2ban_enabled | default(true)
+
     - name: Configure fail2ban for WordPress
       ansible.builtin.copy:
         content: |

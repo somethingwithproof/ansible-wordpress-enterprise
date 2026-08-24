@@ -8,7 +8,7 @@
     notifempty
     compress
     delaycompress
-    create 0640 www-data adm
+    create 0640 {{ wordpress_system_user }} {{ wordpress_system_group }}
     sharedscripts
     postrotate
         [ -f /run/nginx.pid ] && kill -USR1 "$(cat /run/nginx.pid)" || true
