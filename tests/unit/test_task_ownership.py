@@ -90,21 +90,45 @@ def _normalise(target: str) -> str:
     return re.sub(r"\{\{.*?\}\}", one, collapsed)
 
 
+def _constraint(cond) -> tuple[str, str, str] | None:
+    m = re.fullmatch(
+        r"\s*([\w.]+)\s*(?:\|[^=!]*?)?\s*(==|!=)\s*[\"']([^\"']+)[\"']\s*", str(cond))
+    return (m.group(1), m.group(2), m.group(3)) if m else None
+
+
 def _exclusive(conditions: list[tuple]) -> bool:
-    """True when the writers compare one variable against different constants."""
-    seen = collections.defaultdict(set)
+    """True only when one variable provably keeps the writers apart.
+
+    Two "!=" tests are not exclusive: x != 'a' and x != 'b' are both true for
+    x == 'c'. Disjointness needs equalities on distinct values, or a
+    complementary ==/!= pair.
+    """
+    per_writer = []
     for group in conditions:
-        matched = False
+        found = {}
         for cond in group:
-            m = re.fullmatch(
-                r"\s*([\w.]+)\s*(?:\|[^=!]*?)?\s*(==|!=)\s*[\"']([^\"']+)[\"']\s*",
-                str(cond))
-            if m:
-                seen[m.group(1)].add(f"{m.group(2)}{m.group(3)}")
-                matched = True
-        if not matched:
-            return False
-    return any(len(values) == len(conditions) for values in seen.values())
+            c = _constraint(cond)
+            if c:
+                found.setdefault(c[0], set()).add((c[1], c[2]))
+        per_writer.append(found)
+
+    variables = set(per_writer[0]) if per_writer else set()
+    for writer in per_writer[1:]:
+        variables &= set(writer)
+
+    for var in variables:
+        constraints = [w[var] for w in per_writer]
+        if any(len(c) != 1 for c in constraints):
+            continue
+        flat = [next(iter(c)) for c in constraints]
+        equalities = [v for op, v in flat if op == "=="]
+        if len(equalities) == len(flat) and len(set(equalities)) == len(flat):
+            return True
+        if len(flat) == 2:
+            (op_a, val_a), (op_b, val_b) = flat
+            if {op_a, op_b} == {"==", "!="} and val_a == val_b:
+                return True
+    return False
 
 
 def test_the_corpus_is_not_empty(all_tasks) -> None:
@@ -193,8 +217,10 @@ def test_the_missing_template_baseline_has_no_stale_entries(all_tasks, baseline)
 
 def test_the_missing_template_baseline_never_grows(baseline: set[str]) -> None:
     """The debt is capped at what was recorded when the ratchet went in."""
-    assert len(baseline) <= 66, (
-        f"the baseline grew to {len(baseline)}; it is a ratchet, not a bucket"
+    recorded = 62
+    assert len(baseline) <= recorded, (
+        f"the baseline grew to {len(baseline)} from {recorded}; "
+        "it is a ratchet, not a bucket"
     )
 
 
@@ -269,6 +295,21 @@ FEATURE_FLAG = {
 }
 
 
+# These reference a missing template from a task the operator has to opt into,
+# so the failure already lands only when the feature is asked for.
+OPT_IN = {"wpcli.yml", "themes.yml"}
+
+
+def test_every_affected_file_is_classified(baseline) -> None:
+    """Nothing may fall out of the coverage check by being absent from a map."""
+    affected = {entry.split(":", 1)[0] for entry in baseline}
+    unclassified = sorted(affected - set(FEATURE_FLAG) - OPT_IN)
+    assert not unclassified, (
+        "these files reference missing templates but are neither feature-gated "
+        f"nor recorded as opt-in: {unclassified}"
+    )
+
+
 def test_files_with_missing_templates_fail_before_changing_anything(baseline) -> None:
     """A feature that cannot finish must stop first, not halfway."""
     affected = {entry.split(":", 1)[0] for entry in baseline}
@@ -282,3 +323,18 @@ def test_files_with_missing_templates_fail_before_changing_anything(baseline) ->
         "these files reference templates the role does not ship and would abort "
         f"partway through; give them a leading ansible.builtin.fail: {unguarded}"
     )
+
+
+def test_two_not_equal_conditions_are_not_exclusive() -> None:
+    """x != 'a' and x != 'b' are both true for x == 'c'."""
+    assert not _exclusive([("web != 'nginx'",), ("web != 'apache'",)])
+
+
+def test_complementary_conditions_are_exclusive() -> None:
+    assert _exclusive([("web == 'nginx'",), ("web != 'nginx'",)])
+    assert _exclusive([("web == 'nginx'",), ("web == 'apache'",)])
+    assert not _exclusive([("web == 'nginx'",), ("web == 'nginx'",)])
+
+
+def test_writers_constrained_on_different_variables_are_not_exclusive() -> None:
+    assert not _exclusive([("a == 'x'",), ("b == 'y'",)])

@@ -10,6 +10,7 @@ from __future__ import annotations
 import datetime
 import os
 import pathlib
+import warnings
 
 import pytest
 import yaml
@@ -53,6 +54,11 @@ def _reference_date() -> datetime.date:
     """UTC today, overridable so the check is reproducible on any checkout."""
     override = os.environ.get("PLATFORM_SUPPORT_DATE")
     if override:
+        warnings.warn(
+            f"PLATFORM_SUPPORT_DATE={override} overrides the end-of-life check; "
+            "this is for reproducing an old checkout, not for silencing CI",
+            stacklevel=2,
+        )
         return datetime.date.fromisoformat(override)
     return datetime.datetime.now(datetime.timezone.utc).date()
 
@@ -110,3 +116,27 @@ def test_molecule_images_are_pinned_by_digest() -> None:
         if "@sha256:" not in platform["image"]
     ]
     assert not unpinned, f"Molecule images not pinned by digest: {unpinned}"
+
+
+def test_the_date_override_is_not_baked_into_ci() -> None:
+    """The override must not become a permanent way to silence the gate."""
+    workflows = ROOT / ".github" / "workflows"
+    users = [
+        p.name for p in sorted(workflows.glob("*.yml"))
+        if "PLATFORM_SUPPORT_DATE" in p.read_text(encoding="utf-8")
+    ]
+    assert not users, f"CI sets PLATFORM_SUPPORT_DATE, disabling the gate: {users}"
+
+
+def test_the_date_override_is_honoured() -> None:
+    previous = os.environ.get("PLATFORM_SUPPORT_DATE")
+    os.environ["PLATFORM_SUPPORT_DATE"] = "2000-01-01"
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            assert _reference_date() == datetime.date(2000, 1, 1)
+    finally:
+        if previous is None:
+            del os.environ["PLATFORM_SUPPORT_DATE"]
+        else:
+            os.environ["PLATFORM_SUPPORT_DATE"] = previous
