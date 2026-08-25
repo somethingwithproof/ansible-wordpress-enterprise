@@ -20,7 +20,7 @@ server {
     }
 
     location / {
-        return 301 https://$server_name$request_uri;
+        return 301 https://$server_name{% if wordpress_https_port != 443 %}:{{ wordpress_https_port }}{% endif %}$request_uri;
     }
 }
 {% endif %}
