@@ -8,6 +8,8 @@ galaxy_info:
   license: Apache-2.0
   min_ansible_version: "2.15"
 
+  # Kept in step with meta/platform_support.yml by
+  # tests/unit/test_platform_support.py.
   platforms:
     - name: EL
       versions:
@@ -15,9 +17,11 @@ galaxy_info:
         - "9"
     - name: Ubuntu
       versions:
-        - focal
         - jammy
         - noble
+    - name: Debian
+      versions:
+        - trixie
 
   galaxy_tags:
     - wordpress

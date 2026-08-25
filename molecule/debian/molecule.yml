@@ -8,17 +8,8 @@ driver:
   name: docker
 
 platforms:
-  - name: debian-11
-    image: geerlingguy/docker-debian11-ansible@sha256:f32d1ab35477ff4b2b46f82097ae955d6ea1e71c41eb146ba1df150c850d859e
-    command: /sbin/init
-    pre_build_image: true
-    privileged: true
-    cgroupns_mode: host
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:rw
-
-  - name: debian-12
-    image: geerlingguy/docker-debian12-ansible@sha256:2effe5239c105630a302ec605f5d7df9e72a8894a0186a8dcec824d366abbff1
+  - name: debian-13
+    image: geerlingguy/docker-debian13-ansible@sha256:6a0fdd2e0f9b0150d697dfe36a919a9965224a87f9ccad7cf6376383bec7207d
     command: /sbin/init
     pre_build_image: true
     privileged: true
@@ -35,12 +26,9 @@ provisioner:
       roles_path: ${MOLECULE_PROJECT_DIRECTORY}/../
   inventory:
     host_vars:
-      debian-11:
+      debian-13:
         ansible_python_interpreter: /usr/bin/python3
-        wordpress_php_version: "7.4"
-      debian-12:
-        ansible_python_interpreter: /usr/bin/python3
-        wordpress_php_version: "8.2"
+        wordpress_php_version: "8.4"
   playbooks:
     prepare: prepare.yml
     converge: ${MOLECULE_PLAYBOOK:-converge.yml}

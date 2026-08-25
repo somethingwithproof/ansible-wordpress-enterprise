@@ -49,6 +49,9 @@ jobs:
       - name: Run ansible-lint
         run: ansible-lint
 
+      - name: Run unit tests
+        run: pytest tests/unit -q
+
   molecule-test:
     name: Molecule Test (${{ matrix.name }})
     runs-on: [self-hosted, linux, x64]
@@ -61,9 +64,9 @@ jobs:
           - scenario: default
             name: Ubuntu 22/24 and Rocky 9
           - scenario: debian
-            name: Debian (11, 12)
+            name: Debian 13
           - scenario: rhel
-            name: Rocky 9
+            name: Rocky 8 and 9
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2

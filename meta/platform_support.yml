@@ -1,0 +1,71 @@
+---
+# Distribution support policy for this role.
+#
+# eol dates come from https://endoflife.date, checked 2026-08-25. A distribution
+# is supported only while its eol is in the future AND it is exercised by a
+# Molecule scenario. tests/unit/test_platform_support.py enforces both, so this
+# file is the single source of truth for meta/main.yml and the Molecule matrix,
+# and the suite starts failing the day a supported release lapses.
+#
+# To adopt a new release: set supported to true, add it to the Molecule matrix,
+# and run the suite.
+distributions:
+  - meta_name: EL
+    meta_version: "8"
+    image: geerlingguy/docker-rockylinux8-ansible
+    eol: "2029-05-31"
+    supported: true
+
+  - meta_name: EL
+    meta_version: "9"
+    image: geerlingguy/docker-rockylinux9-ansible
+    eol: "2032-05-31"
+    supported: true
+
+  - meta_name: EL
+    meta_version: "10"
+    image: geerlingguy/docker-rockylinux10-ansible
+    eol: "2035-05-31"
+    supported: false  # not yet adopted; no verified run
+
+  - meta_name: Ubuntu
+    meta_version: focal
+    image: geerlingguy/docker-ubuntu2004-ansible
+    eol: "2025-05-31"
+    supported: false  # end of life
+
+  - meta_name: Ubuntu
+    meta_version: jammy
+    image: geerlingguy/docker-ubuntu2204-ansible
+    eol: "2027-04-01"
+    supported: true
+
+  - meta_name: Ubuntu
+    meta_version: noble
+    image: geerlingguy/docker-ubuntu2404-ansible
+    eol: "2029-05-31"
+    supported: true
+
+  - meta_name: Ubuntu
+    meta_version: resolute
+    image: geerlingguy/docker-ubuntu2604-ansible
+    eol: "2031-04-30"
+    supported: false  # not yet adopted; no verified run
+
+  - meta_name: Debian
+    meta_version: bullseye
+    image: geerlingguy/docker-debian11-ansible
+    eol: "2024-08-14"
+    supported: false  # end of life
+
+  - meta_name: Debian
+    meta_version: bookworm
+    image: geerlingguy/docker-debian12-ansible
+    eol: "2026-07-11"
+    supported: false  # end of life
+
+  - meta_name: Debian
+    meta_version: trixie
+    image: geerlingguy/docker-debian13-ansible
+    eol: "2028-08-09"
+    supported: true
