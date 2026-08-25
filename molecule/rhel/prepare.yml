@@ -46,7 +46,11 @@
         echo "--- caps and shadow readability ---"
         grep -E '^Cap(Eff|Bnd)' /proc/self/status
         head -c 12 /etc/shadow >/dev/null 2>&1 && echo "shadow_readable=yes" || echo "shadow_readable=no"
-        getent shadow root | cut -d: -f1,2
+        getent shadow root |
+          awk -F: '{ if ($2 == "") s = "empty";
+                     else if ($2 ~ /^[!*]/) s = "locked";
+                     else s = "set";
+                     print $1, "password=" s }'
       register: rhel_sudo_state
       changed_when: false
       failed_when: false
