@@ -101,12 +101,6 @@
   become: true
   changed_when: true
 
-- name: Reload sysctl
-  ansible.builtin.command:
-    cmd: sysctl --system
-  become: true
-  changed_when: false
-
 # Runs as the web user so the flush touches the same cache the site writes.
 - name: Run wp-cli cache flush
   ansible.builtin.command:

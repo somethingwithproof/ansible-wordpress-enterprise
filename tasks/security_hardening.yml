@@ -178,22 +178,6 @@
         - wordpress_fail2ban_enabled | default(true)
         - wordpress_install_security_tools | default(true)
 
-    - name: Create fail2ban WordPress filters
-      ansible.builtin.copy:
-        content: |
-          # WordPress authentication filter
-          [Definition]
-          failregex = ^<HOST> .* "POST .*wp-login\.php.*" (?:200|302)
-                      ^<HOST> .* "POST .*wp-admin.*" 401
-                      ^<HOST> .* "GET .*wp-login\.php.*" 200.*wp_attempt_focus
-          ignoreregex =
-        dest: /etc/fail2ban/filter.d/wordpress-auth.conf
-        mode: "0644"
-      become: true
-      when:
-        - wordpress_fail2ban_enabled | default(true)
-        - wordpress_install_security_tools | default(true)
-
     - name: Configure automatic security updates
       become: true
       when: wordpress_auto_security_updates | default(true)
@@ -246,6 +230,10 @@
             - rpcbind
             - nfs-server
             - ypbind
+            - telnet
+            - rsh
+            - rlogin
+            - vsftpd
           failed_when: false
           become: true
           when: wordpress_disable_unused_services | default(true)
