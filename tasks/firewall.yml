@@ -1,6 +1,16 @@
 ---
 # Firewall Configuration Tasks
 
+# The role does not ship the templates below, so this file cannot finish.
+# Stop before anything is changed rather than abort partway through and
+# leave the host half configured.
+- name: Refuse to run without the templates this role does not ship
+  ansible.builtin.fail:
+    msg: >-
+      tasks/firewall.yml needs templates that are not in this role:
+      firewall-backup.sh.j2, firewall-check.sh.j2.
+      Add them, or leave wordpress_configure_firewall off.
+
 - name: Install UFW firewall (Debian/Ubuntu)
   ansible.builtin.package:
     name: ufw

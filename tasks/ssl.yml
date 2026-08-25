@@ -1,6 +1,16 @@
 ---
 # SSL Certificate Configuration Tasks
 
+# The role does not ship the templates below, so this file cannot finish.
+# Stop before anything is changed rather than abort partway through and
+# leave the host half configured.
+- name: Refuse to run without the templates this role does not ship
+  ansible.builtin.fail:
+    msg: >-
+      tasks/ssl.yml needs templates that are not in this role:
+      apache-ssl.conf.j2, ssl-monitor.sh.j2, ssl-security.conf.j2.
+      Add them, or leave wordpress_enable_ssl off.
+
 - name: Install SSL/TLS packages
   ansible.builtin.package:
     name:

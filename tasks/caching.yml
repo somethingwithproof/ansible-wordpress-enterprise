@@ -1,6 +1,16 @@
 ---
 # Caching Configuration Tasks
 
+# The role does not ship the templates below, so this file cannot finish.
+# Stop before anything is changed rather than abort partway through and
+# leave the host half configured.
+- name: Refuse to run without the templates this role does not ship
+  ansible.builtin.fail:
+    msg: >-
+      tasks/caching.yml needs templates that are not in this role:
+      cache-warmup.sh.j2, memcached.conf.j2, opcache-status.php.j2, opcache.ini.j2, redis-logrotate.j2, redis.conf.j2.
+      Add them, or leave wordpress_enable_caching off.
+
 - name: Install Redis server
   ansible.builtin.package:
     name: "{{ wordpress_redis_package }}"

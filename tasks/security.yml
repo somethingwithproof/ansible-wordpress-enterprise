@@ -1,6 +1,16 @@
 ---
 # Security Hardening Tasks
 
+# The role does not ship the templates below, so this file cannot finish.
+# Stop before anything is changed rather than abort partway through and
+# leave the host half configured.
+- name: Refuse to run without the templates this role does not ship
+  ansible.builtin.fail:
+    msg: >-
+      tasks/security.yml needs templates that are not in this role:
+      faillock.conf.j2, htaccess-security.j2, logwatch.conf.j2, nginx-security-headers.conf.j2, pwquality.conf.j2, rkhunter.conf.j2, sshd_config.j2, wp-admin-security.sh.j2, wp-security.conf.j2.
+      Add them, or leave wordpress_enable_security off.
+
 - name: Install security packages
   ansible.builtin.package:
     name:

@@ -1,6 +1,16 @@
 ---
 # Fail2ban Configuration Tasks
 
+# The role does not ship the templates below, so this file cannot finish.
+# Stop before anything is changed rather than abort partway through and
+# leave the host half configured.
+- name: Refuse to run without the templates this role does not ship
+  ansible.builtin.fail:
+    msg: >-
+      tasks/fail2ban.yml needs templates that are not in this role:
+      fail2ban-logrotate.j2, fail2ban-notify.sh.j2, fail2ban-status.sh.j2, fail2ban-unban.sh.j2, firewalld-wordpress.conf.j2, jail.local.j2, ufw-wordpress.conf.j2, wordpress-spam.conf.j2, wordpress.conf.j2.
+      Add them, or leave wordpress_enable_fail2ban off.
+
 - name: Install fail2ban
   ansible.builtin.package:
     name: fail2ban

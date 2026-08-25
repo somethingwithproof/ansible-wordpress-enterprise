@@ -1,6 +1,16 @@
 ---
 # Monitoring Configuration Tasks
 
+# The role does not ship the templates below, so this file cannot finish.
+# Stop before anything is changed rather than abort partway through and
+# leave the host half configured.
+- name: Refuse to run without the templates this role does not ship
+  ansible.builtin.fail:
+    msg: >-
+      tasks/monitoring.yml needs templates that are not in this role:
+      alert-notify.sh.j2, cache-monitor.sh.j2, disk-usage-monitor.sh.j2, log-analysis.sh.j2, monitoring-dashboard.sh.j2, monitoring-logrotate.j2, monitoring-master.sh.j2, monitoring-report.sh.j2, monitoring.conf.j2, network-monitor.sh.j2, performance-monitor.sh.j2, php-fpm-monitor.sh.j2, response-time-monitor.sh.j2, security-monitor.sh.j2, system-monitor.sh.j2, uptime-monitor.sh.j2, wordpress-health-check.sh.j2.
+      Add them, or leave wordpress_enable_monitoring off.
+
 - name: Install monitoring packages
   ansible.builtin.package:
     name:

@@ -1,6 +1,16 @@
 ---
 # Backup Configuration Tasks
 
+# The role does not ship the templates below, so this file cannot finish.
+# Stop before anything is changed rather than abort partway through and
+# leave the host half configured.
+- name: Refuse to run without the templates this role does not ship
+  ansible.builtin.fail:
+    msg: >-
+      tasks/backups.yml needs templates that are not in this role:
+      backup-cleanup.sh.j2, backup-encrypt.sh.j2, backup-exclude.txt.j2, backup-logrotate.j2, backup-monitor.sh.j2, backup-notify.sh.j2, backup-restore.sh.j2, backup-size-monitor.sh.j2, backup-sync.sh.j2, backup-verify.sh.j2, backup.conf.j2, files-backup.sh.j2, full-backup.sh.j2.
+      Add them, or leave wordpress_enable_backups off.
+
 - name: Create backup directories
   ansible.builtin.file:
     path: "{{ item }}"
