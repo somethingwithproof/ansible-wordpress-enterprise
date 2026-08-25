@@ -16,7 +16,7 @@
       - ca-certificates
       - gnupg
       - lsb-release
-      - software-properties-common
+      - python3-apt
       - curl
       - wget
     state: present

@@ -6,15 +6,20 @@ wordpress_web_server_package:
   nginx: "nginx"
   apache: "httpd"
 
+# EL 8 ships Python 3.6 as /usr/bin/python3, which ansible-core will not use on
+# a managed node, so the play runs on the python39 module. The MySQL binding has
+# to be built for that interpreter, not for the platform python.
+wordpress_python_package_prefix: "{{ 'python39' if ansible_facts.distribution_major_version is version('8', '==') else 'python3' }}"
+
 wordpress_db_packages:
   mysql:
     - "mysql-server"
     - "mysql"
-    - "python3-PyMySQL"
+    - "{{ wordpress_python_package_prefix }}-PyMySQL"
   mariadb:
     - "mariadb-server"
     - "mariadb"
-    - "python3-PyMySQL"
+    - "{{ wordpress_python_package_prefix }}-PyMySQL"
 
 wordpress_php_packages:
   - "php{{ wordpress_php_version }}"

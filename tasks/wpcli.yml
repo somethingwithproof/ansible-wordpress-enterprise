@@ -32,7 +32,7 @@
 
 - name: Verify WP-CLI download
   ansible.builtin.command:
-    cmd: php /tmp/wp-cli.phar --version
+    cmd: php /tmp/wp-cli.phar --version --allow-root
   register: wpcli_version_check
   changed_when: false
   when: not wpcli_binary.stat.exists or (wordpress_wpcli_force_update | default(false))

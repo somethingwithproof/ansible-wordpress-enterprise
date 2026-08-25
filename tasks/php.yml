@@ -82,8 +82,9 @@
   register: wordpress_php_extensions_apt
   failed_when:
     - wordpress_php_extensions_apt is failed
-    - "'no installation candidate' not in wordpress_php_extensions_apt.msg | default('') | lower"
-    - "'unable to locate package' not in wordpress_php_extensions_apt.msg | default('') | lower"
+    - >-
+      not (wordpress_php_extensions_apt.msg | default('') | lower)
+      is search('no installation candidate|unable to locate package|no package matching')
 
 - name: Install additional PHP extensions for WordPress (RedHat)
   ansible.builtin.dnf:
@@ -101,7 +102,9 @@
   register: wordpress_php_extensions_dnf
   failed_when:
     - wordpress_php_extensions_dnf is failed
-    - "'no package' not in wordpress_php_extensions_dnf.msg | default('') | lower"
+    - >-
+      'no package' not in ((wordpress_php_extensions_dnf.msg | default('')) ~ ' ' ~
+      (wordpress_php_extensions_dnf.failures | default([]) | join(' '))) | lower
 
 - name: Configure PHP OPcache settings
   ansible.builtin.lineinfile:
