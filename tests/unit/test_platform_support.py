@@ -42,6 +42,12 @@ def molecule_images() -> set[str]:
     return images
 
 
+def test_the_corpus_is_not_empty(distributions: list[dict]) -> None:
+    """A moved directory must fail loudly, not pass on zero inputs."""
+    assert MOLECULE, "no molecule.yml files found; the layout changed"
+    assert distributions, "the support policy is empty"
+
+
 def test_no_supported_release_is_end_of_life(supported: list[dict]) -> None:
     today = datetime.date.today()
     lapsed = [

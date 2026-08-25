@@ -70,6 +70,12 @@ def handler_names() -> set[str]:
     return {h["name"] for h in yaml.safe_load(HANDLERS.read_text()) if "name" in h}
 
 
+def test_the_corpus_is_not_empty(handler_names: set[str]) -> None:
+    """A moved directory must fail loudly, not pass on zero inputs."""
+    assert handler_names, "no handlers parsed; the layout changed"
+    assert _notified(), "no notify targets found; the layout changed"
+
+
 def test_every_notify_resolves_to_a_handler(handler_names: set[str]) -> None:
     missing = sorted(_notified() - handler_names)
     assert not missing, f"notify targets with no handler: {missing}"

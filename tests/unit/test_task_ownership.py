@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import collections
 import pathlib
+import re
 
 import pytest
 import yaml
@@ -47,14 +48,25 @@ def all_tasks() -> list[tuple[str, dict]]:
     return list(_tasks())
 
 
+def test_the_corpus_is_not_empty(all_tasks) -> None:
+    """A guard that scanned nothing must not read as a guard that found nothing."""
+    assert TASKS, "no task files found; the glob or the layout changed"
+    assert len(all_tasks) > 100, f"only {len(all_tasks)} tasks parsed"
+
+
 def test_cron_entry_names_are_owned_by_one_file(all_tasks) -> None:
     owners = collections.defaultdict(set)
     for filename, task in all_tasks:
         cron = task.get("ansible.builtin.cron")
         if isinstance(cron, dict) and "name" in cron:
             owners[cron["name"]].add(filename)
-        clash = {n: sorted(f) for n, f in owners.items() if len(f) > 1}
+    clash = {n: sorted(f) for n, f in owners.items() if len(f) > 1}
     assert not clash, f"cron entries defined in more than one file: {clash}"
+
+
+def _normalise(target: str) -> str:
+    """Compare templated destinations structurally: {{ x }}/a and {{ y }}/a differ."""
+    return re.sub(r"\{\{\s*([\w.\[\]'\"]+?)\s*\}\}", r"{{\1}}", target)
 
 
 def test_written_paths_are_owned_by_one_file(all_tasks) -> None:
@@ -66,8 +78,8 @@ def test_written_paths_are_owned_by_one_file(all_tasks) -> None:
                 continue
             for key in keys:
                 target = body.get(key)
-                if isinstance(target, str) and "{{" not in target:
-                    owners[target].add(filename)
+                if isinstance(target, str):
+                    owners[_normalise(target)].add(filename)
     clash = {p: sorted(f) for p, f in owners.items() if len(f) > 1}
     assert not clash, f"paths written from more than one file: {clash}"
 

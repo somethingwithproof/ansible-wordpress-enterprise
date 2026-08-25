@@ -624,3 +624,6 @@ wordpress_access_log_path: "{{
   else '/var/log/apache2/access.log' if ansible_facts.os_family == 'Debian'
   else '/var/log/httpd/access_log'
 }}"
+
+# XML-RPC is a common brute-force target and most sites do not use it.
+wordpress_disable_xmlrpc: true

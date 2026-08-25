@@ -50,9 +50,22 @@ def offenders() -> list[str]:
     for path in _files():
         for number, line in enumerate(path.read_text(errors="ignore").splitlines(), 1):
             for name in PATTERN.findall(line):
-                if name in FACTS:
+                # Fail closed: anything not known to be a connection setting is
+                # treated as a fact and has to be classified deliberately.
+                if name not in NOT_FACTS:
                     found.append(f"{path.relative_to(ROOT)}:{number}: ansible_{name}")
     return found
+
+
+def test_the_corpus_is_not_empty() -> None:
+    """A moved directory must fail loudly, not pass on zero inputs."""
+    assert len(list(_files())) > 50, "too few files scanned; the layout changed"
+
+
+def test_the_scanner_detects_an_unlisted_fact(tmp_path) -> None:
+    """A fact outside FACTS must still be caught."""
+    assert "system" not in NOT_FACTS
+    assert PATTERN.findall("when: ansible_system == 'Linux'") == ["system"]
 
 
 def test_no_bare_fact_variables(offenders: list[str]) -> None:

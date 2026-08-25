@@ -304,46 +304,6 @@
   become: true
   when: wordpress_enable_ssl | bool
 
-- name: Configure HSTS (HTTP Strict Transport Security)
-  ansible.builtin.blockinfile:
-    path: "{{ wordpress_install_dir }}/.htaccess"
-    marker: "# {mark} HSTS CONFIGURATION"
-    block: |
-      # HTTP Strict Transport Security (HSTS)
-      <IfModule mod_headers.c>
-          Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-      </IfModule>
-    insertafter: "# BEGIN WordPress"
-    create: true
-    mode: '0644'
-    owner: "{{ wordpress_system_user }}"
-    group: "{{ wordpress_system_group }}"
-  become: true
-  when:
-    - wordpress_web_server == "apache"
-    - wordpress_enable_ssl | bool
-
-- name: Force HTTPS redirects in .htaccess
-  ansible.builtin.blockinfile:
-    path: "{{ wordpress_install_dir }}/.htaccess"
-    marker: "# {mark} HTTPS REDIRECT"
-    block: |
-      # Force HTTPS
-      <IfModule mod_rewrite.c>
-          RewriteEngine On
-          RewriteCond %{HTTPS} off
-          RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-      </IfModule>
-    insertbefore: "# BEGIN WordPress"
-    create: true
-    mode: '0644'
-    owner: "{{ wordpress_system_user }}"
-    group: "{{ wordpress_system_group }}"
-  become: true
-  when:
-    - wordpress_web_server == "apache"
-    - wordpress_enable_ssl | bool
-
 - name: Set proper permissions on SSL certificate files
   ansible.builtin.file:
     path: "{{ item.path }}"
