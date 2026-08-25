@@ -33,7 +33,7 @@
 The core path installs and configures WordPress: prerequisites, the database,
 PHP, Apache or Nginx, the WordPress install itself, and the baseline hardening
 in `security_hardening.yml`. That is what the Molecule scenarios exercise on
-Rocky 8 and 9, Ubuntu 22.04 and 24.04, and Debian 13.
+Rocky 9, Ubuntu 22.04 and 24.04, and Debian 13.
 
 These features are **off by default and do not currently work**, because the
 role references templates it does not ship (62 of them, listed in

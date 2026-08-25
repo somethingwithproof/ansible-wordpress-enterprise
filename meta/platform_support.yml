@@ -14,7 +14,10 @@ distributions:
     meta_version: "8"
     image: geerlingguy/docker-rockylinux8-ansible
     eol: "2029-05-31"
-    supported: true
+    # Maintenance Support only: Red Hat ended Full Support on 2024-05-31.
+    # Supporting it means running the play on python39 because ansible-core
+    # will not use EL 8's 3.6, and the role has never verified it.
+    supported: false
 
   - meta_name: EL
     meta_version: "9"
