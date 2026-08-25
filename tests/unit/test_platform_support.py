@@ -8,6 +8,7 @@ policy, or when a supported release is not exercised by a Molecule scenario.
 from __future__ import annotations
 
 import datetime
+import os
 import pathlib
 
 import pytest
@@ -48,8 +49,16 @@ def test_the_corpus_is_not_empty(distributions: list[dict]) -> None:
     assert distributions, "the support policy is empty"
 
 
+def _reference_date() -> datetime.date:
+    """UTC today, overridable so the check is reproducible on any checkout."""
+    override = os.environ.get("PLATFORM_SUPPORT_DATE")
+    if override:
+        return datetime.date.fromisoformat(override)
+    return datetime.datetime.now(datetime.timezone.utc).date()
+
+
 def test_no_supported_release_is_end_of_life(supported: list[dict]) -> None:
-    today = datetime.date.today()
+    today = _reference_date()
     lapsed = [
         f"{d['meta_name']} {d['meta_version']} (eol {d['eol']})"
         for d in supported

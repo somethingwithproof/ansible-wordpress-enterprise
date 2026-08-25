@@ -81,9 +81,27 @@ def test_every_notify_resolves_to_a_handler(handler_names: set[str]) -> None:
     assert not missing, f"notify targets with no handler: {missing}"
 
 
+# Handler names are part of the published interface, so a handler no task here
+# notifies is not necessarily unused. These are kept for downstream playbooks;
+# removing one is a breaking change and needs a major version in meta/main.yml.
+PUBLIC = {"Restart nginx", "Restart apache", "Restart php-fpm", "Restart mysql",
+          "Restart mariadb", "Restart redis", "Restart memcached", "Reload systemd"}
+
+
 def test_no_handler_is_orphaned(handler_names: set[str]) -> None:
-    orphans = sorted(handler_names - _notified())
-    assert not orphans, f"handlers nothing notifies: {orphans}"
+    orphans = sorted(handler_names - _notified() - PUBLIC)
+    assert not orphans, (
+        f"handlers nothing notifies and that are not part of the public "
+        f"interface: {orphans}"
+    )
+
+
+def test_the_public_handlers_all_exist(handler_names: set[str]) -> None:
+    missing = sorted(PUBLIC - handler_names)
+    assert not missing, (
+        f"removing a published handler is a breaking change; restore it or bump "
+        f"the major version in meta/main.yml: {missing}"
+    )
 
 
 def test_handler_names_are_unique() -> None:

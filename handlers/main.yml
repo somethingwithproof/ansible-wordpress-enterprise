@@ -22,6 +22,12 @@
     state: reloaded
   become: true
 
+- name: Restart nginx
+  ansible.builtin.systemd:
+    name: "{{ wordpress_web_server_service['nginx'] }}"
+    state: restarted
+  become: true
+
 - name: Reload apache
   ansible.builtin.systemd:
     name: "{{ wordpress_web_server_service['apache'] }}"
