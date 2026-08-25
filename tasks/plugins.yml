@@ -134,14 +134,6 @@
     - wordpress_debug | default(false)
     - installed_plugins is defined
 
-- name: Configure plugin-specific settings
-  ansible.builtin.include_tasks: "configure_plugin_{{ item.name | regex_replace('-', '_') }}.yml"
-  loop: "{{ (wordpress_plugins | default([])) + (wordpress_custom_plugins | default([])) }}"
-  when:
-    - item.state | default('present') == 'present'
-    - item.configure | default(false)
-  ignore_errors: true # Allow missing configuration files
-
 - name: Set plugin file permissions
   ansible.builtin.file:
     path: "{{ wordpress_install_dir }}/wp-content/plugins"

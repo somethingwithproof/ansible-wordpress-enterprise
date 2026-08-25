@@ -145,14 +145,6 @@
     - wordpress_debug | default(false)
     - installed_themes is defined
 
-- name: Configure theme-specific settings
-  ansible.builtin.include_tasks: "configure_theme_{{ item.name | regex_replace('-', '_') }}.yml"
-  loop: "{{ (wordpress_themes | default([])) + (wordpress_custom_themes | default([])) }}"
-  when:
-    - item.state | default('present') == 'present'
-    - item.configure | default(false)
-  ignore_errors: true # Allow missing configuration files
-
 - name: Create theme child directories if needed
   ansible.builtin.file:
     path: "{{ wordpress_install_dir }}/wp-content/themes/{{ item.child_theme_name }}"

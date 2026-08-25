@@ -56,23 +56,24 @@
   when: not wpcli_binary.stat.exists or (wordpress_wpcli_force_update | default(false))
   become: true
 
+- name: Look up the web user's home directory
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ wordpress_system_user }}"
+
 - name: Create WP-CLI configuration directory
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ ansible_facts.getent_passwd[wordpress_system_user][4] }}/.wp-cli"
     state: directory
     owner: "{{ wordpress_system_user }}"
     group: "{{ wordpress_system_group }}"
     mode: "0755"
-  loop:
-    - "/home/{{ wordpress_system_user }}/.wp-cli"
-    - "/var/www/.wp-cli"
   become: true
-  ignore_errors: true
 
 - name: Create WP-CLI global configuration
   ansible.builtin.template:
     src: wp-cli.yml.j2
-    dest: "/home/{{ wordpress_system_user }}/.wp-cli/config.yml"
+    dest: "{{ ansible_facts.getent_passwd[wordpress_system_user][4] }}/.wp-cli/config.yml"
     owner: "{{ wordpress_system_user }}"
     group: "{{ wordpress_system_group }}"
     mode: "0644"
@@ -96,7 +97,13 @@
     mode: "0644"
   become: true
   when: wordpress_wpcli_bash_completion | default(true)
-  ignore_errors: true
+  register: wordpress_wpcli_completion
+  failed_when: false
+
+- name: Report a missing WP-CLI bash completion
+  ansible.builtin.debug:
+    msg: "wp-cli bash completion was not installed: {{ wordpress_wpcli_completion.msg | default('') }}"
+  when: wordpress_wpcli_completion is failed
 
 - name: Verify WP-CLI installation
   ansible.builtin.command:
@@ -123,10 +130,13 @@
 
 - name: Configure WP-CLI aliases
   ansible.builtin.lineinfile:
-    path: "/home/{{ wordpress_system_user }}/.bashrc"
+    path: "{{ ansible_facts.getent_passwd[wordpress_system_user][4] }}/.bashrc"
     line: "alias wp-{{ item.key }}='wp --path={{ item.value }}'"
     state: present
     create: true
+    owner: "{{ wordpress_system_user }}"
+    group: "{{ wordpress_system_group }}"
+    mode: "0644"
   loop: "{{ wordpress_wpcli_aliases | default({}) | dict2items }}"
   become: true
   when: wordpress_wpcli_aliases | default({}) | length > 0

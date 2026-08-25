@@ -151,10 +151,12 @@
 
         - name: Test security status script as non-root user
           ansible.builtin.command: /usr/local/bin/wordpress-security-status
+          become: true
           become_user: testuser
           register: limited_user_test
           failed_when: false
 
+          changed_when: false
         - name: Verify security script handles limited privileges
           ansible.builtin.assert:
             that:
@@ -187,6 +189,7 @@
           failed_when: false
           when: ansible_os_family == "RedHat"
 
+          changed_when: false
         - name: Verify corrupted policy is rejected
           ansible.builtin.assert:
             that:
@@ -213,6 +216,7 @@
           failed_when: false
           when: ansible_os_family == "Debian"
 
+          changed_when: false
         - name: Verify corrupted AppArmor profile is rejected
           ansible.builtin.assert:
             that:
@@ -237,15 +241,18 @@
           ansible.builtin.command: df -h /tmp
           register: disk_space_check
 
+          changed_when: false
         - name: Check available memory
           ansible.builtin.command: free -m
           register: memory_check
 
+          changed_when: false
         - name: Create large test file to consume space
           ansible.builtin.command: dd if=/dev/zero of=/tmp/large-test-file bs=1M count=100
           register: large_file_creation
           failed_when: false
 
+          changed_when: true
         - name: Test security operations with reduced available space
           block:
             - name: Include security tasks with reduced available space
@@ -286,6 +293,7 @@
           register: fail2ban_test_config
           failed_when: false
 
+          changed_when: false
         - name: Cleanup test fail2ban config
           ansible.builtin.file:
             path: /tmp/test-fail2ban.conf
@@ -303,6 +311,7 @@
           register: concurrent_test
           failed_when: false
 
+          changed_when: false
         - name: Verify concurrent execution handling
           ansible.builtin.assert:
             that:
@@ -318,11 +327,13 @@
           register: current_selinux_booleans
           when: ansible_os_family == "RedHat"
 
+          changed_when: false
         - name: Save current AppArmor profiles (Ubuntu/Debian)
           ansible.builtin.command: aa-status
           register: current_apparmor_profiles
           when: ansible_os_family == "Debian"
 
+          changed_when: false
         - name: Simulate configuration changes
           ansible.builtin.debug:
             msg: "Testing configuration persistence across changes"
@@ -344,6 +355,7 @@
           ansible.builtin.command: ls -la "/tmp/test wordpress-#$%&"
           register: special_char_test
 
+          changed_when: false
         - name: Cleanup special character directory
           ansible.builtin.file:
             path: "/tmp/test wordpress-#$%&"
@@ -368,8 +380,8 @@
 
         - name: Verify service dependency handling
           ansible.builtin.debug:
-            msg: "Service dependency checks completed: {{ service_dependency_check.results | map(attribute='status') | map(attribute='ActiveState')
-              | list }}"
+            msg: "Service dependency checks completed: {{ service_dependency_check.results | map(attribute='status')
+              | map(attribute='ActiveState') | list }}"
 
     # Edge Case 13: Test rollback scenarios
     - name: Edge Case 13 - Test security configuration rollback
@@ -380,6 +392,7 @@
             cp /etc/audit/rules.d/wordpress.rules /tmp/security-backup/ 2>/dev/null || true
             cp /etc/fail2ban/jail.d/wordpress.conf /tmp/security-backup/ 2>/dev/null || true
 
+          changed_when: true
         - name: Test configuration rollback capability
           ansible.builtin.debug:
             msg: "Security configuration backup and rollback capability tested"
@@ -437,6 +450,7 @@
           ansible.builtin.file:
             path: /tmp/readonly-test-dir/test-file
             state: touch
+            mode: "0644"
           register: error_recovery_test
           failed_when: false
 

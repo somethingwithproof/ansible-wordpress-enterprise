@@ -283,7 +283,8 @@
           become: true
           when: wordpress_kernel_hardening | default(true)
 
-        - ansible.builtin.lineinfile:
+        - name: Set password policy
+          ansible.builtin.lineinfile:
             path: /etc/login.defs
             regexp: "^{{ item.key }}"
             line: "{{ item.key }} {{ item.value }}"
@@ -298,8 +299,8 @@
             - key: PASS_WARN_AGE
               value: "7"
           become: true
-          name: Set password policy
           when: wordpress_password_policy | default(true)
+
 - name: Generate security status report
   ansible.builtin.template:
     src: security_status.sh.j2
@@ -390,6 +391,7 @@
       Run 'wordpress-security-status' to check current security status.
 
 - name: Validate security configuration
+  when: wordpress_security_validate | default(true)
   block:
     - name: Test file permissions
       ansible.builtin.stat:
@@ -419,4 +421,3 @@
           wp-config.php permissions: {{ wp_config_perms.stat.mode if wp_config_perms.stat.exists else 'File not found' }}
           uploads directory permissions: {{ wp_uploads_perms.stat.mode if wp_uploads_perms.stat.exists else 'Directory not found' }}
           Security services status: {{ security_services.results | map(attribute='status') | map(attribute='ActiveState') | join(', ') }}
-  when: wordpress_security_validate | default(true)

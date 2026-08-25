@@ -91,6 +91,16 @@
   become: true
   when: ansible_os_family == "RedHat"
 
+- name: Compile the custom SELinux policy
+  ansible.builtin.shell: |
+    set -e
+    cd /etc/selinux/local
+    checkmodule -M -m -o wordpress_custom.mod wordpress_custom.te
+    semodule_package -o wordpress_custom.pp -m wordpress_custom.mod
+    semodule -i wordpress_custom.pp
+  become: true
+  changed_when: true
+
 - name: Reload sysctl
   ansible.builtin.command:
     cmd: sysctl --system

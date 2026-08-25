@@ -348,6 +348,8 @@
         # User directories
         /home/*/.wp-cli/ rw,
         /home/*/.wp-cli/** rw,
+        /var/www/.wp-cli/ rw,
+        /var/www/.wp-cli/** rw,
         /root/.wp-cli/ rw,
         /root/.wp-cli/** rw,
 
@@ -384,22 +386,28 @@
     - apparmor_enabled | default(false)
   become: true
 
-- name: Configure AppArmor complain mode for testing
-  ansible.builtin.command: aa-complain {{ item }}
-  loop:
-    - /etc/apparmor.d/wordpress-php-fpm
-    - /etc/apparmor.d/wordpress-nginx
-    - /etc/apparmor.d/wordpress-apache
-    - /etc/apparmor.d/wordpress-wpcli
+- name: Read the AppArmor profile modes
+  ansible.builtin.command: aa-status --json
+  register: wordpress_apparmor_status
+  changed_when: false
+  failed_when: false
+  become: true
   when:
     - ansible_os_family == "Debian"
     - apparmor_enabled | default(false)
-    - wordpress_apparmor_mode == "complain"
-  become: true
-  failed_when: false
 
-- name: Configure AppArmor enforce mode for production
-  ansible.builtin.command: aa-enforce {{ item }}
+- name: Record the profiles already in the requested mode
+  ansible.builtin.set_fact:
+    wordpress_apparmor_settled: >-
+      {{ (wordpress_apparmor_status.stdout | default('{}') | from_json).profiles | default({})
+         | dict2items | selectattr('value', 'eq', wordpress_apparmor_mode)
+         | map(attribute='key') | list }}
+  when:
+    - ansible_os_family == "Debian"
+    - apparmor_enabled | default(false)
+
+- name: Set the AppArmor mode for the WordPress profiles
+  ansible.builtin.command: "aa-{{ wordpress_apparmor_mode }} {{ item }}"
   loop:
     - /etc/apparmor.d/wordpress-php-fpm
     - /etc/apparmor.d/wordpress-nginx
@@ -408,9 +416,9 @@
   when:
     - ansible_os_family == "Debian"
     - apparmor_enabled | default(false)
-    - wordpress_apparmor_mode == "enforce"
+    - (item | basename) not in (wordpress_apparmor_settled | default([]) | map('basename') | list)
   become: true
-  failed_when: false
+  changed_when: true
 
 - name: Install AppArmor log analyzer
   ansible.builtin.package:
@@ -557,7 +565,7 @@
       when: item.item is defined
 
     - name: Load AppArmor profiles
-      ansible.builtin.command: apparmor_parser -r {{ item }}
+      ansible.builtin.command: apparmor_parser --replace --skip-cache {{ item }}
       loop:
         - /etc/apparmor.d/wordpress-php-fpm
         - /etc/apparmor.d/wordpress-nginx
@@ -565,6 +573,7 @@
         - /etc/apparmor.d/wordpress-wpcli
       when: wordpress_apparmor_load_profiles | default(true)
       become: true
+      changed_when: false
       failed_when: false
 
     - name: Check loaded profiles status
