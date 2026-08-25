@@ -39,7 +39,7 @@
     - name: Download custom theme archives
       ansible.builtin.get_url:
         url: "{{ item.source }}"
-        dest: "/tmp/{{ item.name }}.zip"
+        dest: "/tmp/wordpress-theme-{{ item.name }}.zip"
         mode: "0644"
         timeout: 30
       loop: "{{ wordpress_custom_themes | default([]) }}"
@@ -65,7 +65,7 @@
 
     - name: Clean up downloaded theme archives
       ansible.builtin.file:
-        path: "/tmp/{{ item.name }}.zip"
+        path: "/tmp/wordpress-theme-{{ item.name }}.zip"
         state: absent
       loop: "{{ wordpress_custom_themes | default([]) }}"
 - name: Activate WordPress theme

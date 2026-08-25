@@ -23,7 +23,14 @@ WRITERS = {
     "ansible.builtin.copy": ("dest",),
     "ansible.builtin.lineinfile": ("path",),
     "ansible.builtin.blockinfile": ("path",),
+    "ansible.builtin.replace": ("path",),
+    "ansible.builtin.get_url": ("dest",),
+    "ansible.builtin.unarchive": ("dest",),
 }
+
+# Distinct options in one ini file are legitimate, so ownership is keyed on the
+# option, not the file.
+INI = "community.general.ini_file"
 
 
 def _walk(node):
@@ -80,6 +87,10 @@ def test_written_paths_are_owned_by_one_file(all_tasks) -> None:
                 target = body.get(key)
                 if isinstance(target, str):
                     owners[_normalise(target)].add(filename)
+        ini = task.get(INI)
+        if isinstance(ini, dict) and "path" in ini:
+            key = (_normalise(str(ini["path"])), ini.get("section"), ini.get("option"))
+            owners[f"{key}"].add(filename)
     clash = {p: sorted(f) for p, f in owners.items() if len(f) > 1}
     assert not clash, f"paths written from more than one file: {clash}"
 

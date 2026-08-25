@@ -13,7 +13,7 @@ import re
 import pytest
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-SEARCH_DIRS = ("tasks", "templates", "handlers", "defaults", "vars", "molecule", "tests")
+SEARCH_DIRS = ("tasks", "templates", "handlers", "defaults", "vars", "molecule", "tests", "examples")
 
 # setup module facts, which belong under ansible_facts
 FACTS = {

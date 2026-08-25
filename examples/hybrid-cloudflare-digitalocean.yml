@@ -44,7 +44,7 @@
     wordpress_cloudflare_dns_records:
       - name: "blog.example.com"
         type: "A"
-        value: "{{ ansible_default_ipv4.address }}"
+        value: "{{ ansible_facts.default_ipv4.address }}"
         proxied: true
         ttl: 1
 

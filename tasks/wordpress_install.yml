@@ -129,32 +129,9 @@
   become: true
   when: wordpress_installed.stat.exists
 
-- name: Download and install WP-CLI
-  ansible.builtin.get_url:
-    url: >-
-      https://github.com/wp-cli/wp-cli/releases/download/v{{
-      wordpress_wpcli_version | default('2.9.0') }}/wp-cli-{{
-      wordpress_wpcli_version | default('2.9.0') }}.phar
-    dest: "{{ wordpress_wpcli_bin }}"
-    mode: '0755'
-    owner: root
-    group: root
-  become: true
-  when:
-    - wordpress_install_wpcli | bool
-    - wordpress_wpcli_version != "latest"
-
-- name: Download and install latest WP-CLI
-  ansible.builtin.get_url:
-    url: "https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
-    dest: "{{ wordpress_wpcli_bin }}"
-    mode: '0755'
-    owner: root
-    group: root
-  become: true
-  when:
-    - wordpress_install_wpcli | bool
-    - wordpress_wpcli_version == "latest"
+- name: Install WP-CLI
+  ansible.builtin.include_tasks: wpcli.yml
+  when: wordpress_install_wpcli | bool
 
 - name: Verify WP-CLI installation
   ansible.builtin.command:
