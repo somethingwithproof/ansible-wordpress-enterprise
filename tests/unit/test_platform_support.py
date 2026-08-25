@@ -1,8 +1,10 @@
 """The declared platforms, the Molecule matrix and the support policy agree.
 
 meta/platform_support.yml is the source of truth. These tests fail when a
-supported release reaches end of life, when meta/main.yml drifts from the
-policy, or when a supported release is not exercised by a Molecule scenario.
+supported release leaves full vendor support, when meta/main.yml drifts from
+the policy, or when a supported release is not exercised by a Molecule
+scenario. Extended phases (Ubuntu ESM, Debian LTS, EL Maintenance Support) do
+not count as supported.
 """
 
 from __future__ import annotations
@@ -63,14 +65,19 @@ def _reference_date() -> datetime.date:
     return datetime.datetime.now(datetime.timezone.utc).date()
 
 
-def test_no_supported_release_is_end_of_life(supported: list[dict]) -> None:
+def test_every_supported_release_still_has_full_vendor_support(
+    supported: list[dict],
+) -> None:
+    """Extended phases do not count: ESM, Debian LTS and EL Maintenance are out."""
     today = _reference_date()
     lapsed = [
-        f"{d['meta_name']} {d['meta_version']} (eol {d['eol']})"
+        f"{d['meta_name']} {d['meta_version']} (full support ended {d['full_support_ends']})"
         for d in supported
-        if datetime.date.fromisoformat(d["eol"]) <= today
+        if datetime.date.fromisoformat(d["full_support_ends"]) <= today
     ]
-    assert not lapsed, f"supported releases past end of life: {lapsed}"
+    assert not lapsed, (
+        f"these are supported here but no longer fully supported upstream: {lapsed}"
+    )
 
 
 def test_meta_declares_exactly_the_supported_releases(supported: list[dict]) -> None:

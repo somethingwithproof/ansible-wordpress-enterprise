@@ -32,8 +32,24 @@
 
 The core path installs and configures WordPress: prerequisites, the database,
 PHP, Apache or Nginx, the WordPress install itself, and the baseline hardening
-in `security_hardening.yml`. That is what the Molecule scenarios exercise on
-Rocky 9, Ubuntu 22.04 and 24.04, and Debian 13.
+in `security_hardening.yml`. That is what the Molecule scenarios exercise.
+
+### Supported distributions
+
+A release is supported only while its vendor still gives it **full** support.
+Extended phases do not count: Ubuntu ESM, Debian LTS and Enterprise Linux
+Maintenance Support are all out of scope.
+
+| Release | Full support until |
+| --- | --- |
+| Enterprise Linux 9 | 2027-05-31 |
+| Ubuntu 22.04 LTS | 2027-04-01 |
+| Ubuntu 24.04 LTS | 2029-05-31 |
+| Debian 13 | 2028-08-09 |
+
+`meta/platform_support.yml` holds the policy and the dates;
+`tests/unit/test_platform_support.py` fails the build the day a release leaves
+full support, or when `meta/main.yml` and the Molecule matrix drift from it.
 
 These features are **off by default and do not currently work**, because the
 role references templates it does not ship (62 of them, listed in
