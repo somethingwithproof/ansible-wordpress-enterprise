@@ -12,7 +12,7 @@
     wordpress_version: "6.4.2" # Specific version for testing
     wordpress_install_dir: "/var/www/apache-wordpress"
     wordpress_site_title: "Apache WordPress Test Site"
-    wordpress_site_url: "http://{{ ansible_default_ipv4.address }}:8081"
+    wordpress_site_url: "http://{{ ansible_facts.default_ipv4.address }}:8081"
 
     # Admin user
     wordpress_admin_user: "apacheadmin"
@@ -116,14 +116,14 @@
     - name: Wait for Apache to be ready
       ansible.builtin.wait_for:
         port: "{{ wordpress_http_port }}"
-        host: "{{ ansible_default_ipv4.address }}"
+        host: "{{ ansible_facts.default_ipv4.address }}"
         delay: 15
         timeout: 300
       delegate_to: localhost
 
     - name: Test WordPress with Apache
       ansible.builtin.uri:
-        url: "http://{{ ansible_default_ipv4.address }}"
+        url: "http://{{ ansible_facts.default_ipv4.address }}"
         method: GET
         status_code: [200, 301, 302]
         timeout: 30
@@ -132,7 +132,7 @@
 
     - name: Test PHP info page (if debug enabled)
       ansible.builtin.uri:
-        url: "http://{{ ansible_default_ipv4.address }}/phpinfo.php"
+        url: "http://{{ ansible_facts.default_ipv4.address }}/phpinfo.php"
         method: GET
         status_code: [200, 404] # 404 is OK if not created
       delegate_to: localhost
@@ -141,7 +141,7 @@
 
     - name: Test plugin functionality (check for Yoast SEO)
       ansible.builtin.uri:
-        url: "http://{{ ansible_default_ipv4.address }}/wp-admin/admin.php?page=wpseo_dashboard"
+        url: "http://{{ ansible_facts.default_ipv4.address }}/wp-admin/admin.php?page=wpseo_dashboard"
         method: GET
         status_code: [200, 301, 302, 404] # Various redirect responses are OK
       delegate_to: localhost
@@ -152,7 +152,7 @@
       ansible.builtin.debug:
         msg:
           - "✅ Apache WordPress installation test completed"
-          - "✅ Site accessible at: http://{{ ansible_default_ipv4.address }}"
+          - "✅ Site accessible at: http://{{ ansible_facts.default_ipv4.address }}"
           - "✅ Response status: {{ apache_wp_response.status }}"
           - "✅ Web server: {{ wordpress_web_server }}"
           - "✅ PHP version: {{ wordpress_php_version }}"

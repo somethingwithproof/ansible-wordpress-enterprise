@@ -74,7 +74,7 @@
     mode: '0644'
   become: true
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_enable_fail2ban | bool
     - wordpress_configure_firewall | bool
   notify: Restart fail2ban
@@ -88,7 +88,7 @@
     mode: '0644'
   become: true
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - wordpress_enable_fail2ban | bool
     - wordpress_configure_firewall | bool
   notify: Restart fail2ban
@@ -101,7 +101,7 @@
       # Log file paths
       [DEFAULT]
       {% if wordpress_web_server == 'apache' %}
-      {% if ansible_os_family == 'Debian' %}
+      {% if ansible_facts.os_family == 'Debian' %}
       apache_error_log = /var/log/apache2/error.log
       apache_access_log = /var/log/apache2/access.log
       {% else %}
@@ -190,7 +190,7 @@
       # Email notification settings
       [DEFAULT]
       destemail = {{ wordpress_admin_email }}
-      sender = fail2ban@{{ ansible_domain | default(ansible_hostname) }}
+      sender = fail2ban@{{ ansible_facts.domain | default(ansible_facts.hostname) }}
       mta = sendmail
       action = %(action_mwl)s
     backup: true
@@ -253,7 +253,7 @@
       enabled = true
       filter = wordpress-auth
       {% if wordpress_web_server == 'apache' %}
-      {% if ansible_os_family == 'Debian' %}
+      {% if ansible_facts.os_family == 'Debian' %}
       logpath = /var/log/apache2/access.log
       {% else %}
       logpath = /var/log/httpd/access_log
@@ -269,7 +269,7 @@
       enabled = true
       filter = wordpress-spam
       {% if wordpress_web_server == 'apache' %}
-      {% if ansible_os_family == 'Debian' %}
+      {% if ansible_facts.os_family == 'Debian' %}
       logpath = /var/log/apache2/access.log
       {% else %}
       logpath = /var/log/httpd/access_log
@@ -285,7 +285,7 @@
       enabled = true
       filter = {{ wordpress_web_server }}-badbots
       {% if wordpress_web_server == 'apache' %}
-      {% if ansible_os_family == 'Debian' %}
+      {% if ansible_facts.os_family == 'Debian' %}
       logpath = /var/log/apache2/access.log
       {% else %}
       logpath = /var/log/httpd/access_log

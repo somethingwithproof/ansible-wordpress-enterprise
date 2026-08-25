@@ -93,7 +93,7 @@ wordpress_firewall_http_service: "http"
 wordpress_firewall_https_service: "https"
 
 # SELinux
-wordpress_selinux_enabled: "{{ ansible_selinux.status == 'enabled' }}"
+wordpress_selinux_enabled: "{{ ansible_facts.selinux.status == 'enabled' }}"
 wordpress_selinux_booleans:
   - httpd_can_network_connect
   - httpd_can_network_connect_db
@@ -106,9 +106,9 @@ wordpress_enable_remi: true
 
 wordpress_remi_repo_url: >-
   https://rpms.remirepo.net/enterprise/remi-release-{{
-  ansible_distribution_major_version }}.rpm
+  ansible_facts.distribution_major_version }}.rpm
 wordpress_epel_repo_url: >-
   https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{
-  ansible_distribution_major_version }}.noarch.rpm
+  ansible_facts.distribution_major_version }}.noarch.rpm
 
 # System user defaults

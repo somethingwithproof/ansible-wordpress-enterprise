@@ -3,7 +3,7 @@
 
 {% if wordpress_enable_logging %}
 {%   set log_dir = wordpress_log_dir ~ '/apache' %}
-{% elif ansible_os_family == 'Debian' %}
+{% elif ansible_facts.os_family == 'Debian' %}
 {%   set log_dir = '${APACHE_LOG_DIR}' %}
 {% else %}
 {%   set log_dir = 'logs' %}

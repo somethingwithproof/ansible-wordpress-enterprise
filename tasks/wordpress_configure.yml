@@ -96,7 +96,7 @@
 - name: Update WordPress timezone
   ansible.builtin.command:
     cmd: >
-      {{ wordpress_wpcli_bin }} option update timezone_string "{{ ansible_date_time.tz }}"
+      {{ wordpress_wpcli_bin }} option update timezone_string "{{ ansible_facts.date_time.tz }}"
       --path="{{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"

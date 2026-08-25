@@ -12,7 +12,7 @@
     wordpress_version: "latest"
     wordpress_install_dir: "/var/www/secure-wordpress"
     wordpress_site_title: "Secure WordPress Test Site"
-    wordpress_site_url: "https://{{ ansible_default_ipv4.address }}"
+    wordpress_site_url: "https://{{ ansible_facts.default_ipv4.address }}"
 
     # Admin user
     wordpress_admin_user: "secureadmin"
@@ -95,14 +95,14 @@
     - name: Wait for HTTPS services to be ready
       ansible.builtin.wait_for:
         port: "{{ wordpress_https_port }}"
-        host: "{{ ansible_default_ipv4.address }}"
+        host: "{{ ansible_facts.default_ipv4.address }}"
         delay: 20
         timeout: 300
       delegate_to: localhost
 
     - name: Test HTTPS redirect
       ansible.builtin.uri:
-        url: "http://{{ ansible_default_ipv4.address }}"
+        url: "http://{{ ansible_facts.default_ipv4.address }}"
         method: GET
         status_code: [200, 301, 302]
         follow_redirects: none
@@ -111,7 +111,7 @@
 
     - name: Test HTTPS access (with self-signed cert)
       ansible.builtin.uri:
-        url: "https://{{ ansible_default_ipv4.address }}"
+        url: "https://{{ ansible_facts.default_ipv4.address }}"
         method: GET
         status_code: [200, 301, 302]
         validate_certs: false # Self-signed cert
@@ -120,7 +120,7 @@
 
     - name: Check PHP security headers
       ansible.builtin.uri:
-        url: "https://{{ ansible_default_ipv4.address }}"
+        url: "https://{{ ansible_facts.default_ipv4.address }}"
         method: GET
         validate_certs: false
         return_content: true
@@ -129,7 +129,7 @@
 
     - name: Test admin area security
       ansible.builtin.uri:
-        url: "https://{{ ansible_default_ipv4.address }}/wp-admin/"
+        url: "https://{{ ansible_facts.default_ipv4.address }}/wp-admin/"
         method: GET
         status_code: [200, 301, 302]
         validate_certs: false
@@ -138,7 +138,7 @@
 
     - name: Check for security plugin installation
       ansible.builtin.uri:
-        url: "https://{{ ansible_default_ipv4.address }}/wp-admin/admin.php?page=WFLS"
+        url: "https://{{ ansible_facts.default_ipv4.address }}/wp-admin/admin.php?page=WFLS"
         method: GET
         status_code: [200, 301, 302, 404] # 404 is OK if redirect
         validate_certs: false
@@ -148,8 +148,8 @@
 
     - name: Verify SSL certificate (self-signed)
       ansible.builtin.command: >
-        openssl s_client -connect {{ ansible_default_ipv4.address }}:443
-        -servername {{ ansible_default_ipv4.address }} -verify_return_error
+        openssl s_client -connect {{ ansible_facts.default_ipv4.address }}:443
+        -servername {{ ansible_facts.default_ipv4.address }} -verify_return_error
       delegate_to: localhost
       register: ssl_cert_test
       ignore_errors: true

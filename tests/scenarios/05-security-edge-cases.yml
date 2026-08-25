@@ -15,8 +15,8 @@
 
     # Edge case configurations
     wordpress_security_hardening_enabled: true
-    wordpress_selinux_enabled: "{{ ansible_os_family == 'RedHat' }}"
-    wordpress_apparmor_enabled: "{{ ansible_os_family == 'Debian' }}"
+    wordpress_selinux_enabled: "{{ ansible_facts.os_family == 'RedHat' }}"
+    wordpress_apparmor_enabled: "{{ ansible_facts.os_family == 'Debian' }}"
 
     # Test different permission scenarios
     test_scenarios:
@@ -35,8 +35,8 @@
   pre_tasks:
     - name: Set test facts
       ansible.builtin.set_fact:
-        test_start_time: "{{ ansible_date_time.epoch }}"
-        os_security_system: "{{ 'SELinux' if ansible_os_family == 'RedHat' else 'AppArmor' if ansible_os_family == 'Debian'
+        test_start_time: "{{ ansible_facts.date_time.epoch }}"
+        os_security_system: "{{ 'SELinux' if ansible_facts.os_family == 'RedHat' else 'AppArmor' if ansible_facts.os_family == 'Debian'
           else 'None' }}"
 
     - name: Display edge case test information
@@ -120,7 +120,7 @@
           block:
             - name: Include SELinux tasks on non-SELinux system
               ansible.builtin.include_tasks: ../../tasks/selinux.yml
-              when: ansible_os_family != "RedHat"
+              when: ansible_facts.os_family != "RedHat"
           rescue:
             - name: Record expected SELinux platform handling
               ansible.builtin.debug:
@@ -130,7 +130,7 @@
           block:
             - name: Include AppArmor tasks on non-AppArmor system
               ansible.builtin.include_tasks: ../../tasks/apparmor.yml
-              when: ansible_os_family != "Debian"
+              when: ansible_facts.os_family != "Debian"
           rescue:
             - name: Record expected AppArmor platform handling
               ansible.builtin.debug:
@@ -181,13 +181,13 @@
               this_is_not_valid_selinux_policy
             dest: /tmp/test-corrupted-policy.te
             mode: "0644"
-          when: ansible_os_family == "RedHat"
+          when: ansible_facts.os_family == "RedHat"
 
         - name: Test SELinux policy compilation with corrupted file
           ansible.builtin.command: checkmodule -M -m -o /tmp/test-corrupted-policy.mod /tmp/test-corrupted-policy.te
           register: corrupted_policy_test
           failed_when: false
-          when: ansible_os_family == "RedHat"
+          when: ansible_facts.os_family == "RedHat"
 
           changed_when: false
         - name: Verify corrupted policy is rejected
@@ -196,7 +196,7 @@
               - corrupted_policy_test.rc != 0
             fail_msg: "Corrupted SELinux policy should be rejected"
             success_msg: "SELinux correctly rejects corrupted policies"
-          when: ansible_os_family == "RedHat"
+          when: ansible_facts.os_family == "RedHat"
 
         - name: Create invalid AppArmor profile (Ubuntu/Debian)
           ansible.builtin.copy:
@@ -208,13 +208,13 @@
               }
             dest: /tmp/test-corrupted-apparmor
             mode: "0644"
-          when: ansible_os_family == "Debian"
+          when: ansible_facts.os_family == "Debian"
 
         - name: Test AppArmor profile validation with corrupted file
           ansible.builtin.command: apparmor_parser -T /tmp/test-corrupted-apparmor
           register: corrupted_apparmor_test
           failed_when: false
-          when: ansible_os_family == "Debian"
+          when: ansible_facts.os_family == "Debian"
 
           changed_when: false
         - name: Verify corrupted AppArmor profile is rejected
@@ -223,7 +223,7 @@
               - corrupted_apparmor_test.rc != 0
             fail_msg: "Corrupted AppArmor profile should be rejected"
             success_msg: "AppArmor correctly rejects corrupted profiles"
-          when: ansible_os_family == "Debian"
+          when: ansible_facts.os_family == "Debian"
 
         - name: Cleanup corrupted test files
           ansible.builtin.file:
@@ -325,13 +325,13 @@
         - name: Save current SELinux booleans (RHEL/CentOS)
           ansible.builtin.command: getsebool -a
           register: current_selinux_booleans
-          when: ansible_os_family == "RedHat"
+          when: ansible_facts.os_family == "RedHat"
 
           changed_when: false
         - name: Save current AppArmor profiles (Ubuntu/Debian)
           ansible.builtin.command: aa-status
           register: current_apparmor_profiles
-          when: ansible_os_family == "Debian"
+          when: ansible_facts.os_family == "Debian"
 
           changed_when: false
         - name: Simulate configuration changes
@@ -376,7 +376,7 @@
           loop:
             - auditd
             - fail2ban
-            - "{{ 'firewalld' if ansible_os_family == 'RedHat' else 'ufw' }}"
+            - "{{ 'firewalld' if ansible_facts.os_family == 'RedHat' else 'ufw' }}"
 
         - name: Verify service dependency handling
           ansible.builtin.debug:
@@ -470,14 +470,14 @@
       block:
         - name: Calculate test execution time
           ansible.builtin.set_fact:
-            test_duration: "{{ ansible_date_time.epoch | int - test_start_time | int }}"
+            test_duration: "{{ ansible_facts.date_time.epoch | int - test_start_time | int }}"
 
         - name: Generate comprehensive edge case test summary
           ansible.builtin.debug:
             msg: |
               ===== WORDPRESS SECURITY EDGE CASES TEST SUMMARY =====
               Test Run ID: {{ test_run_id }}
-              Target System: {{ ansible_distribution }} {{ ansible_distribution_version }}
+              Target System: {{ ansible_facts.distribution }} {{ ansible_facts.distribution_version }}
               Security System: {{ os_security_system }}
               Test Duration: {{ test_duration }} seconds
 
@@ -511,5 +511,5 @@
       ansible.builtin.lineinfile:
         path: "/var/log/wordpress-tests.log"
         create: true
-        line: "{{ ansible_date_time.iso8601 }}: Security edge cases test {{ test_run_id }} completed successfully"
+        line: "{{ ansible_facts.date_time.iso8601 }}: Security edge cases test {{ test_run_id }} completed successfully"
         mode: "0644"

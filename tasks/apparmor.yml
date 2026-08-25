@@ -9,19 +9,19 @@
   ansible.builtin.stat:
     path: /sys/kernel/security/apparmor
   register: apparmor_status
-  when: ansible_os_family == "Debian"
+  when: ansible_facts.os_family == "Debian"
 
 - name: Set AppArmor facts
   ansible.builtin.set_fact:
     apparmor_enabled: >-
       {{ (wordpress_apparmor_enabled | default(true) | bool)
          and (apparmor_status.stat.exists | default(false)) }}
-  when: ansible_os_family == "Debian"
+  when: ansible_facts.os_family == "Debian"
 
 - name: Display AppArmor status
   ansible.builtin.debug:
     msg: "AppArmor status: {{ 'Enabled' if apparmor_enabled else 'Disabled' }}"
-  when: ansible_os_family == "Debian"
+  when: ansible_facts.os_family == "Debian"
 
 - name: Install AppArmor utilities
   ansible.builtin.package:
@@ -32,7 +32,7 @@
       - apparmor-profiles-extra
     state: present
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_apparmor_install | default(true)
   become: true
 
@@ -42,7 +42,7 @@
     enabled: true
     state: started
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_apparmor_install | default(true)
     - apparmor_enabled | default(false)
   become: true
@@ -53,7 +53,7 @@
     state: directory
     mode: "0755"
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - apparmor_enabled | default(false)
   become: true
 
@@ -61,7 +61,7 @@
   ansible.builtin.copy:
     content: |
       # WordPress PHP-FPM AppArmor Profile
-      # Last Modified: {{ ansible_date_time.iso8601 }}
+      # Last Modified: {{ ansible_facts.date_time.iso8601 }}
 
       #include <tunables/global>
 
@@ -141,7 +141,7 @@
     dest: /etc/apparmor.d/wordpress-php-fpm
     mode: "0644"
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - apparmor_enabled | default(false)
     - wordpress_apparmor_php_profile | default(true)
   become: true
@@ -152,7 +152,7 @@
   ansible.builtin.copy:
     content: |
       # WordPress Nginx AppArmor Profile
-      # Last Modified: {{ ansible_date_time.iso8601 }}
+      # Last Modified: {{ ansible_facts.date_time.iso8601 }}
 
       #include <tunables/global>
 
@@ -212,7 +212,7 @@
     dest: /etc/apparmor.d/wordpress-nginx
     mode: "0644"
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - apparmor_enabled | default(false)
     - wordpress_web_server == "nginx"
     - wordpress_apparmor_nginx_profile | default(true)
@@ -224,7 +224,7 @@
   ansible.builtin.copy:
     content: |
       # WordPress Apache AppArmor Profile
-      # Last Modified: {{ ansible_date_time.iso8601 }}
+      # Last Modified: {{ ansible_facts.date_time.iso8601 }}
 
       #include <tunables/global>
 
@@ -292,7 +292,7 @@
     dest: /etc/apparmor.d/wordpress-apache
     mode: "0644"
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - apparmor_enabled | default(false)
     - wordpress_web_server == "apache"
     - wordpress_apparmor_apache_profile | default(true)
@@ -304,7 +304,7 @@
   ansible.builtin.copy:
     content: |
       # WordPress WP-CLI AppArmor Profile
-      # Last Modified: {{ ansible_date_time.iso8601 }}
+      # Last Modified: {{ ansible_facts.date_time.iso8601 }}
 
       #include <tunables/global>
 
@@ -364,7 +364,7 @@
     dest: /etc/apparmor.d/wordpress-wpcli
     mode: "0644"
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - apparmor_enabled | default(false)
     - wordpress_apparmor_wpcli_profile | default(true)
   become: true
@@ -382,7 +382,7 @@
     - wordpress-apache
     - wordpress-wpcli
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - apparmor_enabled | default(false)
   become: true
 
@@ -393,7 +393,7 @@
   failed_when: false
   become: true
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - apparmor_enabled | default(false)
 
 - name: Record the profiles already in the requested mode
@@ -403,7 +403,7 @@
          | dict2items | selectattr('value', 'eq', wordpress_apparmor_mode)
          | map(attribute='key') | list }}
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - apparmor_enabled | default(false)
 
 - name: Set the AppArmor mode for the WordPress profiles
@@ -414,7 +414,7 @@
     - /etc/apparmor.d/wordpress-apache
     - /etc/apparmor.d/wordpress-wpcli
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - apparmor_enabled | default(false)
     - (item | basename) not in (wordpress_apparmor_settled | default([]) | map('basename') | list)
   become: true
@@ -425,7 +425,7 @@
     name: apparmor-notify
     state: present
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - apparmor_enabled | default(false)
     - wordpress_apparmor_notify | default(true)
   become: true
@@ -464,7 +464,7 @@
     dest: /usr/local/bin/wordpress-apparmor-status
     mode: "0755"
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - apparmor_enabled | default(false)
   become: true
 
@@ -520,7 +520,7 @@
     dest: /usr/local/bin/wordpress-apparmor-troubleshoot
     mode: "0755"
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - apparmor_enabled | default(false)
   become: true
 
@@ -534,7 +534,7 @@
     - "# AppArmor audit rules for WordPress"
     - "-a always,exit -F arch=b64 -S all -F key=apparmor"
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - apparmor_enabled | default(false)
     - wordpress_apparmor_audit | default(true)
   become: true
@@ -543,7 +543,7 @@
 
 - name: Validate AppArmor profiles
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - apparmor_enabled | default(false)
     - wordpress_apparmor_validate | default(true)
   block:

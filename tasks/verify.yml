@@ -75,7 +75,7 @@
 
 - name: Test HTTP response
   ansible.builtin.uri:
-    url: "http://{{ ansible_default_ipv4.address | default('localhost') }}"
+    url: "http://{{ ansible_facts.default_ipv4.address | default('localhost') }}"
     method: GET
     status_code: [200, 301, 302, 403]
   register: http_response
@@ -87,7 +87,7 @@
 
 - name: Test HTTPS response (if SSL is enabled)
   ansible.builtin.uri:
-    url: "https://{{ ansible_default_ipv4.address | default('localhost') }}"
+    url: "https://{{ ansible_facts.default_ipv4.address | default('localhost') }}"
     method: GET
     status_code: [200, 301, 302, 403]
     validate_certs: false
@@ -204,7 +204,7 @@
     cmd: "ufw status"
   register: ufw_status_check
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_configure_firewall | bool
   changed_when: false
   ignore_errors: true
@@ -213,7 +213,7 @@
   ansible.builtin.debug:
     msg: "UFW firewall: {{ 'ACTIVE' if 'Status: active' in ufw_status_check.stdout else 'INACTIVE' }}"
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_configure_firewall | bool
     - ufw_status_check is defined
 
@@ -222,7 +222,7 @@
     cmd: "firewall-cmd --state"
   register: firewalld_status_check
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - wordpress_configure_firewall | bool
   changed_when: false
   ignore_errors: true
@@ -231,7 +231,7 @@
   ansible.builtin.debug:
     msg: "Firewalld: {{ 'RUNNING' if firewalld_status_check.stdout == 'running' else 'NOT RUNNING' }}"
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - wordpress_configure_firewall | bool
     - firewalld_status_check is defined
 
@@ -356,7 +356,7 @@
 - name: Generate verification report
   ansible.builtin.template:
     src: verification-report.txt.j2
-    dest: "{{ wordpress_log_dir }}/verification-report-{{ ansible_date_time.epoch }}.txt"
+    dest: "{{ wordpress_log_dir }}/verification-report-{{ ansible_facts.date_time.epoch }}.txt"
     owner: root
     group: root
     mode: "0644"

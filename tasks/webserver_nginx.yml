@@ -194,7 +194,7 @@
   ansible.builtin.lineinfile:
     path: /etc/nginx/nginx.conf
     regexp: '^worker_processes'
-    line: "worker_processes {{ ansible_processor_vcpus | default('auto') }};"
+    line: "worker_processes {{ ansible_facts.processor_vcpus | default('auto') }};"
   become: true
   notify: Reload nginx
 

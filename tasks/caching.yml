@@ -22,7 +22,7 @@
 - name: Configure Redis server
   ansible.builtin.template:
     src: redis.conf.j2
-    dest: "{{ '/etc/redis/redis.conf' if ansible_os_family == 'Debian' else '/etc/redis.conf' }}"
+    dest: "{{ '/etc/redis/redis.conf' if ansible_facts.os_family == 'Debian' else '/etc/redis.conf' }}"
     owner: redis
     group: redis
     mode: '0640'
@@ -34,7 +34,7 @@
 - name: Configure Memcached server
   ansible.builtin.template:
     src: memcached.conf.j2
-    dest: "{{ '/etc/memcached.conf' if ansible_os_family == 'Debian' else '/etc/sysconfig/memcached' }}"
+    dest: "{{ '/etc/memcached.conf' if ansible_facts.os_family == 'Debian' else '/etc/sysconfig/memcached' }}"
     owner: root
     group: root
     mode: '0644'
@@ -91,7 +91,7 @@
 
 - name: Configure Redis security
   ansible.builtin.blockinfile:
-    path: "{{ '/etc/redis/redis.conf' if ansible_os_family == 'Debian' else '/etc/redis.conf' }}"
+    path: "{{ '/etc/redis/redis.conf' if ansible_facts.os_family == 'Debian' else '/etc/redis.conf' }}"
     marker: "# {mark} SECURITY CONFIGURATION"
     block: |
       # Security settings
@@ -119,7 +119,7 @@
 
 - name: Configure Redis logging
   ansible.builtin.lineinfile:
-    path: "{{ '/etc/redis/redis.conf' if ansible_os_family == 'Debian' else '/etc/redis.conf' }}"
+    path: "{{ '/etc/redis/redis.conf' if ansible_facts.os_family == 'Debian' else '/etc/redis.conf' }}"
     regexp: '^logfile'
     line: 'logfile /var/log/redis/redis.log'
     backup: true
@@ -172,7 +172,7 @@
     dest: >-
       {{ '/etc/php/' + wordpress_php_version +
       '/mods-available/opcache.ini'
-      if ansible_os_family == 'Debian'
+      if ansible_facts.os_family == 'Debian'
       else '/etc/php.d/10-opcache.ini' }}
     owner: root
     group: root
@@ -187,7 +187,7 @@
     cmd: "phpenmod -v {{ wordpress_php_version }} opcache"
   become: true
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_opcache_enable | bool
   register: opcache_enable_result
   changed_when: opcache_enable_result.rc == 0

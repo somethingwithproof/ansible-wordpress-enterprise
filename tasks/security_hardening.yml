@@ -5,15 +5,15 @@
 - name: Display security hardening information
   ansible.builtin.debug:
     msg: |
-      Starting WordPress security hardening for {{ ansible_os_family }}
-      Distribution: {{ ansible_distribution }} {{ ansible_distribution_version }}
-      Security system: {{ 'SELinux' if ansible_os_family == 'RedHat' else 'AppArmor' if ansible_os_family == 'Debian' else 'None detected' }}
+      Starting WordPress security hardening for {{ ansible_facts.os_family }}
+      Distribution: {{ ansible_facts.distribution }} {{ ansible_facts.distribution_version }}
+      Security system: {{ 'SELinux' if ansible_facts.os_family == 'RedHat' else 'AppArmor' if ansible_facts.os_family == 'Debian' else 'None detected' }}
 
 # Configure SELinux for RedHat-based systems
 - name: Configure SELinux security policies
   ansible.builtin.include_tasks: selinux.yml
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - wordpress_security_hardening_enabled | default(true)
     - wordpress_selinux_enabled | default(true)
 
@@ -21,7 +21,7 @@
 - name: Configure AppArmor security profiles
   ansible.builtin.include_tasks: apparmor.yml
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_security_hardening_enabled | default(true)
     - wordpress_apparmor_enabled | default(true)
 
@@ -203,15 +203,15 @@
           ansible.builtin.package:
             name: unattended-upgrades
             state: present
-          when: ansible_os_family == "Debian"
+          when: ansible_facts.os_family == "Debian"
 
         - name: Configure unattended-upgrades (Debian/Ubuntu)
           ansible.builtin.lineinfile:
             path: /etc/apt/apt.conf.d/50unattended-upgrades
-            regexp: '^//\s*"{{ ansible_distribution }}-security";'
-            line: '        "{{ ansible_distribution }}-security";'
+            regexp: '^//\s*"{{ ansible_facts.distribution }}-security";'
+            line: '        "{{ ansible_facts.distribution }}-security";'
             state: present
-          when: ansible_os_family == "Debian"
+          when: ansible_facts.os_family == "Debian"
 
         # yum-cron was dropped in EL8; dnf-automatic replaces it. The role
         # supports EL8 and EL9 only (see meta/main.yml).
@@ -219,7 +219,7 @@
           ansible.builtin.package:
             name: dnf-automatic
             state: present
-          when: ansible_os_family == "RedHat"
+          when: ansible_facts.os_family == "RedHat"
 
         - name: Configure dnf-automatic for security updates (RHEL/CentOS)
           community.general.ini_file:
@@ -230,7 +230,7 @@
             owner: root
             group: root
             mode: "0644"
-          when: ansible_os_family == "RedHat"
+          when: ansible_facts.os_family == "RedHat"
           notify:
             - Restart dnf-automatic timer
     - name: Configure system-wide security settings
@@ -372,7 +372,7 @@
     msg: |
       WordPress Security Hardening Complete!
 
-      Security system: {{ 'SELinux' if ansible_os_family == 'RedHat' else 'AppArmor' if ansible_os_family == 'Debian' else 'Basic hardening only' }}
+      Security system: {{ 'SELinux' if ansible_facts.os_family == 'RedHat' else 'AppArmor' if ansible_facts.os_family == 'Debian' else 'Basic hardening only' }}
       Fail2ban: {{ 'Configured' if wordpress_fail2ban_enabled | default(true) else 'Disabled' }}
       Auto updates: {{ 'Enabled' if wordpress_auto_security_updates | default(true) else 'Disabled' }}
       Security tools: {{ 'Installed' if wordpress_install_security_tools | default(true) else 'Not installed' }}
@@ -380,10 +380,10 @@
       Security scripts available:
       - /usr/local/bin/wordpress-security-status
       - /usr/local/bin/wordpress-security-maintenance
-      {% if ansible_os_family == 'RedHat' %}
+      {% if ansible_facts.os_family == 'RedHat' %}
       - /usr/local/bin/wordpress-selinux-status
       - /usr/local/bin/wordpress-selinux-troubleshoot
-      {% elif ansible_os_family == 'Debian' %}
+      {% elif ansible_facts.os_family == 'Debian' %}
       - /usr/local/bin/wordpress-apparmor-status
       - /usr/local/bin/wordpress-apparmor-troubleshoot
       {% endif %}
@@ -411,7 +411,7 @@
       register: security_services
       loop:
         - fail2ban
-        - "{{ 'auditd' if ansible_os_family == 'RedHat' else 'auditd' }}"
+        - "{{ 'auditd' if ansible_facts.os_family == 'RedHat' else 'auditd' }}"
       failed_when: false
 
     - name: Display security validation results

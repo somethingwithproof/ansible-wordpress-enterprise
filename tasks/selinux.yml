@@ -7,18 +7,18 @@
   register: selinux_status
   failed_when: false
   changed_when: false
-  when: ansible_os_family == "RedHat"
+  when: ansible_facts.os_family == "RedHat"
 
 - name: Set SELinux facts
   ansible.builtin.set_fact:
     selinux_enabled: "{{ selinux_status.rc == 0 and selinux_status.stdout in ['Enforcing', 'Permissive'] }}"
     selinux_mode: "{{ selinux_status.stdout | default('Disabled') }}"
-  when: ansible_os_family == "RedHat"
+  when: ansible_facts.os_family == "RedHat"
 
 - name: Display SELinux status
   ansible.builtin.debug:
     msg: "SELinux status: {{ selinux_mode }}"
-  when: ansible_os_family == "RedHat"
+  when: ansible_facts.os_family == "RedHat"
 
 - name: Install SELinux management tools
   ansible.builtin.package:
@@ -29,7 +29,7 @@
       - setroubleshoot-server
     state: present
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - selinux_enabled | default(false)
   become: true
 
@@ -40,8 +40,8 @@
       - checkpolicy
     state: present
   when:
-    - ansible_os_family == "RedHat"
-    - ansible_distribution_major_version | int >= 8
+    - ansible_facts.os_family == "RedHat"
+    - ansible_facts.distribution_major_version | int >= 8
     - selinux_enabled | default(false)
   become: true
 
@@ -50,7 +50,7 @@
     policy: targeted
     state: "{{ wordpress_selinux_mode | default('enforcing') }}"
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - selinux_enabled | default(false)
     - wordpress_selinux_enforce | default(true)
   become: true
@@ -82,7 +82,7 @@
     - path: "{{ wordpress_install_dir }}/wp-admin(/.*)?"
       setype: httpd_sys_content_t
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - selinux_enabled | default(false)
   become: true
 
@@ -101,7 +101,7 @@
     - path: "/var/log/php-fpm(/.*)?"
       setype: httpd_log_t
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - selinux_enabled | default(false)
   become: true
 
@@ -120,7 +120,7 @@
     - path: "/var/lib/php/opcache(/.*)?"
       setype: httpd_var_lib_t
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - selinux_enabled | default(false)
     - wordpress_php_fpm_enabled | default(true)
   become: true
@@ -128,7 +128,7 @@
 - name: Apply SELinux contexts to WordPress files
   ansible.builtin.command: restorecon -R {{ wordpress_install_dir }}
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - selinux_enabled | default(false)
   become: true
   changed_when: true
@@ -141,7 +141,7 @@
     - /var/log/httpd
     - /run/php-fpm
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - selinux_enabled | default(false)
   become: true
   failed_when: false
@@ -172,7 +172,7 @@
     - name: httpd_enable_homedirs
       state: "{{ wordpress_selinux_httpd_enable_homedirs | default(false) }}"
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - selinux_enabled | default(false)
   become: true
 
@@ -187,14 +187,14 @@
     - name: httpd_can_network_redis
       state: "{{ wordpress_cache_type == 'redis' }}"
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - selinux_enabled | default(false)
     - wordpress_cache_enabled | default(false)
   become: true
 
 - name: Create custom SELinux policy for WordPress (if needed)
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - selinux_enabled | default(false)
     - wordpress_selinux_custom_policy | default(false)
 
@@ -237,7 +237,7 @@
 
 - name: Set up SELinux logging and monitoring
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - selinux_enabled | default(false)
     - wordpress_selinux_audit | default(true)
 
@@ -275,7 +275,7 @@
     dest: /usr/local/bin/wordpress-selinux-troubleshoot
     mode: "0755"
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - selinux_enabled | default(false)
   become: true
 
@@ -298,13 +298,13 @@
     dest: /usr/local/bin/wordpress-selinux-status
     mode: "0755"
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - selinux_enabled | default(false)
   become: true
 
 - name: Validate SELinux configuration
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - selinux_enabled | default(false)
     - wordpress_selinux_validate | default(true)
   block:

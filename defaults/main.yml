@@ -8,7 +8,7 @@ wordpress_version: "latest"  # Specify version like "6.4.2" or "latest"
 wordpress_install_dir: "/var/www/wordpress"
 wordpress_wpcli_bin: "/usr/local/bin/wp"
 wordpress_download_url: "https://wordpress.org/wordpress-{{ wordpress_version }}.tar.gz"
-wordpress_site_url: "https://{{ ansible_fqdn }}"
+wordpress_site_url: "https://{{ ansible_facts.fqdn }}"
 wordpress_site_title: "Enterprise WordPress Site"
 
 # WordPress admin user
@@ -17,7 +17,7 @@ wordpress_site_title: "Enterprise WordPress Site"
 # For idempotent passwords, use: lookup('password', 'credentials/admin_password length=32')
 wordpress_admin_user: "wpadmin"
 wordpress_admin_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
-wordpress_admin_email: "admin@{{ ansible_domain | default('example.com') }}"
+wordpress_admin_email: "admin@{{ ansible_facts.domain | default('example.com') }}"
 
 # ============================================================================
 # Database Configuration
@@ -42,7 +42,7 @@ wordpress_db_root_password: "{{ lookup('password', '/dev/null length=32 chars=as
 wordpress_web_server: "nginx"
 wordpress_http_port: 80
 wordpress_https_port: 443
-wordpress_server_name: "{{ ansible_fqdn }}"
+wordpress_server_name: "{{ ansible_facts.fqdn }}"
 
 # PHP-FPM Configuration
 wordpress_php_version: "8.2"  # 7.4, 8.0, 8.1, 8.2, 8.3
@@ -317,7 +317,7 @@ wordpress_cloudflare_dns_records: []
 # wordpress_cloudflare_dns_records:
 #   - name: "{{ wordpress_server_name }}"
 #     type: "A"
-#     value: "{{ ansible_default_ipv4.address }}"
+#     value: "{{ ansible_facts.default_ipv4.address }}"
 #     proxied: true
 
 # DigitalOcean specific
@@ -542,7 +542,7 @@ wordpress_smtp_host: "smtp.sendgrid.net"
 wordpress_smtp_port: 587
 wordpress_smtp_user: ""
 wordpress_smtp_password: ""
-wordpress_smtp_from_email: "noreply@{{ ansible_domain | default('example.com') }}"
+wordpress_smtp_from_email: "noreply@{{ ansible_facts.domain | default('example.com') }}"
 wordpress_smtp_from_name: "{{ wordpress_site_title }}"
 wordpress_smtp_encryption: "tls"  # tls, ssl, none
 wordpress_smtp_auth: true
@@ -621,6 +621,6 @@ wordpress_password_policy: true
 # Logging paths (can be overridden per web server)
 wordpress_access_log_path: "{{
   '/var/log/nginx/access.log' if wordpress_web_server == 'nginx'
-  else '/var/log/apache2/access.log' if ansible_os_family == 'Debian'
+  else '/var/log/apache2/access.log' if ansible_facts.os_family == 'Debian'
   else '/var/log/httpd/access_log'
 }}"

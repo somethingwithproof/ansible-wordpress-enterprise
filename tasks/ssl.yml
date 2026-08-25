@@ -31,7 +31,7 @@
     update_cache: "{{ wordpress_update_cache | bool }}"
   become: true
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_use_letsencrypt | bool
     - wordpress_enable_ssl | bool
 
@@ -43,7 +43,7 @@
     state: present
   become: true
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - wordpress_use_letsencrypt | bool
     - wordpress_enable_ssl | bool
 
@@ -190,7 +190,7 @@
     dest: >-
       {{ wordpress_apache_conf_path }}/{{
       'conf-available/ssl-' + wordpress_server_name + '.conf'
-      if ansible_os_family == 'Debian'
+      if ansible_facts.os_family == 'Debian'
       else 'conf.d/ssl-' + wordpress_server_name + '.conf' }}
     owner: root
     group: root
@@ -207,7 +207,7 @@
     cmd: "a2enconf ssl-{{ wordpress_server_name }}"
   become: true
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_web_server == "apache"
     - wordpress_enable_ssl | bool
   register: enable_ssl_conf_result
@@ -219,7 +219,7 @@
     cmd: "a2enmod ssl"
   become: true
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_web_server == "apache"
     - wordpress_enable_ssl | bool
   register: enable_ssl_mod_result
@@ -243,7 +243,7 @@
       {{ '/etc/nginx/snippets/ssl-params.conf'
       if wordpress_web_server == 'nginx'
       else wordpress_apache_conf_path + '/conf-available/ssl-params.conf'
-      if ansible_os_family == 'Debian'
+      if ansible_facts.os_family == 'Debian'
       else wordpress_apache_conf_path + '/conf.d/ssl-params.conf' }}
     owner: root
     group: root
@@ -258,7 +258,7 @@
     cmd: "a2enconf ssl-params"
   become: true
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_web_server == "apache"
     - wordpress_enable_ssl | bool
   register: enable_ssl_params_result

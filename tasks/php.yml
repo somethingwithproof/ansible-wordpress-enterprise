@@ -17,7 +17,7 @@
       - "php{{ wordpress_php_version }}-imagick"
     state: present
     update_cache: true
-  when: ansible_os_family == "Debian"
+  when: ansible_facts.os_family == "Debian"
   become: true
 
 - name: Install PHP packages for RedHat/CentOS
@@ -37,7 +37,7 @@
       - php-imagick
       - php-opcache
     state: present
-  when: ansible_os_family == "RedHat"
+  when: ansible_facts.os_family == "RedHat"
   become: true
 
 - name: Configure PHP-FPM pool
@@ -76,7 +76,7 @@
       - "php{{ wordpress_php_version }}-xdebug"
     state: present
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_php_install_extensions | default(true)
   become: true
   register: wordpress_php_extensions_apt
@@ -95,7 +95,7 @@
       - php-xdebug
     state: present
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - wordpress_php_install_extensions | default(true)
   become: true
   register: wordpress_php_extensions_dnf
