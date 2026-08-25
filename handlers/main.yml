@@ -163,9 +163,9 @@
     state: restarted
   become: true
 
-- name: restart yum-cron
+- name: restart dnf-automatic timer
   ansible.builtin.systemd:
-    name: yum-cron
+    name: dnf-automatic.timer
     state: restarted
     enabled: true
   become: true

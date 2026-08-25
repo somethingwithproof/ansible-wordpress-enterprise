@@ -210,21 +210,26 @@
             state: present
           when: ansible_os_family == "Debian"
 
+        # yum-cron was dropped in EL8; dnf-automatic replaces it. The role
+        # supports EL8 and EL9 only (see meta/main.yml).
         - name: Enable automatic security updates (RHEL/CentOS)
           ansible.builtin.package:
-            name: yum-cron
+            name: dnf-automatic
             state: present
           when: ansible_os_family == "RedHat"
 
-        - name: Configure yum-cron for security updates (RHEL/CentOS)
-          ansible.builtin.lineinfile:
-            path: /etc/yum/yum-cron.conf
-            regexp: '^update_cmd = '
-            line: 'update_cmd = security'
-            state: present
+        - name: Configure dnf-automatic for security updates (RHEL/CentOS)
+          community.general.ini_file:
+            path: /etc/dnf/automatic.conf
+            section: commands
+            option: upgrade_type
+            value: security
+            owner: root
+            group: root
+            mode: '0644'
           when: ansible_os_family == "RedHat"
           notify:
-            - restart yum-cron
+            - restart dnf-automatic timer
       become: true
       when: wordpress_auto_security_updates | default(true)
 

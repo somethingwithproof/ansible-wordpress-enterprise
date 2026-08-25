@@ -329,7 +329,7 @@ else
     echo "⚠️  Automatic security updates not configured"
 fi
 {% else %}
-if systemctl is-enabled --quiet yum-cron 2>/dev/null; then
+if systemctl is-enabled --quiet dnf-automatic.timer 2>/dev/null; then
     security_score=$((security_score + 1))
     echo "✅ Automatic security updates configured"
 else
