@@ -1116,7 +1116,7 @@ All scenarios include:
 
     - name: Verify database connection
       command: wp db check --path={{ wordpress_path }}
-      become_user: "{{ wordpress_user }}"
+      become_user: "{{ wordpress_system_user }}"
 
     - name: Test admin login
       uri:
