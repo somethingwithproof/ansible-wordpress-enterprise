@@ -37,7 +37,7 @@
     dest: /root/.my.cnf
     owner: root
     group: root
-    mode: '0600'
+    mode: "0600"
   become: true
   when: not wordpress_use_external_db | bool
 
@@ -105,7 +105,7 @@
     dest: "{{ wordpress_db_config_dir[wordpress_db_engine] }}/wordpress.cnf"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
     backup: true
   become: true
   when: not wordpress_use_external_db | bool
@@ -119,7 +119,7 @@
     dest: "{{ wordpress_db_config_dir[wordpress_db_engine] }}/optimization.cnf"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
     backup: true
   become: true
   when: not wordpress_use_external_db | bool
@@ -131,7 +131,7 @@
     state: directory
     owner: root
     group: root
-    mode: '0750'
+    mode: "0750"
   become: true
   when: wordpress_enable_backups | bool
 
@@ -141,7 +141,7 @@
     dest: /usr/local/bin/wordpress-db-backup.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
   become: true
   when: wordpress_enable_backups | bool
 
@@ -162,7 +162,7 @@
     dest: /etc/logrotate.d/mysql-wordpress
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   become: true
   when:
     - not wordpress_use_external_db | bool
@@ -216,7 +216,7 @@
         state: directory
         owner: mysql
         group: mysql
-        mode: '0750'
+        mode: "0750"
       become: true
 
     - name: Copy database SSL certificates
@@ -225,7 +225,7 @@
         dest: "{{ item.dest }}"
         owner: mysql
         group: mysql
-        mode: '0640'
+        mode: "0640"
       become: true
       loop:
         - { src: "{{ wordpress_external_db_ssl_ca }}", dest: "/etc/mysql/ssl/ca.pem" }
@@ -241,7 +241,7 @@
     dest: /usr/local/bin/wordpress-db-monitor.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
   become: true
   when: wordpress_enable_logging | bool
 

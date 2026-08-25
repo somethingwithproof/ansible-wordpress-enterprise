@@ -62,7 +62,8 @@
     - name: Set test facts
       ansible.builtin.set_fact:
         test_start_time: "{{ ansible_date_time.epoch }}"
-        expected_security_system: "{{ 'SELinux' if ansible_os_family == 'RedHat' else 'AppArmor' if ansible_os_family == 'Debian' else 'None' }}"
+        expected_security_system: "{{ 'SELinux' if ansible_os_family == 'RedHat' else 'AppArmor' if ansible_os_family == 'Debian'
+          else 'None' }}"
 
     - name: Display test information
       ansible.builtin.debug:
@@ -76,7 +77,7 @@
 
   roles:
     - role: ansible-wordpress-enterprise
-      tags: ['wordpress', 'security']
+      tags: ["wordpress", "security"]
 
   post_tasks:
     # Test 1: Verify Security System Installation
@@ -253,6 +254,9 @@
 
     # Test 6: Verify SELinux Booleans (RHEL/CentOS)
     - name: Test - Verify SELinux booleans are correctly set
+      when: ansible_os_family == "RedHat"
+
+      # Test 7: Verify AppArmor Profiles (Ubuntu/Debian)
       block:
         - name: Check critical SELinux booleans
           ansible.builtin.command: getsebool {{ item }}
@@ -271,10 +275,10 @@
             fail_msg: "SELinux boolean {{ item.item }} is not enabled"
             success_msg: "SELinux boolean {{ item.item }} is enabled"
           loop: "{{ selinux_booleans_check.results }}"
-      when: ansible_os_family == "RedHat"
-
-    # Test 7: Verify AppArmor Profiles (Ubuntu/Debian)
     - name: Test - Verify AppArmor profiles are in correct mode
+      when: ansible_os_family == "Debian"
+
+      # Test 8: Verify Security Scripts Installation
       block:
         - name: Check AppArmor profile modes
           ansible.builtin.shell: aa-status | grep -E "(wordpress|php|nginx|apache)" | head -10
@@ -291,9 +295,6 @@
               - apparmor_profile_modes.stdout != ""
             fail_msg: "No WordPress-related AppArmor profiles found"
             success_msg: "WordPress AppArmor profiles are loaded"
-      when: ansible_os_family == "Debian"
-
-    # Test 8: Verify Security Scripts Installation
     - name: Test - Verify security monitoring scripts are installed
       block:
         - name: Check security status script
@@ -574,11 +575,11 @@
           ansible.builtin.file:
             path: "/tmp/wordpress-security-test-{{ test_run_id }}-complete"
             state: touch
-            mode: '0644'
+            mode: "0644"
 
         - name: Log test completion
           ansible.builtin.lineinfile:
             path: "/var/log/wordpress-tests.log"
             create: true
             line: "{{ ansible_date_time.iso8601 }}: Security hardening test {{ test_run_id }} completed successfully"
-            mode: '0644'
+            mode: "0644"

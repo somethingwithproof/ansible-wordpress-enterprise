@@ -359,7 +359,7 @@
     dest: "{{ wordpress_log_dir }}/verification-report-{{ ansible_date_time.epoch }}.txt"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   become: true
   when: wordpress_enable_logging | bool
 
@@ -374,10 +374,8 @@
         {{ wp_db_check.rc == 0
         if wp_db_check is defined else 'N/A' }}
       web_server_running: >-
-        {{ ansible_facts.services[wordpress_web_server_service[
-        wordpress_web_server] + '.service'].state == 'running'
-        if (wordpress_web_server_service[wordpress_web_server] + '.service')
-        in ansible_facts.services else false }}
+        {{ ansible_facts.services[wordpress_web_server_service[wordpress_web_server] + '.service'].state == 'running' if (wordpress_web_server_service[wordpress_web_server]
+        + '.service') in ansible_facts.services else false }}
       php_fpm_running: >-
         {{ ansible_facts.services[wordpress_php_fpm_service +
         '.service'].state == 'running'

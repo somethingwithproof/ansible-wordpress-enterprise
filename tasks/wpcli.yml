@@ -9,9 +9,10 @@
 
 - name: Download WP-CLI
   ansible.builtin.get_url:
-    url: "https://github.com/wp-cli/wp-cli/releases/download/v{{ wordpress_wpcli_version | default('2.10.0') }}/wp-cli-{{ wordpress_wpcli_version | default('2.10.0') }}.phar"
+    url: "https://github.com/wp-cli/wp-cli/releases/download/v{{ wordpress_wpcli_version | default('2.10.0') }}/wp-cli-{{
+      wordpress_wpcli_version | default('2.10.0') }}.phar"
     dest: /tmp/wp-cli.phar
-    mode: '0755'
+    mode: "0755"
     timeout: 30
   when:
     - not wpcli_binary.stat.exists or (wordpress_wpcli_force_update | default(false))
@@ -22,7 +23,7 @@
   ansible.builtin.get_url:
     url: "https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
     dest: /tmp/wp-cli.phar
-    mode: '0755'
+    mode: "0755"
     timeout: 30
   when:
     - not wpcli_binary.stat.exists or (wordpress_wpcli_force_update | default(false))
@@ -41,7 +42,7 @@
   ansible.builtin.copy:
     src: /tmp/wp-cli.phar
     dest: "{{ wordpress_wpcli_bin }}"
-    mode: '0755'
+    mode: "0755"
     owner: root
     group: root
     remote_src: true
@@ -61,7 +62,7 @@
     state: directory
     owner: "{{ wordpress_system_user }}"
     group: "{{ wordpress_system_group }}"
-    mode: '0755'
+    mode: "0755"
   loop:
     - "/home/{{ wordpress_system_user }}/.wp-cli"
     - "/var/www/.wp-cli"
@@ -74,7 +75,7 @@
     dest: "/home/{{ wordpress_system_user }}/.wp-cli/config.yml"
     owner: "{{ wordpress_system_user }}"
     group: "{{ wordpress_system_group }}"
-    mode: '0644'
+    mode: "0644"
   become: true
   when: wordpress_wpcli_config | default({}) | length > 0
 
@@ -84,7 +85,7 @@
     dest: "{{ wordpress_install_dir }}/wp-cli.yml"
     owner: "{{ wordpress_system_user }}"
     group: "{{ wordpress_system_group }}"
-    mode: '0644'
+    mode: "0644"
   become: true
   when: wordpress_wpcli_project_config | default({}) | length > 0
 
@@ -92,7 +93,7 @@
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/wp-cli/wp-cli/v2.10.0/utils/wp-completion.bash
     dest: /etc/bash_completion.d/wp-cli
-    mode: '0644'
+    mode: "0644"
   become: true
   when: wordpress_wpcli_bash_completion | default(true)
   ignore_errors: true

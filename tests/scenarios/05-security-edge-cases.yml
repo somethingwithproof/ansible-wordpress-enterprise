@@ -36,7 +36,8 @@
     - name: Set test facts
       ansible.builtin.set_fact:
         test_start_time: "{{ ansible_date_time.epoch }}"
-        os_security_system: "{{ 'SELinux' if ansible_os_family == 'RedHat' else 'AppArmor' if ansible_os_family == 'Debian' else 'None' }}"
+        os_security_system: "{{ 'SELinux' if ansible_os_family == 'RedHat' else 'AppArmor' if ansible_os_family == 'Debian'
+          else 'None' }}"
 
     - name: Display edge case test information
       ansible.builtin.debug:
@@ -90,14 +91,14 @@
           ansible.builtin.file:
             path: "/tmp/test-wp-config.php"
             state: touch
-            mode: '0000'  # No permissions
+            mode: "0000" # No permissions
 
         - name: Test security hardening on restricted file
           block:
             - name: Apply security to restricted file
               ansible.builtin.file:
                 path: "/tmp/test-wp-config.php"
-                mode: '0644'
+                mode: "0644"
                 owner: www-data
                 group: www-data
               register: restricted_file_result
@@ -177,7 +178,7 @@
               invalid_syntax_here
               this_is_not_valid_selinux_policy
             dest: /tmp/test-corrupted-policy.te
-            mode: '0644'
+            mode: "0644"
           when: ansible_os_family == "RedHat"
 
         - name: Test SELinux policy compilation with corrupted file
@@ -203,7 +204,7 @@
                 syntax_error_here
               }
             dest: /tmp/test-corrupted-apparmor
-            mode: '0644'
+            mode: "0644"
           when: ansible_os_family == "Debian"
 
         - name: Test AppArmor profile validation with corrupted file
@@ -250,7 +251,7 @@
             - name: Include security tasks with reduced available space
               ansible.builtin.include_tasks: ../../tasks/security_hardening.yml
               vars:
-                wordpress_security_status_script: false  # Skip to save space
+                wordpress_security_status_script: false # Skip to save space
           rescue:
             - name: Record expected reduced-space handling
               ansible.builtin.debug:
@@ -278,7 +279,7 @@
               logpath = /nonexistent/path/access.log
               maxretry = 3
             dest: /tmp/test-fail2ban.conf
-            mode: '0644'
+            mode: "0644"
 
         - name: Verify fail2ban handles missing log files gracefully
           ansible.builtin.command: fail2ban-client -t
@@ -337,7 +338,7 @@
           ansible.builtin.file:
             path: "/tmp/test wordpress-#$%&"
             state: directory
-            mode: '0755'
+            mode: "0755"
 
         - name: Test security operations on unusual paths
           ansible.builtin.command: ls -la "/tmp/test wordpress-#$%&"
@@ -367,7 +368,8 @@
 
         - name: Verify service dependency handling
           ansible.builtin.debug:
-            msg: "Service dependency checks completed: {{ service_dependency_check.results | map(attribute='status') | map(attribute='ActiveState') | list }}"
+            msg: "Service dependency checks completed: {{ service_dependency_check.results | map(attribute='status') | map(attribute='ActiveState')
+              | list }}"
 
     # Edge Case 13: Test rollback scenarios
     - name: Edge Case 13 - Test security configuration rollback
@@ -395,7 +397,7 @@
           ansible.builtin.file:
             path: "{{ item }}"
             state: directory
-            mode: '0755'
+            mode: "0755"
           loop:
             - /tmp/wordpress2
             - /tmp/wordpress2/wp-content
@@ -429,7 +431,7 @@
           ansible.builtin.file:
             path: /tmp/readonly-test-dir
             state: directory
-            mode: '0444'  # Read-only directory
+            mode: "0444" # Read-only directory
 
         - name: Test error handling in security operations
           ansible.builtin.file:
@@ -489,11 +491,11 @@
       ansible.builtin.file:
         path: "/tmp/wordpress-security-edge-test-{{ test_run_id }}-complete"
         state: touch
-        mode: '0644'
+        mode: "0644"
 
     - name: Log edge case test completion
       ansible.builtin.lineinfile:
         path: "/var/log/wordpress-tests.log"
         create: true
         line: "{{ ansible_date_time.iso8601 }}: Security edge cases test {{ test_run_id }} completed successfully"
-        mode: '0644'
+        mode: "0644"
