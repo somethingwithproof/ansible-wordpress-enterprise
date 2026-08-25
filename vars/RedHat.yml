@@ -70,6 +70,7 @@ wordpress_db_config_dir:
 
 wordpress_php_fpm_service: "php-fpm"
 wordpress_redis_service: "redis"
+wordpress_sshd_service: "sshd"
 wordpress_memcached_service: "memcached"
 
 # tasks/php.yml installs the unversioned AppStream php/php-fpm packages, so the

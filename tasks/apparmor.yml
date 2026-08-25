@@ -51,7 +51,7 @@
   ansible.builtin.file:
     path: /etc/apparmor.d/local/wordpress
     state: directory
-    mode: '0755'
+    mode: "0755"
   when:
     - ansible_os_family == "Debian"
     - apparmor_enabled | default(false)
@@ -139,14 +139,14 @@
         #include <local/wordpress-php-fpm>
       }
     dest: /etc/apparmor.d/wordpress-php-fpm
-    mode: '0644'
+    mode: "0644"
   when:
     - ansible_os_family == "Debian"
     - apparmor_enabled | default(false)
     - wordpress_apparmor_php_profile | default(true)
   become: true
   notify:
-    - reload apparmor
+    - Reload apparmor
 
 - name: Create WordPress Nginx AppArmor profile
   ansible.builtin.copy:
@@ -210,7 +210,7 @@
         #include <local/wordpress-nginx>
       }
     dest: /etc/apparmor.d/wordpress-nginx
-    mode: '0644'
+    mode: "0644"
   when:
     - ansible_os_family == "Debian"
     - apparmor_enabled | default(false)
@@ -218,7 +218,7 @@
     - wordpress_apparmor_nginx_profile | default(true)
   become: true
   notify:
-    - reload apparmor
+    - Reload apparmor
 
 - name: Create WordPress Apache AppArmor profile
   ansible.builtin.copy:
@@ -290,7 +290,7 @@
         #include <local/wordpress-apache>
       }
     dest: /etc/apparmor.d/wordpress-apache
-    mode: '0644'
+    mode: "0644"
   when:
     - ansible_os_family == "Debian"
     - apparmor_enabled | default(false)
@@ -298,7 +298,7 @@
     - wordpress_apparmor_apache_profile | default(true)
   become: true
   notify:
-    - reload apparmor
+    - Reload apparmor
 
 - name: Create WordPress WP-CLI AppArmor profile
   ansible.builtin.copy:
@@ -360,20 +360,20 @@
         #include <local/wordpress-wpcli>
       }
     dest: /etc/apparmor.d/wordpress-wpcli
-    mode: '0644'
+    mode: "0644"
   when:
     - ansible_os_family == "Debian"
     - apparmor_enabled | default(false)
     - wordpress_apparmor_wpcli_profile | default(true)
   become: true
   notify:
-    - reload apparmor
+    - Reload apparmor
 
 - name: Create local AppArmor customization files
   ansible.builtin.file:
     path: "/etc/apparmor.d/local/{{ item }}"
     state: touch
-    mode: '0644'
+    mode: "0644"
   loop:
     - wordpress-php-fpm
     - wordpress-nginx
@@ -454,7 +454,7 @@
           echo "No log files found"
       fi
     dest: /usr/local/bin/wordpress-apparmor-status
-    mode: '0755'
+    mode: "0755"
   when:
     - ansible_os_family == "Debian"
     - apparmor_enabled | default(false)
@@ -510,7 +510,7 @@
           echo ""
       fi
     dest: /usr/local/bin/wordpress-apparmor-troubleshoot
-    mode: '0755'
+    mode: "0755"
   when:
     - ansible_os_family == "Debian"
     - apparmor_enabled | default(false)
@@ -521,7 +521,7 @@
     path: /etc/audit/rules.d/apparmor.rules
     create: true
     line: "{{ item }}"
-    mode: '0640'
+    mode: "0640"
   loop:
     - "# AppArmor audit rules for WordPress"
     - "-a always,exit -F arch=b64 -S all -F key=apparmor"
@@ -531,9 +531,13 @@
     - wordpress_apparmor_audit | default(true)
   become: true
   notify:
-    - restart auditd
+    - Restart auditd
 
 - name: Validate AppArmor profiles
+  when:
+    - ansible_os_family == "Debian"
+    - apparmor_enabled | default(false)
+    - wordpress_apparmor_validate | default(true)
   block:
     - name: Check AppArmor profile syntax
       ansible.builtin.command: apparmor_parser -T {{ item }}
@@ -571,7 +575,3 @@
     - name: Display loaded AppArmor profiles
       ansible.builtin.debug:
         msg: "{{ apparmor_loaded_status.stdout_lines | select('match', '.*wordpress.*') | list }}"
-  when:
-    - ansible_os_family == "Debian"
-    - apparmor_enabled | default(false)
-    - wordpress_apparmor_validate | default(true)
