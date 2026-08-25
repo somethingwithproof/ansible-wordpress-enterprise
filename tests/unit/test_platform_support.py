@@ -120,12 +120,18 @@ def test_molecule_images_are_pinned_by_digest() -> None:
 
 def test_the_date_override_is_not_baked_into_ci() -> None:
     """The override must not become a permanent way to silence the gate."""
-    workflows = ROOT / ".github" / "workflows"
-    users = [
-        p.name for p in sorted(workflows.glob("*.yml"))
-        if "PLATFORM_SUPPORT_DATE" in p.read_text(encoding="utf-8")
+    candidates = [
+        *sorted((ROOT / ".github").rglob("*.yml")),
+        *sorted((ROOT / ".github").rglob("*.yaml")),
+        *[ROOT / name for name in
+          ("tox.ini", "Makefile", ".env", "pytest.ini", "setup.cfg", "pyproject.toml",
+           "docker-compose.yml", "docker-compose.test.yml", "Dockerfile")],
     ]
-    assert not users, f"CI sets PLATFORM_SUPPORT_DATE, disabling the gate: {users}"
+    users = sorted({
+        str(p.relative_to(ROOT)) for p in candidates
+        if p.is_file() and "PLATFORM_SUPPORT_DATE" in p.read_text(encoding="utf-8")
+    })
+    assert not users, f"PLATFORM_SUPPORT_DATE is set in-tree, disabling the gate: {users}"
 
 
 def test_the_date_override_is_honoured() -> None:

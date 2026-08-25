@@ -176,7 +176,7 @@ def test_written_destinations_are_owned_by_one_task(all_tasks) -> None:
         if len(writers) < 2:
             continue
         files = {f for _, f, _ in writers}
-        if any(files <= pair for pair in EXCLUSIVE_FILES):
+        if any(files == pair for pair in EXCLUSIVE_FILES):
             continue
         if _exclusive([c for _, _, c in writers]):
             continue

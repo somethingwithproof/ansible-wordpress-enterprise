@@ -28,6 +28,32 @@
 - [Support](#-support)
 - [License](#-license)
 
+## ⚠️ What currently works
+
+The core path installs and configures WordPress: prerequisites, the database,
+PHP, Apache or Nginx, the WordPress install itself, and the baseline hardening
+in `security_hardening.yml`. That is what the Molecule scenarios exercise on
+Rocky 8 and 9, Ubuntu 22.04 and 24.04, and Debian 13.
+
+These features are **off by default and do not currently work**, because the
+role references templates it does not ship (62 of them, listed in
+`tests/unit/missing_templates.yml`):
+
+| Flag | Missing templates |
+| --- | --- |
+| `wordpress_enable_monitoring` | 17 |
+| `wordpress_enable_backups` | 13 |
+| `wordpress_enable_fail2ban` | 9 |
+| `wordpress_enable_security` | 9 |
+| `wordpress_enable_caching` | 6 |
+| `wordpress_enable_ssl` | 3 |
+| `wordpress_configure_firewall` | 2 |
+
+Turning one on stops the play immediately and names the missing templates,
+rather than aborting part way through and leaving the host half configured. The
+examples below show these flags set to `true`; they will not run until the
+templates exist.
+
 ## 🌟 Features
 
 ### Core Capabilities

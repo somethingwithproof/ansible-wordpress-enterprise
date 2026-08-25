@@ -61,7 +61,10 @@ wordpress_php_max_input_vars: "5000"
 # ============================================================================
 # SSL/TLS Configuration
 # ============================================================================
-wordpress_enable_ssl: true
+# Off by default: this feature needs templates the role does not ship
+# (see tests/unit/missing_templates.yml). Turning it on stops the play
+# immediately rather than part way through.
+wordpress_enable_ssl: false
 wordpress_ssl_certificate: "/etc/ssl/certs/{{ wordpress_server_name }}.crt"
 wordpress_ssl_certificate_key: "/etc/ssl/private/{{ wordpress_server_name }}.key"
 wordpress_nginx_brotli_enabled: false
@@ -215,7 +218,10 @@ wordpress_php_fpm_pool_path: "/etc/php/{{ wordpress_php_version }}/fpm/pool.d/ww
 # ============================================================================
 # Backup Configuration
 # ============================================================================
-wordpress_enable_backups: true
+# Off by default: this feature needs templates the role does not ship
+# (see tests/unit/missing_templates.yml). Turning it on stops the play
+# immediately rather than part way through.
+wordpress_enable_backups: false
 wordpress_backup_dir: "/var/backups/wordpress"
 wordpress_backup_retention_days: 30
 wordpress_backup_schedule_hour: "2"
@@ -263,14 +269,26 @@ wordpress_file_permissions: "0644"
 wordpress_dir_permissions: "0755"
 
 # Service control
-wordpress_enable_security: true
-wordpress_enable_caching: true
-wordpress_enable_monitoring: true
+# Off by default: this feature needs templates the role does not ship
+# (see tests/unit/missing_templates.yml). Turning it on stops the play
+# immediately rather than part way through.
+wordpress_enable_security: false
+# Off by default: this feature needs templates the role does not ship
+# (see tests/unit/missing_templates.yml). Turning it on stops the play
+# immediately rather than part way through.
+wordpress_enable_caching: false
+# Off by default: this feature needs templates the role does not ship
+# (see tests/unit/missing_templates.yml). Turning it on stops the play
+# immediately rather than part way through.
+wordpress_enable_monitoring: false
 
 # ============================================================================
 # Firewall and Security
 # ============================================================================
-wordpress_configure_firewall: true
+# Off by default: this feature needs templates the role does not ship
+# (see tests/unit/missing_templates.yml). Turning it on stops the play
+# immediately rather than part way through.
+wordpress_configure_firewall: false
 wordpress_allowed_ips: []
 # Example:
 # wordpress_allowed_ips:
@@ -278,7 +296,10 @@ wordpress_allowed_ips: []
 #   - "10.0.0.1"
 
 # Fail2ban
-wordpress_enable_fail2ban: true
+# Off by default: this feature needs templates the role does not ship
+# (see tests/unit/missing_templates.yml). Turning it on stops the play
+# immediately rather than part way through.
+wordpress_enable_fail2ban: false
 wordpress_fail2ban_maxretry: 5
 wordpress_fail2ban_findtime: "10m"
 wordpress_fail2ban_bantime: "1h"
