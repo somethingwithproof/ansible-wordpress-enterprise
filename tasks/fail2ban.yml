@@ -33,8 +33,14 @@
   notify: Restart fail2ban
 
 - name: Create WordPress login fail2ban filter
-  ansible.builtin.template:
-    src: wordpress-auth.conf.j2
+  ansible.builtin.copy:
+    content: |
+      # WordPress authentication filter
+      [Definition]
+      failregex = ^<HOST> .* "POST .*wp-login\.php.*" (?:200|302)
+                  ^<HOST> .* "POST .*wp-admin.*" 401
+                  ^<HOST> .* "GET .*wp-login\.php.*" 200.*wp_attempt_focus
+      ignoreregex =
     dest: /etc/fail2ban/filter.d/wordpress-auth.conf
     owner: root
     group: root

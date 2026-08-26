@@ -1,3 +1,12 @@
+{% if wordpress_enable_ssl | default(false) %}
+# Force HTTPS
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+{% endif %}
 # BEGIN WordPress
 <IfModule mod_rewrite.c>
 RewriteEngine On
@@ -15,6 +24,7 @@ RewriteRule . /index.php [L]
     Header always set X-Content-Type-Options nosniff
     Header always set X-XSS-Protection "1; mode=block"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), midi=(), sync-xhr=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), fullscreen=(self), payment=()"
     {% if wordpress_enable_ssl | default(false) %}
     Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
     {% endif %}
@@ -45,6 +55,14 @@ ServerSignature Off
     Order allow,deny
     Deny from all
 </Files>
+
+{% if wordpress_disable_xmlrpc | default(true) %}
+# XML-RPC is a common brute-force target and most sites do not use it.
+<Files "xmlrpc.php">
+    Order allow,deny
+    Deny from all
+</Files>
+{% endif %}
 
 # Block access to wp-includes and wp-admin for non-admin requests
 <IfModule mod_rewrite.c>

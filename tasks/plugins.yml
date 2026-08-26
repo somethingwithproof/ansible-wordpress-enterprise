@@ -37,7 +37,7 @@
     - name: Download custom plugin archives
       ansible.builtin.get_url:
         url: "{{ item.source }}"
-        dest: "/tmp/{{ item.name }}.zip"
+        dest: "/tmp/wordpress-plugin-{{ item.name }}.zip"
         mode: '0644'
         timeout: 30
       loop: "{{ wordpress_custom_plugins | default([]) }}"
@@ -63,7 +63,7 @@
 
     - name: Clean up downloaded plugin archives
       ansible.builtin.file:
-        path: "/tmp/{{ item.name }}.zip"
+        path: "/tmp/wordpress-plugin-{{ item.name }}.zip"
         state: absent
       loop: "{{ wordpress_custom_plugins | default([]) }}"
   when: wordpress_custom_plugins | default([]) | length > 0

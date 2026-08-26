@@ -24,38 +24,6 @@
   become: true
   when: ansible_os_family == "RedHat"
 
-- name: Configure automatic security updates (Debian/Ubuntu)
-  ansible.builtin.template:
-    src: 50unattended-upgrades.j2
-    dest: /etc/apt/apt.conf.d/50unattended-upgrades
-    owner: root
-    group: root
-    mode: '0644'
-    backup: true
-  become: true
-  when: ansible_os_family == "Debian"
-
-- name: Enable automatic security updates (Debian/Ubuntu)
-  ansible.builtin.template:
-    src: 20auto-upgrades.j2
-    dest: /etc/apt/apt.conf.d/20auto-upgrades
-    owner: root
-    group: root
-    mode: '0644'
-  become: true
-  when: ansible_os_family == "Debian"
-
-- name: Configure yum-cron for automatic updates (RedHat/CentOS)
-  ansible.builtin.template:
-    src: yum-cron.conf.j2
-    dest: /etc/yum/yum-cron.conf
-    owner: root
-    group: root
-    mode: '0644'
-    backup: true
-  become: true
-  when: ansible_os_family == "RedHat"
-
 - name: Enable yum-cron service (RedHat/CentOS)
   ansible.builtin.service:
     name: yum-cron
@@ -171,77 +139,6 @@
   become: true
   when: wordpress_web_server == "apache"
 
-- name: Apply security headers in .htaccess
-  ansible.builtin.blockinfile:
-    path: "{{ wordpress_install_dir }}/.htaccess"
-    marker: "# {mark} SECURITY HEADERS"
-    mode: '0644'
-    owner: "{{ wordpress_system_user }}"
-    group: "{{ wordpress_system_group }}"
-    block: |
-      # Security Headers
-      <IfModule mod_headers.c>
-          Header always set X-Content-Type-Options nosniff
-          Header always set X-Frame-Options DENY
-          Header always set X-XSS-Protection "1; mode=block"
-          Header always set Referrer-Policy "strict-origin-when-cross-origin"
-          Header always set Permissions-Policy
-          "geolocation=(),midi=(),sync-xhr=(),microphone=(),camera=(),
-          magnetometer=(),gyroscope=(),fullscreen=(self),payment=()"
-      </IfModule>
-    insertafter: "# BEGIN WordPress"
-    create: true
-  become: true
-  when: wordpress_web_server == "apache"
-
-- name: Protect sensitive WordPress files
-  ansible.builtin.blockinfile:
-    path: "{{ wordpress_install_dir }}/.htaccess"
-    marker: "# {mark} PROTECT SENSITIVE FILES"
-    mode: '0644'
-    owner: "{{ wordpress_system_user }}"
-    group: "{{ wordpress_system_group }}"
-    block: |
-      # Protect sensitive files
-      <Files wp-config.php>
-          Order deny,allow
-          Deny from all
-      </Files>
-      <Files .htaccess>
-          Order deny,allow
-          Deny from all
-      </Files>
-      <Files readme.html>
-          Order deny,allow
-          Deny from all
-      </Files>
-      <Files license.txt>
-          Order deny,allow
-          Deny from all
-      </Files>
-    insertafter: "# BEGIN WordPress"
-    create: true
-  become: true
-  when: wordpress_web_server == "apache"
-
-- name: Disable XML-RPC if not needed
-  ansible.builtin.blockinfile:
-    path: "{{ wordpress_install_dir }}/.htaccess"
-    marker: "# {mark} DISABLE XML-RPC"
-    mode: '0644'
-    owner: "{{ wordpress_system_user }}"
-    group: "{{ wordpress_system_group }}"
-    block: |
-      # Disable XML-RPC
-      <Files xmlrpc.php>
-          Order deny,allow
-          Deny from all
-      </Files>
-    insertafter: "# BEGIN WordPress"
-    create: true
-  become: true
-  when: wordpress_web_server == "apache"
-
 - name: Install WordPress security plugins via WP-CLI
   ansible.builtin.command:
     cmd: >
@@ -277,27 +174,6 @@
     owner: "{{ wordpress_system_user }}"
     group: "{{ wordpress_system_group }}"
   become: true
-
-- name: Create security monitoring script
-  ansible.builtin.template:
-    src: security-monitor.sh.j2
-    dest: /usr/local/bin/security-monitor.sh
-    owner: root
-    group: root
-    mode: '0755'
-  become: true
-  when: wordpress_enable_logging | bool
-
-- name: Schedule security monitoring
-  ansible.builtin.cron:
-    name: "WordPress Security Monitoring"
-    minute: "0"
-    hour: "*/6"
-    job: "/usr/local/bin/security-monitor.sh"
-    user: root
-    state: present
-  become: true
-  when: wordpress_enable_logging | bool
 
 - name: Configure rkhunter
   ansible.builtin.template:

@@ -142,30 +142,6 @@
     - wordpress_enable_logging | bool
     - wordpress_logrotate_enabled | bool
 
-- name: Create cache monitoring script
-  ansible.builtin.template:
-    src: cache-monitor.sh.j2
-    dest: /usr/local/bin/cache-monitor.sh
-    owner: root
-    group: root
-    mode: '0755'
-  become: true
-  when:
-    - wordpress_enable_redis | bool or wordpress_enable_memcached | bool
-    - wordpress_enable_logging | bool
-
-- name: Schedule cache monitoring
-  ansible.builtin.cron:
-    name: "WordPress Cache Monitoring"
-    minute: "*/5"
-    job: "/usr/local/bin/cache-monitor.sh"
-    user: root
-    state: present
-  become: true
-  when:
-    - wordpress_enable_redis | bool or wordpress_enable_memcached | bool
-    - wordpress_enable_logging | bool
-
 - name: Configure PHP OPcache
   ansible.builtin.template:
     src: opcache.ini.j2

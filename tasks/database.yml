@@ -141,27 +141,6 @@
   become: true
   when: wordpress_enable_backups | bool
 
-- name: Create database backup script
-  ansible.builtin.template:
-    src: database-backup.sh.j2
-    dest: /usr/local/bin/wordpress-db-backup.sh
-    owner: root
-    group: root
-    mode: '0755'
-  become: true
-  when: wordpress_enable_backups | bool
-
-- name: Schedule database backup cron job
-  ansible.builtin.cron:
-    name: "WordPress Database Backup"
-    minute: "{{ wordpress_backup_schedule_minute }}"
-    hour: "{{ wordpress_backup_schedule_hour }}"
-    job: "/usr/local/bin/wordpress-db-backup.sh"
-    user: root
-    state: present
-  become: true
-  when: wordpress_enable_backups | bool
-
 - name: Configure database log rotation
   ansible.builtin.template:
     src: mysql-logrotate.j2
@@ -240,23 +219,3 @@
       when:
         - item.src != ""
         - item.src is defined
-
-- name: Create database monitoring script
-  ansible.builtin.template:
-    src: database-monitor.sh.j2
-    dest: /usr/local/bin/wordpress-db-monitor.sh
-    owner: root
-    group: root
-    mode: '0755'
-  become: true
-  when: wordpress_enable_logging | bool
-
-- name: Schedule database monitoring
-  ansible.builtin.cron:
-    name: "WordPress Database Monitoring"
-    minute: "*/5"
-    job: "/usr/local/bin/wordpress-db-monitor.sh"
-    user: root
-    state: present
-  become: true
-  when: wordpress_enable_logging | bool

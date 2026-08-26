@@ -49,6 +49,9 @@ jobs:
       - name: Run ansible-lint
         run: ansible-lint
 
+      - name: Run unit tests
+        run: pytest tests/unit -q
+
   molecule-test:
     name: Molecule Test (${{ matrix.name }})
     runs-on: [self-hosted, linux, x64]

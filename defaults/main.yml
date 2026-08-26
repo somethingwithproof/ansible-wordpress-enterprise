@@ -560,3 +560,6 @@ wordpress_mailgun_api_key: ""
 # Postmark specific
 wordpress_postmark_api_key: ""
 wordpress_postmark_server_token: ""
+
+# XML-RPC is a common brute-force target and most sites do not use it.
+wordpress_disable_xmlrpc: true
