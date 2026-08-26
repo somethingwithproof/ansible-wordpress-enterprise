@@ -93,13 +93,18 @@ jobs:
     - name: Report security edge-case compatibility baseline
       continue-on-error: true
       run: |
-        make test-scenario-05
+        tests/scripts/run-all-tests.sh --test 05 --no-cleanup
       timeout-minutes: 20
 
     - name: Run security unit tests
       run: |
         make test-security-unit
       timeout-minutes: 10
+
+    - name: Clean up security test targets
+      if: always()
+      run: |
+        docker-compose -f docker-compose.test.yml down --remove-orphans --volumes
 
     - name: Generate test coverage report
       run: |

@@ -85,7 +85,7 @@ services:
     container_name: wp-test-ubuntu
     privileged: true
     volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
       - .:/ansible-workspace
       - ubuntu_test_data:/var/www
     ports:
@@ -107,7 +107,7 @@ services:
     container_name: wp-test-centos
     privileged: true
     volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
       - .:/ansible-workspace
       - centos_test_data:/var/www
     ports:
@@ -130,6 +130,7 @@ services:
     working_dir: /ansible-workspace
     volumes:
       - .:/ansible-workspace
+      - .:/ansible-roles/ansible-wordpress-enterprise
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - wp-test-network
@@ -139,6 +140,7 @@ services:
     environment:
       - ANSIBLE_HOST_KEY_CHECKING=False
       - ANSIBLE_STDOUT_CALLBACK=yaml
+      - ANSIBLE_ROLES_PATH=/ansible-roles
     command: tail -f /dev/null
 
 volumes:

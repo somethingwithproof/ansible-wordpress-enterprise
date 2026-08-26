@@ -195,7 +195,7 @@
     - wordpress_selinux_enabled | default(false) | bool
 
 - name: Set SELinux context for WordPress directory (RedHat/CentOS)
-  ansible.posix.sefcontext:
+  community.general.sefcontext:
     target: "{{ wordpress_install_dir }}(/.*)?"
     setype: httpd_exec_t
     state: present
