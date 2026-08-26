@@ -192,7 +192,8 @@
   loop: "{{ wordpress_selinux_booleans }}"
   when:
     - ansible_os_family == "RedHat"
-    - wordpress_selinux_enabled | default(false) | bool
+    - wordpress_selinux_enabled | bool
+    - ansible_selinux.status | default('disabled') == 'enabled'
 
 - name: Set SELinux context for WordPress directory (RedHat/CentOS)
   ansible.posix.sefcontext:
@@ -202,7 +203,8 @@
   become: true
   when:
     - ansible_os_family == "RedHat"
-    - wordpress_selinux_enabled | default(false) | bool
+    - wordpress_selinux_enabled | bool
+    - ansible_selinux.status | default('disabled') == 'enabled'
 
 - name: Apply SELinux context to WordPress directory (RedHat/CentOS)
   ansible.builtin.command:
@@ -210,5 +212,6 @@
   become: true
   when:
     - ansible_os_family == "RedHat"
-    - wordpress_selinux_enabled | default(false) | bool
+    - wordpress_selinux_enabled | bool
+    - ansible_selinux.status | default('disabled') == 'enabled'
   changed_when: false
