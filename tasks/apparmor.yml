@@ -142,7 +142,7 @@
     - wordpress_apparmor_php_profile | default(true)
   become: true
   notify:
-    - reload apparmor
+    - Reload apparmor
 
 - name: Create WordPress Nginx AppArmor profile
   ansible.builtin.copy:
@@ -214,7 +214,7 @@
     - wordpress_apparmor_nginx_profile | default(true)
   become: true
   notify:
-    - reload apparmor
+    - Reload apparmor
 
 - name: Create WordPress Apache AppArmor profile
   ansible.builtin.copy:
@@ -294,7 +294,7 @@
     - wordpress_apparmor_apache_profile | default(true)
   become: true
   notify:
-    - reload apparmor
+    - Reload apparmor
 
 - name: Create WordPress WP-CLI AppArmor profile
   ansible.builtin.copy:
@@ -363,7 +363,7 @@
     - wordpress_apparmor_wpcli_profile | default(true)
   become: true
   notify:
-    - reload apparmor
+    - Reload apparmor
 
 - name: Create local AppArmor customization files
   ansible.builtin.file:
@@ -527,7 +527,7 @@
     - wordpress_apparmor_audit | default(true)
   become: true
   notify:
-    - restart auditd
+    - Restart auditd
 
 - name: Validate AppArmor profiles
   block:

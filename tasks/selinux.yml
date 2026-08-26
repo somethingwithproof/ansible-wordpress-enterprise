@@ -55,7 +55,7 @@
     - wordpress_selinux_enforce | default(true)
   become: true
   notify:
-    - reboot system
+    - Reboot system
 
 - name: Set SELinux file contexts for WordPress directories
   community.general.sefcontext:
@@ -265,7 +265,7 @@
         - "-a always,exit -F arch=b64 -S openat -F dir={{ wordpress_path }} -k wordpress_access"
       become: true
       notify:
-        - restart auditd
+        - Restart auditd
 
     - name: Enable and start audit daemon
       ansible.builtin.systemd:

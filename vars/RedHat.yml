@@ -57,6 +57,7 @@ wordpress_db_service:
 
 wordpress_php_fpm_service: "php{{ wordpress_php_version }}-fpm"
 wordpress_redis_service: "redis"
+wordpress_sshd_service: "sshd"
 wordpress_memcached_service: "memcached"
 
 # Paths (Remi PHP uses /etc/opt/remi/phpXY/ structure on RHEL)
