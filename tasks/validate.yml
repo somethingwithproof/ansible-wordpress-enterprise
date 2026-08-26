@@ -6,6 +6,28 @@
 # Basic System Validation
 # ============================================================================
 
+# Generated credentials land here on the controller. A relative path, or one
+# under a world-writable directory, would leave them readable by other users.
+- name: Validate the credential store is a private absolute path
+  ansible.builtin.assert:
+    that:
+      - wordpress_credential_store is string
+      - wordpress_credential_store | length > 0
+      - wordpress_credential_store.startswith('/')
+      - not wordpress_credential_store.startswith('/tmp/')
+      - not wordpress_credential_store.startswith('/var/tmp/')
+      - not wordpress_credential_store.startswith('/dev/shm/')
+      # An unset HOME would leave the store directly under the filesystem root.
+      - not wordpress_credential_store.startswith('/.ansible/')
+      - wordpress_credential_store.split('/') | select() | list | length > 2
+    fail_msg: >-
+      wordpress_credential_store must be an absolute path outside the shared
+      temporary directories; got
+      "{{ wordpress_credential_store | default('<unset>') }}". Set HOME on the
+      controller, or set wordpress_credential_store explicitly.
+    success_msg: "Credential store location validation passed"
+    quiet: true
+
 - name: Validate operating system compatibility
   ansible.builtin.assert:
     that:

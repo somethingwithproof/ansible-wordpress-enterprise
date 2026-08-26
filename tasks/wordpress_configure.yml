@@ -20,6 +20,34 @@
     backup: true
   become: true
   when: not wordpress_installed.stat.exists
+
+# The template is only written on the first run so later runs cannot clobber
+# what plugins add to wp-config.php. That leaves the database credentials free
+# to drift: tasks/database.yml sets the user from these variables every run.
+# Keep just those three defines in step.
+- name: Keep the database credentials in wp-config.php in step
+  ansible.builtin.lineinfile:
+    path: "{{ wordpress_install_dir }}/wp-config.php"
+    regexp: >-
+      ^define\(\s*'{{ item.define }}'
+    # Update the existing define and nothing else. Without backrefs a regexp
+    # that does not match appends the line to the end of the file, after
+    # wp-settings.php has already run, where a define has no effect.
+    backrefs: true
+    line: >-
+      define( '{{ item.define }}', '{{ item.value | replace('\\', '\\\\') | replace("'", "\\'") }}' );
+    owner: "{{ wordpress_system_user }}"
+    group: "{{ wordpress_system_group }}"
+    mode: '0600'
+  become: true
+  loop:
+    - {define: DB_NAME, value: "{{ wordpress_db_name }}"}
+    - {define: DB_USER, value: "{{ wordpress_db_user }}"}
+    - {define: DB_PASSWORD, value: "{{ wordpress_db_password }}"}
+  loop_control:
+    label: "{{ item.define }}"
+  no_log: true
+  when: wordpress_installed.stat.exists
   notify: Run wp-cli cache flush
 
 - name: Install WordPress using WP-CLI (if not already installed)
