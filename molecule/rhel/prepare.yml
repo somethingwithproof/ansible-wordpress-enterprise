@@ -3,6 +3,10 @@
   hosts: all
   gather_facts: false
   tasks:
+    - name: Ensure a supported Python is present
+      ansible.builtin.raw: test -x /usr/bin/python3.9 || dnf -y install python39
+      changed_when: false
+
     - name: Wait for container command execution
       ansible.builtin.raw: /bin/true
       register: container_ready
@@ -10,6 +14,16 @@
       retries: 30
       delay: 2
       until: container_ready.rc == 0
+
+    - name: Let sudo skip unavailable PAM account services in the container
+      ansible.builtin.raw: |
+        set -e
+        for f in /etc/pam.d/system-auth /etc/pam.d/password-auth; do
+          [ -f "$f" ] && sed -i '/pam_sss\.so/d' "$f"
+        done
+        sed -i 's/^\(passwd:.*\)sss /\1/' /etc/nsswitch.conf
+        sed -i 's|^account.*system-auth|account    sufficient    pam_permit.so|' /etc/pam.d/sudo
+      changed_when: false
 
     - name: Install python for Ansible
       ansible.builtin.raw: test -e /usr/bin/python3 || (dnf -y install python3)
