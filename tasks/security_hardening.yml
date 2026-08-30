@@ -164,7 +164,7 @@
         mode: '0644'
       become: true
       notify:
-        - restart fail2ban
+        - Restart fail2ban
       when:
         - wordpress_fail2ban_enabled | default(true)
         - wordpress_install_security_tools | default(true)
@@ -215,7 +215,7 @@
             state: present
           when: ansible_os_family == "RedHat"
           notify:
-            - restart yum-cron
+            - Restart yum-cron
       become: true
       when: wordpress_auto_security_updates | default(true)
 

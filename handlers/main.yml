@@ -1,5 +1,13 @@
 ---
-# Handlers for ansible-wordpress-enterprise
+# Handlers for ansible-wordpress-enterprise.
+#
+# Service names differ between distributions, so they come from
+# vars/<os_family>.yml rather than being written out here.
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+  become: true
 
 - name: Restart php-fpm
   ansible.builtin.systemd:
@@ -10,43 +18,43 @@
 
 - name: Reload nginx
   ansible.builtin.systemd:
-    name: nginx
+    name: "{{ wordpress_web_server_service['nginx'] }}"
     state: reloaded
   become: true
 
 - name: Restart nginx
   ansible.builtin.systemd:
-    name: nginx
+    name: "{{ wordpress_web_server_service['nginx'] }}"
     state: restarted
   become: true
 
 - name: Reload apache
   ansible.builtin.systemd:
-    name: "{{ wordpress_apache_service }}"
+    name: "{{ wordpress_web_server_service['apache'] }}"
     state: reloaded
   become: true
 
 - name: Restart apache
   ansible.builtin.systemd:
-    name: "{{ wordpress_apache_service }}"
+    name: "{{ wordpress_web_server_service['apache'] }}"
     state: restarted
   become: true
 
 - name: Restart mysql
   ansible.builtin.systemd:
-    name: "{{ wordpress_mysql_service }}"
+    name: "{{ wordpress_db_service['mysql'] }}"
     state: restarted
   become: true
 
 - name: Restart mariadb
   ansible.builtin.systemd:
-    name: "{{ wordpress_mariadb_service }}"
+    name: "{{ wordpress_db_service['mariadb'] }}"
     state: restarted
   become: true
 
 - name: Restart redis
   ansible.builtin.systemd:
-    name: redis
+    name: "{{ wordpress_redis_service }}"
     state: restarted
   become: true
 
@@ -56,114 +64,44 @@
     state: restarted
   become: true
 
-- name: Restart fail2ban
-  ansible.builtin.systemd:
-    name: fail2ban
-    state: restarted
-  become: true
-
 - name: Reload firewalld
   ansible.builtin.systemd:
     name: firewalld
     state: reloaded
   become: true
 
-- name: Restart php-fpm
-  ansible.builtin.systemd:
-    name: "{{ wordpress_php_fpm_service }}"
-    state: restarted
-  become: true
-
-- name: Reload nginx
-  ansible.builtin.systemd:
-    name: nginx
-    state: reloaded
-  become: true
-
-- name: Reload apache
-  ansible.builtin.systemd:
-    name: "{{ wordpress_apache_service }}"
-    state: reloaded
-  become: true
-
-- name: Restart apache
-  ansible.builtin.systemd:
-    name: "{{ wordpress_apache_service }}"
-    state: restarted
-  become: true
-
-- name: Restart redis
-  ansible.builtin.systemd:
-    name: redis
-    state: restarted
-  become: true
-
 - name: Restart fail2ban
   ansible.builtin.systemd:
     name: fail2ban
     state: restarted
   become: true
 
-- name: "Reload nginx"
+- name: Restart sshd
   ansible.builtin.systemd:
-    name: nginx
-    state: reloaded
-  become: true
-
-- name: "Reload apache"
-  ansible.builtin.systemd:
-    name: "{{ wordpress_apache_service }}"
-    state: reloaded
-  become: true
-
-- name: "Restart mysql"
-  ansible.builtin.systemd:
-    name: mysql
+    name: "{{ wordpress_sshd_service }}"
     state: restarted
   become: true
 
-- name: "Restart mariadb"
+- name: Restart auditd
   ansible.builtin.systemd:
-    name: mariadb
+    name: auditd
     state: restarted
   become: true
 
-- name: "Restart php8.1-fpm"
-  ansible.builtin.systemd:
-    name: php8.1-fpm
-    state: restarted
-    daemon_reload: true
-  become: true
-
-- name: "Restart php8.2-fpm"
-  ansible.builtin.systemd:
-    name: php8.2-fpm
-    state: restarted
-    daemon_reload: true
-  become: true
-
-- name: restart php-fpm
-  ansible.builtin.systemd:
-    name: "{{ wordpress_php_fpm_service }}"
-    state: restarted
-    daemon_reload: true
-  become: true
-
-# Security-related handlers
-- name: reload apparmor
+- name: Reload apparmor
   ansible.builtin.systemd:
     name: apparmor
     state: reloaded
   become: true
   when: ansible_os_family == "Debian"
 
-- name: restart auditd
-  ansible.builtin.systemd:
-    name: auditd
-    state: restarted
+- name: Reload sysctl
+  ansible.builtin.command:
+    cmd: sysctl --system
   become: true
+  changed_when: false
 
-- name: restart yum-cron
+- name: Restart yum-cron
   ansible.builtin.systemd:
     name: yum-cron
     state: restarted
@@ -171,7 +109,24 @@
   become: true
   when: ansible_os_family == "RedHat"
 
-- name: reboot system
+- name: Run wp-cli cache flush
+  ansible.builtin.command:
+    cmd: "{{ wordpress_wpcli_bin }} cache flush --path={{ wordpress_install_dir }}"
+  become: true
+  become_user: "{{ wordpress_system_user }}"
+  register: wordpress_cache_flush
+  changed_when: wordpress_cache_flush.rc == 0
+  # Best effort: the config can change before WordPress is installed, and a
+  # cold cache is not a deployment failure. Report it rather than hide it.
+  failed_when: false
+  notify: Report a failed wp-cli cache flush
+
+- name: Report a failed wp-cli cache flush
+  ansible.builtin.debug:
+    msg: "wp cache flush exited {{ wordpress_cache_flush.rc }}: {{ wordpress_cache_flush.stderr | default('') }}"
+  when: wordpress_cache_flush.rc | default(0) != 0
+
+- name: Reboot system
   ansible.builtin.reboot:
     reboot_timeout: 600
     test_command: whoami

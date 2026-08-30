@@ -63,6 +63,7 @@ wordpress_db_service:
 
 wordpress_php_fpm_service: "php{{ wordpress_php_version }}-fpm"
 wordpress_redis_service: "redis-server"
+wordpress_sshd_service: "ssh"
 wordpress_memcached_service: "memcached"
 
 # Paths
