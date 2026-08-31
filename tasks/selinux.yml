@@ -182,10 +182,12 @@
     state: "{{ item.state }}"
     persistent: true
   loop:
+    # wordpress_cache_type is defined nowhere, so both of these were undefined
+    # on any EL host with SELinux. The role already carries a flag per backend.
     - name: httpd_can_network_memcache
-      state: "{{ wordpress_cache_type == 'memcached' }}"
+      state: "{{ wordpress_enable_memcached | bool }}"
     - name: httpd_can_network_redis
-      state: "{{ wordpress_cache_type == 'redis' }}"
+      state: "{{ wordpress_enable_redis | bool }}"
   when:
     - ansible_os_family == "RedHat"
     - selinux_enabled | default(false)
