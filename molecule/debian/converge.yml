@@ -12,7 +12,6 @@
     wordpress_admin_password: "TestPass123!"
 
     # Database configuration
-    # Debian's supported in-repository database server is MariaDB.
     wordpress_db_engine: "mariadb"
     wordpress_db_name: "wordpress_test"
     wordpress_db_user: "wp_user"

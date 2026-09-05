@@ -1,19 +1,19 @@
 [client]
 user = root
 password = {{ wordpress_db_root_password }}
-socket = /var/run/mysqld/mysqld.sock
+socket = {{ wordpress_db_socket }}
 
 [mysql]
 user = root
 password = {{ wordpress_db_root_password }}
-socket = /var/run/mysqld/mysqld.sock
+socket = {{ wordpress_db_socket }}
 
 [mysqladmin]
 user = root
 password = {{ wordpress_db_root_password }}
-socket = /var/run/mysqld/mysqld.sock
+socket = {{ wordpress_db_socket }}
 
 [mysqldump]
 user = root
 password = {{ wordpress_db_root_password }}
-socket = /var/run/mysqld/mysqld.sock
+socket = {{ wordpress_db_socket }}

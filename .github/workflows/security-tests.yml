@@ -31,7 +31,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python 3.12
       uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
       with:
         python-version: "3.12"
@@ -47,11 +47,11 @@ jobs:
     - name: Install system dependencies
       run: |
         missing=()
-        for tool in jq bc curl docker-compose; do
+        for tool in jq bc curl; do
           command -v "$tool" >/dev/null 2>&1 || missing+=("$tool")
         done
         if [ "${#missing[@]}" -eq 0 ]; then
-          echo "jq, bc, curl, docker-compose already present; skipping apt install"
+          echo "jq, bc, curl already present; skipping apt install"
           exit 0
         fi
         if command -v apt-get >/dev/null 2>&1 && command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
@@ -69,9 +69,7 @@ jobs:
 
     - name: Install Ansible Galaxy collections
       run: |
-        ansible-galaxy collection install community.general
-        ansible-galaxy collection install community.mysql
-        ansible-galaxy collection install ansible.posix
+        ansible-galaxy collection install -r requirements.yml
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4
@@ -83,6 +81,21 @@ jobs:
         key: ${{ runner.os }}-buildx-${{ github.sha }}
         restore-keys: |
           ${{ runner.os }}-buildx-
+
+    - name: Ensure docker compose v2
+      run: |
+        if docker compose version >/dev/null 2>&1; then
+          echo "docker compose v2 already available"
+          exit 0
+        fi
+        # The self-hosted runner image ships the docker engine without the
+        # compose plugin. Install it under the runner user so no sudo is needed.
+        mkdir -p "$HOME/.docker/cli-plugins"
+        curl -fsSL --retry 3 \
+          "https://github.com/docker/compose/releases/download/v5.4.0/docker-compose-linux-x86_64" \
+          -o "$HOME/.docker/cli-plugins/docker-compose"
+        chmod +x "$HOME/.docker/cli-plugins/docker-compose"
+        docker compose version
 
     - name: Report security hardening compatibility baseline
       continue-on-error: true
@@ -101,10 +114,9 @@ jobs:
         make test-security-unit
       timeout-minutes: 10
 
-    - name: Clean up security test targets
+    - name: Clean up security test containers
       if: always()
-      run: |
-        docker-compose -f docker-compose.test.yml down --remove-orphans --volumes
+      run: tests/scripts/cleanup.sh --force
 
     - name: Generate test coverage report
       run: |
@@ -263,6 +275,21 @@ jobs:
         sudo apt-get install -y jq bc
         python -m pip install --upgrade pip
         pip install "ansible>=2.14" ansible-lint
+
+    - name: Ensure docker compose v2
+      run: |
+        if docker compose version >/dev/null 2>&1; then
+          echo "docker compose v2 already available"
+          exit 0
+        fi
+        # The self-hosted runner image ships the docker engine without the
+        # compose plugin. Install it under the runner user so no sudo is needed.
+        mkdir -p "$HOME/.docker/cli-plugins"
+        curl -fsSL --retry 3 \
+          "https://github.com/docker/compose/releases/download/v5.4.0/docker-compose-linux-x86_64" \
+          -o "$HOME/.docker/cli-plugins/docker-compose"
+        chmod +x "$HOME/.docker/cli-plugins/docker-compose"
+        docker compose version
 
     - name: Run comprehensive security test suite
       run: |

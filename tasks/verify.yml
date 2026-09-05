@@ -8,7 +8,7 @@
 
 - name: Verify WordPress core files
   ansible.builtin.command:
-    cmd: "wp core verify-checksums --path={{ wordpress_install_dir }}"
+    cmd: "{{ wordpress_wpcli_bin }} core verify-checksums --path={{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"
   register: wp_core_verify
@@ -27,7 +27,7 @@
 
 - name: Check WordPress version
   ansible.builtin.command:
-    cmd: "wp core version --path={{ wordpress_install_dir }}"
+    cmd: "{{ wordpress_wpcli_bin }} core version --path={{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"
   register: wp_version_check
@@ -46,7 +46,7 @@
 
 - name: Test database connection
   ansible.builtin.command:
-    cmd: "wp db check --path={{ wordpress_install_dir }}"
+    cmd: "{{ wordpress_wpcli_bin }} db check --path={{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"
   register: wp_db_check
@@ -75,7 +75,7 @@
 
 - name: Test HTTP response
   ansible.builtin.uri:
-    url: "http://{{ ansible_default_ipv4.address | default('localhost') }}"
+    url: "http://{{ ansible_facts.default_ipv4.address | default('localhost') }}"
     method: GET
     status_code: [200, 301, 302, 403]
   register: http_response
@@ -87,7 +87,7 @@
 
 - name: Test HTTPS response (if SSL is enabled)
   ansible.builtin.uri:
-    url: "https://{{ ansible_default_ipv4.address | default('localhost') }}"
+    url: "https://{{ ansible_facts.default_ipv4.address | default('localhost') }}"
     method: GET
     status_code: [200, 301, 302, 403]
     validate_certs: false
@@ -204,7 +204,7 @@
     cmd: "ufw status"
   register: ufw_status_check
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_configure_firewall | bool
   changed_when: false
   ignore_errors: true
@@ -213,7 +213,7 @@
   ansible.builtin.debug:
     msg: "UFW firewall: {{ 'ACTIVE' if 'Status: active' in ufw_status_check.stdout else 'INACTIVE' }}"
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_configure_firewall | bool
     - ufw_status_check is defined
 
@@ -222,7 +222,7 @@
     cmd: "firewall-cmd --state"
   register: firewalld_status_check
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - wordpress_configure_firewall | bool
   changed_when: false
   ignore_errors: true
@@ -231,7 +231,7 @@
   ansible.builtin.debug:
     msg: "Firewalld: {{ 'RUNNING' if firewalld_status_check.stdout == 'running' else 'NOT RUNNING' }}"
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - wordpress_configure_firewall | bool
     - firewalld_status_check is defined
 
@@ -252,7 +252,7 @@
 
 - name: Check WordPress plugins status
   ansible.builtin.command:
-    cmd: "wp plugin list --status=active --path={{ wordpress_install_dir }}"
+    cmd: "{{ wordpress_wpcli_bin }} plugin list --status=active --path={{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"
   register: wp_plugins_check
@@ -273,7 +273,7 @@
 
 - name: Check WordPress themes status
   ansible.builtin.command:
-    cmd: "wp theme list --status=active --path={{ wordpress_install_dir }}"
+    cmd: "{{ wordpress_wpcli_bin }} theme list --status=active --path={{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"
   register: wp_themes_check
@@ -296,7 +296,7 @@
 
 - name: Check WordPress updates
   ansible.builtin.command:
-    cmd: "wp core check-update --path={{ wordpress_install_dir }}"
+    cmd: "{{ wordpress_wpcli_bin }} core check-update --path={{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"
   register: wp_updates_check
@@ -356,10 +356,10 @@
 - name: Generate verification report
   ansible.builtin.template:
     src: verification-report.txt.j2
-    dest: "{{ wordpress_log_dir }}/verification-report-{{ ansible_date_time.epoch }}.txt"
+    dest: "{{ wordpress_log_dir }}/verification-report-{{ ansible_facts.date_time.epoch }}.txt"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   become: true
   when: wordpress_enable_logging | bool
 
@@ -374,10 +374,8 @@
         {{ wp_db_check.rc == 0
         if wp_db_check is defined else 'N/A' }}
       web_server_running: >-
-        {{ ansible_facts.services[wordpress_web_server_service[
-        wordpress_web_server] + '.service'].state == 'running'
-        if (wordpress_web_server_service[wordpress_web_server] + '.service')
-        in ansible_facts.services else false }}
+        {{ ansible_facts.services[wordpress_web_server_service[wordpress_web_server] + '.service'].state == 'running' if (wordpress_web_server_service[wordpress_web_server]
+        + '.service') in ansible_facts.services else false }}
       php_fpm_running: >-
         {{ ansible_facts.services[wordpress_php_fpm_service +
         '.service'].state == 'running'

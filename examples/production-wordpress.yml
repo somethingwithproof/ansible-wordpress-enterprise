@@ -57,7 +57,7 @@
     wordpress_cloudflare_dns_records:
       - name: "blog.example.com"
         type: "A"
-        value: "{{ ansible_default_ipv4.address }}"
+        value: "{{ ansible_facts.default_ipv4.address }}"
         proxied: true
         ttl: 1
 
@@ -299,9 +299,9 @@
     - name: Verify OS compatibility
       ansible.builtin.assert:
         that:
-          - ansible_distribution in ['Ubuntu', 'Debian', 'RedHat', 'CentOS', 'Rocky', 'AlmaLinux']
-        fail_msg: "Unsupported OS: {{ ansible_distribution }}"
-        success_msg: "OS {{ ansible_distribution }} {{ ansible_distribution_version }} is supported"
+          - ansible_facts.distribution in ['Ubuntu', 'Debian', 'RedHat', 'CentOS', 'Rocky', 'AlmaLinux']
+        fail_msg: "Unsupported OS: {{ ansible_facts.distribution }}"
+        success_msg: "OS {{ ansible_facts.distribution }} {{ ansible_facts.distribution_version }} is supported"
 
     - name: Install required Python packages
       ansible.builtin.pip:
@@ -347,19 +347,19 @@
         username: "{{ wordpress_smtp_user }}"
         password: "{{ wordpress_smtp_password }}"
         to: "{{ wordpress_admin_email }}"
-        subject: "WordPress Deployment Completed - {{ ansible_hostname }}"
+        subject: "WordPress Deployment Completed - {{ ansible_facts.hostname }}"
         body: |
-          WordPress has been successfully deployed on {{ ansible_hostname }}.
+          WordPress has been successfully deployed on {{ ansible_facts.hostname }}.
 
           Details:
           - Site URL: {{ wordpress_site_url }}
-          - Server: {{ ansible_distribution }} {{ ansible_distribution_version }}
+          - Server: {{ ansible_facts.distribution }} {{ ansible_facts.distribution_version }}
           - PHP Version: {{ wordpress_php_version }}
           - Web Server: {{ wordpress_web_server }}
           - Database: External Managed Database
           - Cache: Redis (Managed)
           - CDN: Cloudflare
-          - Deployment Time: {{ ansible_date_time.iso8601 }}
+          - Deployment Time: {{ ansible_facts.date_time.iso8601 }}
 
           Please verify the installation at {{ wordpress_site_url }}/wp-admin
 

@@ -6,7 +6,7 @@ upstream php-fpm {
     server unix:{{ wordpress_php_fpm_listen }};
 }
 
-{% if wordpress_enable_ssl %}
+{% if wordpress_ssl_ready | default(false) %}
 # HTTP to HTTPS redirect
 server {
     listen {{ wordpress_http_port }};
@@ -20,14 +20,14 @@ server {
     }
 
     location / {
-        return 301 https://$server_name$request_uri;
+        return 301 https://$server_name{% if wordpress_https_port != 443 %}:{{ wordpress_https_port }}{% endif %}$request_uri;
     }
 }
 {% endif %}
 
 # Main server block
 server {
-{% if wordpress_enable_ssl %}
+{% if wordpress_ssl_ready | default(false) %}
     listen {{ wordpress_https_port }} ssl http2;
     listen [::]:{{ wordpress_https_port }} ssl http2;
 
@@ -59,6 +59,12 @@ server {
     server_name {{ wordpress_server_name }};
     root {{ wordpress_install_dir }};
     index index.php index.html index.htm;
+
+    # $wordpress_bad_method is set by the map in nginx-security.conf; without
+    # this the map is defined and never consulted, so TRACE/TRACK are served.
+    if ($wordpress_bad_method) {
+        return 405;
+    }
 
     # Logging
     access_log {{ wordpress_access_log }};
@@ -127,7 +133,7 @@ server {
         fastcgi_busy_buffers_size 256k;
         fastcgi_temp_file_write_size 256k;
 
-{% if wordpress_enable_redis or wordpress_enable_memcached %}
+{% if wordpress_enable_nginx_cache | default(true) %}
         # Caching headers
         fastcgi_cache_bypass $skip_cache;
         fastcgi_no_cache $skip_cache;
@@ -195,7 +201,7 @@ server {
         deny all;
     }
 
-{% if wordpress_enable_redis or wordpress_enable_memcached %}
+{% if wordpress_enable_nginx_cache | default(true) %}
     # Skip cache for specific conditions
     set $skip_cache 0;
 
@@ -226,8 +232,10 @@ server {
     gzip_types text/plain text/css text/xml text/javascript application/json application/javascript application/xml+rss application/rss+xml font/truetype font/opentype application/vnd.ms-fontobject image/svg+xml;
     gzip_disable "msie6";
 
-    # Brotli compression (if available)
-    {% if ansible_distribution == 'Ubuntu' and ansible_distribution_major_version | int >= 20 %}
+    # Brotli compression. The distro nginx packages do not ship ngx_brotli,
+    # so this is opt-in for hosts that load the module themselves; keying it
+    # off the distro version emitted directives nginx could not parse.
+    {% if wordpress_nginx_brotli_enabled | default(false) %}
     brotli on;
     brotli_comp_level 6;
     brotli_types text/plain text/css application/json application/javascript text/xml application/xml+rss text/javascript application/x-javascript image/svg+xml;

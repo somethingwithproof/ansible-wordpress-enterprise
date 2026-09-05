@@ -209,6 +209,6 @@
     - name: Open browser (macOS)
       ansible.builtin.command:
         cmd: "open {{ wordpress_site_url }}"
-      when: ansible_os_family == "Darwin"
+      when: ansible_facts.os_family == "Darwin"
       failed_when: false
       changed_when: false

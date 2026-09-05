@@ -4,14 +4,15 @@
 
 - name: Check if WP-CLI is already installed
   ansible.builtin.stat:
-    path: /usr/local/bin/wp
+    path: "{{ wordpress_wpcli_bin }}"
   register: wpcli_binary
 
 - name: Download WP-CLI
   ansible.builtin.get_url:
-    url: "https://github.com/wp-cli/wp-cli/releases/download/v{{ wordpress_wpcli_version | default('2.10.0') }}/wp-cli-{{ wordpress_wpcli_version | default('2.10.0') }}.phar"
+    url: "https://github.com/wp-cli/wp-cli/releases/download/v{{ wordpress_wpcli_version | default('2.10.0') }}/wp-cli-{{
+      wordpress_wpcli_version | default('2.10.0') }}.phar"
     dest: /tmp/wp-cli.phar
-    mode: '0755'
+    mode: "0755"
     timeout: 30
   when:
     - not wpcli_binary.stat.exists or (wordpress_wpcli_force_update | default(false))
@@ -22,7 +23,7 @@
   ansible.builtin.get_url:
     url: "https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
     dest: /tmp/wp-cli.phar
-    mode: '0755'
+    mode: "0755"
     timeout: 30
   when:
     - not wpcli_binary.stat.exists or (wordpress_wpcli_force_update | default(false))
@@ -31,7 +32,7 @@
 
 - name: Verify WP-CLI download
   ansible.builtin.command:
-    cmd: php /tmp/wp-cli.phar --version
+    cmd: php /tmp/wp-cli.phar --version --allow-root
   register: wpcli_version_check
   changed_when: false
   when: not wpcli_binary.stat.exists or (wordpress_wpcli_force_update | default(false))
@@ -40,8 +41,8 @@
 - name: Install WP-CLI to system location
   ansible.builtin.copy:
     src: /tmp/wp-cli.phar
-    dest: /usr/local/bin/wp
-    mode: '0755'
+    dest: "{{ wordpress_wpcli_bin }}"
+    mode: "0755"
     owner: root
     group: root
     remote_src: true
@@ -55,26 +56,27 @@
   when: not wpcli_binary.stat.exists or (wordpress_wpcli_force_update | default(false))
   become: true
 
+- name: Look up the web user's home directory
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ wordpress_system_user }}"
+
 - name: Create WP-CLI configuration directory
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ ansible_facts.getent_passwd[wordpress_system_user][4] }}/.wp-cli"
     state: directory
     owner: "{{ wordpress_system_user }}"
     group: "{{ wordpress_system_group }}"
-    mode: '0755'
-  loop:
-    - "/home/{{ wordpress_system_user }}/.wp-cli"
-    - "/var/www/.wp-cli"
+    mode: "0755"
   become: true
-  ignore_errors: true
 
 - name: Create WP-CLI global configuration
   ansible.builtin.template:
     src: wp-cli.yml.j2
-    dest: "/home/{{ wordpress_system_user }}/.wp-cli/config.yml"
+    dest: "{{ ansible_facts.getent_passwd[wordpress_system_user][4] }}/.wp-cli/config.yml"
     owner: "{{ wordpress_system_user }}"
     group: "{{ wordpress_system_group }}"
-    mode: '0644'
+    mode: "0644"
   become: true
   when: wordpress_wpcli_config | default({}) | length > 0
 
@@ -84,7 +86,7 @@
     dest: "{{ wordpress_install_dir }}/wp-cli.yml"
     owner: "{{ wordpress_system_user }}"
     group: "{{ wordpress_system_group }}"
-    mode: '0644'
+    mode: "0644"
   become: true
   when: wordpress_wpcli_project_config | default({}) | length > 0
 
@@ -92,14 +94,20 @@
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/wp-cli/wp-cli/v2.10.0/utils/wp-completion.bash
     dest: /etc/bash_completion.d/wp-cli
-    mode: '0644'
+    mode: "0644"
   become: true
   when: wordpress_wpcli_bash_completion | default(true)
-  ignore_errors: true
+  register: wordpress_wpcli_completion
+  failed_when: false
+
+- name: Report a missing WP-CLI bash completion
+  ansible.builtin.debug:
+    msg: "wp-cli bash completion was not installed: {{ wordpress_wpcli_completion.msg | default('') }}"
+  when: wordpress_wpcli_completion is failed
 
 - name: Verify WP-CLI installation
   ansible.builtin.command:
-    cmd: wp --version
+    cmd: "{{ wordpress_wpcli_bin }} --version"
   register: wpcli_final_check
   changed_when: false
   become: true
@@ -112,7 +120,7 @@
 
 - name: Test WP-CLI with WordPress installation
   ansible.builtin.command:
-    cmd: wp core version --path={{ wordpress_install_dir }}
+    cmd: "{{ wordpress_wpcli_bin }} core version --path={{ wordpress_install_dir }}"
   become: true
   become_user: "{{ wordpress_system_user }}"
   register: wp_core_test
@@ -122,17 +130,20 @@
 
 - name: Configure WP-CLI aliases
   ansible.builtin.lineinfile:
-    path: "/home/{{ wordpress_system_user }}/.bashrc"
+    path: "{{ ansible_facts.getent_passwd[wordpress_system_user][4] }}/.bashrc"
     line: "alias wp-{{ item.key }}='wp --path={{ item.value }}'"
     state: present
     create: true
+    owner: "{{ wordpress_system_user }}"
+    group: "{{ wordpress_system_group }}"
+    mode: "0644"
   loop: "{{ wordpress_wpcli_aliases | default({}) | dict2items }}"
   become: true
   when: wordpress_wpcli_aliases | default({}) | length > 0
 
 - name: Install WP-CLI packages
   ansible.builtin.command:
-    cmd: wp package install {{ item }}
+    cmd: "{{ wordpress_wpcli_bin }} package install {{ item }}"
   loop: "{{ wordpress_wpcli_packages | default([]) }}"
   become: true
   become_user: "{{ wordpress_system_user }}"

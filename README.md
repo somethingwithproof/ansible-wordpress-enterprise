@@ -28,14 +28,61 @@
 - [Support](#-support)
 - [License](#-license)
 
+## ⚠️ What currently works
+
+The core path installs and configures WordPress: prerequisites, the database,
+PHP, Apache or Nginx, the WordPress install itself, and the baseline hardening
+in `security_hardening.yml`. That is what the Molecule scenarios exercise.
+
+### Supported distributions
+
+A release is supported only while its vendor still gives it **full** support.
+Extended phases do not count: Ubuntu ESM, Debian LTS and Enterprise Linux
+Maintenance Support are all out of scope.
+
+| Release | Full support until |
+| --- | --- |
+| Enterprise Linux 9 | 2027-05-31 |
+| Ubuntu 22.04 LTS | 2027-04-01 |
+| Ubuntu 24.04 LTS | 2029-05-31 |
+| Debian 13 | 2028-08-09 |
+
+`meta/platform_support.yml` holds the policy and the dates;
+`tests/unit/test_platform_support.py` fails the build the day a release leaves
+full support, or when `meta/main.yml` and the Molecule matrix drift from it.
+
+These features are **off by default and do not currently work**, because the
+role references templates it does not ship (62 of them, listed in
+`tests/unit/missing_templates.yml`):
+
+| Flag | Missing templates |
+| --- | --- |
+| `wordpress_enable_monitoring` | 17 |
+| `wordpress_enable_backups` | 13 |
+| `wordpress_enable_fail2ban` | 9 |
+| `wordpress_enable_security` | 9 |
+| `wordpress_enable_caching` | 6 |
+| `wordpress_enable_ssl` | 3 |
+| `wordpress_configure_firewall` | 2 |
+
+Turning one on stops the play immediately and names the missing templates,
+rather than aborting part way through and leaving the host half configured. The
+examples below show these flags set to `true`; they will not run until the
+templates exist.
+
 ## 🌟 Features
 
 ### Core Capabilities
 
 ✅ **Multi-Platform Support**
 - Ubuntu 20.04 LTS, 22.04 LTS, 24.04 LTS
-- RHEL 8, 9 / Rocky Linux 8, 9 / AlmaLinux 8, 9
-- CentOS Stream 8, 9
+- RHEL 9 / Rocky Linux 9 / AlmaLinux 9
+- CentOS Stream 9
+
+  Enterprise Linux 8 is not supported: its platform Python is 3.6, below
+  ansible-core's floor of 3.9 for a managed node, and no `python39-dnf`
+  package exists, so no interpreter satisfies both ansible-core and the
+  `dnf` module.
 - Debian 11, 12
 
 ✅ **Web Server Options**
@@ -135,11 +182,11 @@ git clone https://github.com/thomasvincent/ansible-wordpress-enterprise.git
 - name: Production WordPress Deployment
   hosts: wordpress_production
   become: true
-  
+
   vars_files:
     - vars/production.yml
     - vault/secrets.yml
-  
+
   roles:
     - role: thomasvincent.wordpress_enterprise
       vars:
@@ -148,31 +195,31 @@ git clone https://github.com/thomasvincent/ansible-wordpress-enterprise.git
         wordpress_site_url: "https://{{ ansible_fqdn }}"
         wordpress_site_title: "Enterprise WordPress"
         wordpress_environment: "production"
-        
+
         # Web Server & PHP
         wordpress_web_server: "nginx"
         wordpress_php_version: "8.2"
         wordpress_php_memory_limit: "512M"
-        
+
         # Database
         wordpress_db_engine: "mysql"
         wordpress_use_external_db: true
         wordpress_external_db_host: "{{ vault_db_host }}"
-        
+
         # Caching
         wordpress_enable_redis: true
         wordpress_enable_object_cache: true
-        
+
         # Security
         wordpress_enable_ssl: true
         wordpress_use_letsencrypt: true
         wordpress_enable_fail2ban: true
         wordpress_configure_firewall: true
-        
+
         # Performance
         wordpress_enable_cdn: true
         wordpress_cdn_provider: "cloudflare"
-        
+
         # Monitoring
         wordpress_enable_monitoring: true
         wordpress_enable_backups: true
@@ -183,12 +230,12 @@ git clone https://github.com/thomasvincent/ansible-wordpress-enterprise.git
 ### System Requirements
 
 - **Control Node**
-  - Ansible 2.15 or higher
-  - Python 3.8+
+  - ansible-core 2.21 or higher
+  - Python 3.12+ (ansible-core 2.21 requires it)
 
 - **Target Nodes**
   - Supported OS (see platform support)
-  - Python 3.6+
+  - Python 3.9+ (ansible-core no longer supports older managed nodes)
   - Sudo/root access
   - Minimum 2GB RAM
   - 20GB disk space
@@ -199,7 +246,8 @@ git clone https://github.com/thomasvincent/ansible-wordpress-enterprise.git
 
 ```bash
 ansible-galaxy collection install community.general
-ansible-galaxy collection install community.mysql
+ansible-galaxy collection install ansible.mysql
+ansible-galaxy collection install community.crypto
 ansible-galaxy collection install ansible.posix
 ```
 
@@ -236,8 +284,13 @@ roles:
 
 collections:
   - name: community.general
-  - name: community.mysql
+    version: ">=8.0.0"
+  - name: ansible.mysql
+    version: ">=5.0.0"
+  - name: community.crypto
+    version: ">=2.0.0"
   - name: ansible.posix
+    version: ">=1.5.0"
 ```
 
 Install:
@@ -266,7 +319,7 @@ git submodule update --remote roles/wordpress_enterprise
   hosts: localhost
   connection: local
   become: true
-  
+
   roles:
     - role: wordpress_enterprise
       vars:
@@ -276,10 +329,10 @@ git submodule update --remote roles/wordpress_enterprise
         wordpress_debug_log: true
         wordpress_debug_display: true
         wordpress_environment: "development"
-        
+
         # Use SQLite for development
         wordpress_db_engine: "sqlite"
-        
+
         # Disable production features
         wordpress_enable_ssl: false
         wordpress_enable_fail2ban: false
@@ -294,31 +347,31 @@ git submodule update --remote roles/wordpress_enterprise
 - name: WordPress Staging Deployment
   hosts: staging_servers
   become: true
-  
+
   vars_files:
     - vars/staging.yml
-  
+
   roles:
     - role: thomasvincent.wordpress_enterprise
       vars:
         wordpress_environment: "staging"
         wordpress_site_url: "https://staging.example.com"
-        
+
         # Enable debugging for staging
         wordpress_debug: true
         wordpress_debug_log: true
         wordpress_debug_display: false
-        
+
         # Use production-like configuration
         wordpress_web_server: "nginx"
         wordpress_php_version: "8.2"
         wordpress_enable_ssl: true
         wordpress_use_letsencrypt: true
-        
+
         # Basic security
         wordpress_enable_fail2ban: true
         wordpress_configure_firewall: true
-        
+
         # Enable monitoring
         wordpress_enable_monitoring: true
 ```
@@ -1001,13 +1054,13 @@ wordpress_plugins:
     config:
       scan_schedule: "daily"
       firewall_mode: "extended"
-  
+
   # Performance
   - name: "wp-rocket"
     version: "3.15"
     activate: true
     license_key: "{{ vault_wp_rocket_license }}"
-  
+
   # SEO
   - name: "wordpress-seo"
     version: "latest"
@@ -1015,7 +1068,7 @@ wordpress_plugins:
     config:
       enable_xml_sitemap: true
       enable_schema: true
-  
+
   # Backup
   - name: "updraftplus"
     version: "latest"
@@ -1033,11 +1086,11 @@ wordpress_themes:
   - name: "twentytwentyfour"
     version: "latest"
     activate: false
-  
+
   - name: "custom-theme"
     source: "https://example.com/themes/custom-theme.zip"
     activate: true
-    
+
 wordpress_child_theme:
   parent: "custom-theme"
   name: "custom-theme-child"
@@ -1061,7 +1114,7 @@ molecule test
 molecule test -s default  # Ubuntu 22, 24 and Rocky Linux 9
 molecule test -s ubuntu   # Ubuntu 22.04 and 24.04
 molecule test -s debian   # Debian 11 and 12
-molecule test -s rhel     # RHEL 8 and 9 (Rocky Linux)
+molecule test -s rhel     # Rocky Linux 9
 
 # Interactive testing
 molecule converge          # Deploy the role
@@ -1080,7 +1133,7 @@ molecule idempotence
 | **default** | Ubuntu 22.04, 24.04, Rocky Linux 9 | Quick testing across major platforms |
 | **ubuntu** | Ubuntu 22.04, 24.04 | Ubuntu-specific testing |
 | **debian** | Debian 11, 12 | Debian-specific testing |
-| **rhel** | Rocky Linux 8, 9 | RHEL/CentOS-compatible testing |
+| **rhel** | Rocky Linux 9 | RHEL/CentOS-compatible testing |
 
 All scenarios include:
 - ✅ Syntax checking
@@ -1105,7 +1158,7 @@ All scenarios include:
 
     - name: Verify database connection
       command: wp db check --path={{ wordpress_path }}
-      become_user: "{{ wordpress_user }}"
+      become_user: "{{ wordpress_system_user }}"
 
     - name: Test admin login
       uri:

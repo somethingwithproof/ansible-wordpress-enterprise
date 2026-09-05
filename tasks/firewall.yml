@@ -1,6 +1,16 @@
 ---
 # Firewall Configuration Tasks
 
+# The role does not ship the templates below, so this file cannot finish.
+# Stop before anything is changed rather than abort partway through and
+# leave the host half configured.
+- name: Refuse to run without the templates this role does not ship
+  ansible.builtin.fail:
+    msg: >-
+      tasks/firewall.yml needs templates that are not in this role:
+      firewall-backup.sh.j2, firewall-check.sh.j2.
+      Add them, or leave wordpress_configure_firewall off.
+
 - name: Install UFW firewall (Debian/Ubuntu)
   ansible.builtin.package:
     name: ufw
@@ -8,7 +18,7 @@
     update_cache: "{{ wordpress_update_cache | bool }}"
   become: true
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_configure_firewall | bool
 
 - name: Install firewalld (RedHat/CentOS)
@@ -17,7 +27,7 @@
     state: present
   become: true
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - wordpress_configure_firewall | bool
 
 - name: Start and enable firewalld (RedHat/CentOS)
@@ -27,7 +37,7 @@
     enabled: true
   become: true
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - wordpress_configure_firewall | bool
 
 - name: Reset UFW to defaults (Debian/Ubuntu)
@@ -35,7 +45,7 @@
     state: reset
   become: true
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_configure_firewall | bool
 
 - name: Set UFW default policy for incoming
@@ -44,7 +54,7 @@
     policy: deny
   become: true
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_configure_firewall | bool
 
 - name: Set UFW default policy for outgoing
@@ -53,7 +63,7 @@
     policy: allow
   become: true
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_configure_firewall | bool
 
 - name: Set UFW default policy for routed
@@ -62,7 +72,7 @@
     policy: deny
   become: true
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_configure_firewall | bool
 
 - name: Allow SSH access (UFW)
@@ -72,7 +82,7 @@
     proto: tcp
   become: true
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_configure_firewall | bool
 
 - name: Allow SSH access (firewalld)
@@ -83,7 +93,7 @@
     immediate: true
   become: true
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - wordpress_configure_firewall | bool
 
 - name: Allow HTTP traffic (UFW)
@@ -93,7 +103,7 @@
     proto: tcp
   become: true
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_configure_firewall | bool
 
 - name: Allow HTTP traffic (firewalld)
@@ -104,7 +114,7 @@
     immediate: true
   become: true
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - wordpress_configure_firewall | bool
 
 - name: Allow HTTPS traffic (UFW)
@@ -114,7 +124,7 @@
     proto: tcp
   become: true
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_configure_firewall | bool
     - wordpress_enable_ssl | bool
 
@@ -126,7 +136,7 @@
     immediate: true
   become: true
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - wordpress_configure_firewall | bool
     - wordpress_enable_ssl | bool
 
@@ -137,7 +147,7 @@
   become: true
   loop: "{{ wordpress_allowed_ips }}"
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_configure_firewall | bool
     - wordpress_allowed_ips | length > 0
 
@@ -150,7 +160,7 @@
   become: true
   loop: "{{ wordpress_allowed_ips }}"
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - wordpress_configure_firewall | bool
     - wordpress_allowed_ips | length > 0
 
@@ -161,7 +171,7 @@
     proto: tcp
   become: true
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_configure_firewall | bool
 
 - name: Configure rate limiting for HTTP (UFW)
@@ -171,7 +181,7 @@
     proto: tcp
   become: true
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_configure_firewall | bool
 
 - name: Configure rate limiting for HTTPS (UFW)
@@ -181,7 +191,7 @@
     proto: tcp
   become: true
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_configure_firewall | bool
     - wordpress_enable_ssl | bool
 
@@ -199,7 +209,7 @@
     - '1433'  # MSSQL
     - '3389'  # RDP
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_configure_firewall | bool
 
 - name: Enable UFW firewall (Debian/Ubuntu)
@@ -207,7 +217,7 @@
     state: enabled
   become: true
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_configure_firewall | bool
 
 - name: Create firewall status check script
@@ -237,7 +247,7 @@
     logging: 'medium'
   become: true
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_configure_firewall | bool
     - wordpress_enable_logging | bool
 
@@ -246,7 +256,7 @@
     cmd: firewall-cmd --set-log-denied=all --permanent
   become: true
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - wordpress_configure_firewall | bool
     - wordpress_enable_logging | bool
   changed_when: false
@@ -256,7 +266,7 @@
     cmd: firewall-cmd --reload
   become: true
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - wordpress_configure_firewall | bool
   changed_when: false
 
@@ -266,7 +276,7 @@
   register: ufw_status
   become: true
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_configure_firewall | bool
   changed_when: false
 
@@ -274,7 +284,7 @@
   ansible.builtin.debug:
     var: ufw_status.stdout_lines
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_configure_firewall | bool
     - ufw_status.stdout_lines is defined
 
@@ -284,7 +294,7 @@
   register: firewalld_status
   become: true
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - wordpress_configure_firewall | bool
   changed_when: false
 
@@ -292,7 +302,7 @@
   ansible.builtin.debug:
     var: firewalld_status.stdout_lines
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - wordpress_configure_firewall | bool
     - firewalld_status.stdout_lines is defined
 

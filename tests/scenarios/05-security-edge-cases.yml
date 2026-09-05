@@ -3,18 +3,22 @@
 # Tests edge cases, error conditions, and boundary scenarios for security hardening
 
 - name: WordPress Enterprise Security Edge Cases Test
-  hosts: all
+  hosts: wordpress_servers
   become: true
   gather_facts: true
 
   vars:
     test_run_id: "{{ test_run_id | default('security_edge_test') }}"
-    wordpress_path: "/var/www/html/wordpress"
+    wordpress_install_dir: "/var/www/html/wordpress"
+    wordpress_system_user: "{{ 'apache' if ansible_facts.os_family == 'RedHat' else 'www-data' }}"
+    wordpress_system_group: "{{ 'apache' if ansible_facts.os_family == 'RedHat' else 'www-data' }}"
+    # ubuntu:22.04 ships php8.1; the role default of 8.2 has no candidate.
+    wordpress_php_version: "8.1"
 
     # Edge case configurations
     wordpress_security_hardening_enabled: true
-    wordpress_selinux_enabled: "{{ ansible_os_family == 'RedHat' }}"
-    wordpress_apparmor_enabled: "{{ ansible_os_family == 'Debian' }}"
+    wordpress_selinux_enabled: "{{ ansible_facts.os_family == 'RedHat' }}"
+    wordpress_apparmor_enabled: "{{ ansible_facts.os_family == 'Debian' }}"
 
     # Test different permission scenarios
     test_scenarios:
@@ -27,14 +31,15 @@
         wordpress_install_security_tools: false
         wordpress_fail2ban_enabled: false
       - name: "custom_paths"
-        wordpress_path: "/opt/custom/wordpress"
+        wordpress_install_dir: "/opt/custom/wordpress"
         wordpress_access_log_path: "/var/log/custom/access.log"
 
   pre_tasks:
     - name: Set test facts
       ansible.builtin.set_fact:
-        test_start_time: "{{ ansible_date_time.epoch }}"
-        os_security_system: "{{ 'SELinux' if ansible_os_family == 'RedHat' else 'AppArmor' if ansible_os_family == 'Debian' else 'None' }}"
+        test_start_time: "{{ ansible_facts.date_time.epoch }}"
+        os_security_system: "{{ 'SELinux' if ansible_facts.os_family == 'RedHat' else 'AppArmor' if ansible_facts.os_family == 'Debian'
+          else 'None' }}"
 
     - name: Display edge case test information
       ansible.builtin.debug:
@@ -71,7 +76,7 @@
             - name: Include security tasks with missing directory
               ansible.builtin.include_tasks: ../../tasks/security_hardening.yml
               vars:
-                wordpress_path: "{{ temp_wp_path }}"
+                wordpress_install_dir: "{{ temp_wp_path }}"
           rescue:
             - name: Record expected missing directory handling
               ansible.builtin.debug:
@@ -88,14 +93,14 @@
           ansible.builtin.file:
             path: "/tmp/test-wp-config.php"
             state: touch
-            mode: '0000'  # No permissions
+            mode: "0000" # No permissions
 
         - name: Test security hardening on restricted file
           block:
             - name: Apply security to restricted file
               ansible.builtin.file:
                 path: "/tmp/test-wp-config.php"
-                mode: '0644'
+                mode: "0644"
                 owner: www-data
                 group: www-data
               register: restricted_file_result
@@ -117,7 +122,7 @@
           block:
             - name: Include SELinux tasks on non-SELinux system
               ansible.builtin.include_tasks: ../../tasks/selinux.yml
-              when: ansible_os_family != "RedHat"
+              when: ansible_facts.os_family != "RedHat"
           rescue:
             - name: Record expected SELinux platform handling
               ansible.builtin.debug:
@@ -127,7 +132,7 @@
           block:
             - name: Include AppArmor tasks on non-AppArmor system
               ansible.builtin.include_tasks: ../../tasks/apparmor.yml
-              when: ansible_os_family != "Debian"
+              when: ansible_facts.os_family != "Debian"
           rescue:
             - name: Record expected AppArmor platform handling
               ansible.builtin.debug:
@@ -148,10 +153,12 @@
 
         - name: Test security status script as non-root user
           ansible.builtin.command: /usr/local/bin/wordpress-security-status
+          become: true
           become_user: testuser
           register: limited_user_test
           failed_when: false
 
+          changed_when: false
         - name: Verify security script handles limited privileges
           ansible.builtin.assert:
             that:
@@ -175,22 +182,23 @@
               invalid_syntax_here
               this_is_not_valid_selinux_policy
             dest: /tmp/test-corrupted-policy.te
-            mode: '0644'
-          when: ansible_os_family == "RedHat"
+            mode: "0644"
+          when: ansible_facts.os_family == "RedHat"
 
         - name: Test SELinux policy compilation with corrupted file
           ansible.builtin.command: checkmodule -M -m -o /tmp/test-corrupted-policy.mod /tmp/test-corrupted-policy.te
           register: corrupted_policy_test
           failed_when: false
-          when: ansible_os_family == "RedHat"
+          when: ansible_facts.os_family == "RedHat"
 
+          changed_when: false
         - name: Verify corrupted policy is rejected
           ansible.builtin.assert:
             that:
               - corrupted_policy_test.rc != 0
             fail_msg: "Corrupted SELinux policy should be rejected"
             success_msg: "SELinux correctly rejects corrupted policies"
-          when: ansible_os_family == "RedHat"
+          when: ansible_facts.os_family == "RedHat"
 
         - name: Create invalid AppArmor profile (Ubuntu/Debian)
           ansible.builtin.copy:
@@ -201,22 +209,23 @@
                 syntax_error_here
               }
             dest: /tmp/test-corrupted-apparmor
-            mode: '0644'
-          when: ansible_os_family == "Debian"
+            mode: "0644"
+          when: ansible_facts.os_family == "Debian"
 
         - name: Test AppArmor profile validation with corrupted file
           ansible.builtin.command: apparmor_parser -T /tmp/test-corrupted-apparmor
           register: corrupted_apparmor_test
           failed_when: false
-          when: ansible_os_family == "Debian"
+          when: ansible_facts.os_family == "Debian"
 
+          changed_when: false
         - name: Verify corrupted AppArmor profile is rejected
           ansible.builtin.assert:
             that:
               - corrupted_apparmor_test.rc != 0
             fail_msg: "Corrupted AppArmor profile should be rejected"
             success_msg: "AppArmor correctly rejects corrupted profiles"
-          when: ansible_os_family == "Debian"
+          when: ansible_facts.os_family == "Debian"
 
         - name: Cleanup corrupted test files
           ansible.builtin.file:
@@ -234,21 +243,24 @@
           ansible.builtin.command: df -h /tmp
           register: disk_space_check
 
+          changed_when: false
         - name: Check available memory
           ansible.builtin.command: free -m
           register: memory_check
 
+          changed_when: false
         - name: Create large test file to consume space
           ansible.builtin.command: dd if=/dev/zero of=/tmp/large-test-file bs=1M count=100
           register: large_file_creation
           failed_when: false
 
+          changed_when: true
         - name: Test security operations with reduced available space
           block:
             - name: Include security tasks with reduced available space
               ansible.builtin.include_tasks: ../../tasks/security_hardening.yml
               vars:
-                wordpress_security_status_script: false  # Skip to save space
+                wordpress_security_status_script: false # Skip to save space
           rescue:
             - name: Record expected reduced-space handling
               ansible.builtin.debug:
@@ -276,13 +288,14 @@
               logpath = /nonexistent/path/access.log
               maxretry = 3
             dest: /tmp/test-fail2ban.conf
-            mode: '0644'
+            mode: "0644"
 
         - name: Verify fail2ban handles missing log files gracefully
           ansible.builtin.command: fail2ban-client -t
           register: fail2ban_test_config
           failed_when: false
 
+          changed_when: false
         - name: Cleanup test fail2ban config
           ansible.builtin.file:
             path: /tmp/test-fail2ban.conf
@@ -300,6 +313,7 @@
           register: concurrent_test
           failed_when: false
 
+          changed_when: false
         - name: Verify concurrent execution handling
           ansible.builtin.assert:
             that:
@@ -313,13 +327,15 @@
         - name: Save current SELinux booleans (RHEL/CentOS)
           ansible.builtin.command: getsebool -a
           register: current_selinux_booleans
-          when: ansible_os_family == "RedHat"
+          when: ansible_facts.os_family == "RedHat"
 
+          changed_when: false
         - name: Save current AppArmor profiles (Ubuntu/Debian)
           ansible.builtin.command: aa-status
           register: current_apparmor_profiles
-          when: ansible_os_family == "Debian"
+          when: ansible_facts.os_family == "Debian"
 
+          changed_when: false
         - name: Simulate configuration changes
           ansible.builtin.debug:
             msg: "Testing configuration persistence across changes"
@@ -335,12 +351,13 @@
           ansible.builtin.file:
             path: "/tmp/test wordpress-#$%&"
             state: directory
-            mode: '0755'
+            mode: "0755"
 
         - name: Test security operations on unusual paths
           ansible.builtin.command: ls -la "/tmp/test wordpress-#$%&"
           register: special_char_test
 
+          changed_when: false
         - name: Cleanup special character directory
           ansible.builtin.file:
             path: "/tmp/test wordpress-#$%&"
@@ -361,11 +378,12 @@
           loop:
             - auditd
             - fail2ban
-            - "{{ 'firewalld' if ansible_os_family == 'RedHat' else 'ufw' }}"
+            - "{{ 'firewalld' if ansible_facts.os_family == 'RedHat' else 'ufw' }}"
 
         - name: Verify service dependency handling
           ansible.builtin.debug:
-            msg: "Service dependency checks completed: {{ service_dependency_check.results | map(attribute='status') | map(attribute='ActiveState') | list }}"
+            msg: "Service dependency checks completed: {{ service_dependency_check.results | map(attribute='status')
+              | map(attribute='ActiveState') | list }}"
 
     # Edge Case 13: Test rollback scenarios
     - name: Edge Case 13 - Test security configuration rollback
@@ -376,6 +394,7 @@
             cp /etc/audit/rules.d/wordpress.rules /tmp/security-backup/ 2>/dev/null || true
             cp /etc/fail2ban/jail.d/wordpress.conf /tmp/security-backup/ 2>/dev/null || true
 
+          changed_when: true
         - name: Test configuration rollback capability
           ansible.builtin.debug:
             msg: "Security configuration backup and rollback capability tested"
@@ -393,7 +412,7 @@
           ansible.builtin.file:
             path: "{{ item }}"
             state: directory
-            mode: '0755'
+            mode: "0755"
           loop:
             - /tmp/wordpress2
             - /tmp/wordpress2/wp-content
@@ -404,7 +423,7 @@
             - name: Include security hardening for second installation
               ansible.builtin.include_tasks: ../../tasks/security_hardening.yml
               vars:
-                wordpress_path: /tmp/wordpress2
+                wordpress_install_dir: /tmp/wordpress2
           rescue:
             - name: Record expected multi-installation handling
               ansible.builtin.debug:
@@ -427,12 +446,13 @@
           ansible.builtin.file:
             path: /tmp/readonly-test-dir
             state: directory
-            mode: '0444'  # Read-only directory
+            mode: "0444" # Read-only directory
 
         - name: Test error handling in security operations
           ansible.builtin.file:
             path: /tmp/readonly-test-dir/test-file
             state: touch
+            mode: "0644"
           register: error_recovery_test
           failed_when: false
 
@@ -452,14 +472,14 @@
       block:
         - name: Calculate test execution time
           ansible.builtin.set_fact:
-            test_duration: "{{ ansible_date_time.epoch | int - test_start_time | int }}"
+            test_duration: "{{ ansible_facts.date_time.epoch | int - test_start_time | int }}"
 
         - name: Generate comprehensive edge case test summary
           ansible.builtin.debug:
             msg: |
               ===== WORDPRESS SECURITY EDGE CASES TEST SUMMARY =====
               Test Run ID: {{ test_run_id }}
-              Target System: {{ ansible_distribution }} {{ ansible_distribution_version }}
+              Target System: {{ ansible_facts.distribution }} {{ ansible_facts.distribution_version }}
               Security System: {{ os_security_system }}
               Test Duration: {{ test_duration }} seconds
 
@@ -487,11 +507,11 @@
       ansible.builtin.file:
         path: "/tmp/wordpress-security-edge-test-{{ test_run_id }}-complete"
         state: touch
-        mode: '0644'
+        mode: "0644"
 
     - name: Log edge case test completion
       ansible.builtin.lineinfile:
         path: "/var/log/wordpress-tests.log"
         create: true
-        line: "{{ ansible_date_time.iso8601 }}: Security edge cases test {{ test_run_id }} completed successfully"
-        mode: '0644'
+        line: "{{ ansible_facts.date_time.iso8601 }}: Security edge cases test {{ test_run_id }} completed successfully"
+        mode: "0644"

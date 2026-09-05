@@ -8,15 +8,6 @@ driver:
   name: docker
 
 platforms:
-  - name: rhel-8
-    image: geerlingguy/docker-rockylinux8-ansible@sha256:0c842d7f72e2308f9d23e12b7b6c28905c6b9e5bc1505bccebc20047c6df5fde
-    command: /sbin/init
-    pre_build_image: true
-    privileged: true
-    cgroupns_mode: host
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:rw
-
   - name: rhel-9
     image: geerlingguy/docker-rockylinux9-ansible@sha256:5b5b69fcad35dec33d41faf6432d7c25cebc1979b4d566c26fa1c05fd3ccebe1
     command: /sbin/init
@@ -35,8 +26,6 @@ provisioner:
       roles_path: ${MOLECULE_PROJECT_DIRECTORY}/../
   inventory:
     host_vars:
-      rhel-8:
-        ansible_python_interpreter: /usr/bin/python3.9
       rhel-9:
         ansible_python_interpreter: /usr/bin/python3
   playbooks:

@@ -84,6 +84,7 @@ services:
       dockerfile: tests/dockerfiles/Dockerfile.ubuntu
     container_name: wp-test-ubuntu
     privileged: true
+    cgroup: host
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
       - .:/ansible-workspace
@@ -106,6 +107,7 @@ services:
       dockerfile: tests/dockerfiles/Dockerfile.centos
     container_name: wp-test-centos
     privileged: true
+    cgroup: host
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
       - .:/ansible-workspace
@@ -130,6 +132,8 @@ services:
     working_dir: /ansible-workspace
     volumes:
       - .:/ansible-workspace
+      # Mounted a second time under its role name so `role:
+      # ansible-wordpress-enterprise` resolves without a symlink.
       - .:/ansible-roles/ansible-wordpress-enterprise
       - /var/run/docker.sock:/var/run/docker.sock
     networks:

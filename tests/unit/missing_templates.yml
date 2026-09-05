@@ -1,0 +1,70 @@
+---
+# Template sources referenced by tasks that the role does not ship. Every entry
+# is a task that fails the moment its feature is enabled.
+#
+# This is a ratchet, not a permission slip: tests/unit/test_task_ownership.py
+# fails on any reference not listed here, and on any entry here that has since
+# been written. Delete a line when you add the template.
+missing_templates:
+  - backups.yml:backup-cleanup.sh.j2
+  - backups.yml:backup-encrypt.sh.j2
+  - backups.yml:backup-exclude.txt.j2
+  - backups.yml:backup-logrotate.j2
+  - backups.yml:backup-monitor.sh.j2
+  - backups.yml:backup-notify.sh.j2
+  - backups.yml:backup-restore.sh.j2
+  - backups.yml:backup-size-monitor.sh.j2
+  - backups.yml:backup-sync.sh.j2
+  - backups.yml:backup-verify.sh.j2
+  - backups.yml:backup.conf.j2
+  - backups.yml:files-backup.sh.j2
+  - backups.yml:full-backup.sh.j2
+  - caching.yml:cache-warmup.sh.j2
+  - caching.yml:memcached.conf.j2
+  - caching.yml:opcache-status.php.j2
+  - caching.yml:opcache.ini.j2
+  - caching.yml:redis-logrotate.j2
+  - caching.yml:redis.conf.j2
+  - fail2ban.yml:fail2ban-logrotate.j2
+  - fail2ban.yml:fail2ban-notify.sh.j2
+  - fail2ban.yml:fail2ban-status.sh.j2
+  - fail2ban.yml:fail2ban-unban.sh.j2
+  - fail2ban.yml:firewalld-wordpress.conf.j2
+  - fail2ban.yml:jail.local.j2
+  - fail2ban.yml:ufw-wordpress.conf.j2
+  - fail2ban.yml:wordpress-spam.conf.j2
+  - fail2ban.yml:wordpress.conf.j2
+  - firewall.yml:firewall-backup.sh.j2
+  - firewall.yml:firewall-check.sh.j2
+  - monitoring.yml:alert-notify.sh.j2
+  - monitoring.yml:cache-monitor.sh.j2
+  - monitoring.yml:disk-usage-monitor.sh.j2
+  - monitoring.yml:log-analysis.sh.j2
+  - monitoring.yml:monitoring-dashboard.sh.j2
+  - monitoring.yml:monitoring-logrotate.j2
+  - monitoring.yml:monitoring-master.sh.j2
+  - monitoring.yml:monitoring-report.sh.j2
+  - monitoring.yml:monitoring.conf.j2
+  - monitoring.yml:network-monitor.sh.j2
+  - monitoring.yml:performance-monitor.sh.j2
+  - monitoring.yml:php-fpm-monitor.sh.j2
+  - monitoring.yml:response-time-monitor.sh.j2
+  - monitoring.yml:security-monitor.sh.j2
+  - monitoring.yml:system-monitor.sh.j2
+  - monitoring.yml:uptime-monitor.sh.j2
+  - monitoring.yml:wordpress-health-check.sh.j2
+  - security.yml:faillock.conf.j2
+  - security.yml:htaccess-security.j2
+  - security.yml:logwatch.conf.j2
+  - security.yml:nginx-security-headers.conf.j2
+  - security.yml:pwquality.conf.j2
+  - security.yml:rkhunter.conf.j2
+  - security.yml:sshd_config.j2
+  - security.yml:wp-admin-security.sh.j2
+  - security.yml:wp-security.conf.j2
+  - ssl.yml:apache-ssl.conf.j2
+  - ssl.yml:ssl-monitor.sh.j2
+  - ssl.yml:ssl-security.conf.j2
+  - themes.yml:child-theme-functions.php.j2
+  - themes.yml:child-theme-style.css.j2
+  - wpcli.yml:wp-cli.yml.j2

@@ -59,21 +59,16 @@
 
 - name: Create Nginx cache directory
   ansible.builtin.file:
-    path: /var/cache/nginx
+    path: "{{ item }}"
     state: directory
-    owner: www-data
-    group: www-data
+    owner: "{{ wordpress_system_user }}"
+    group: "{{ wordpress_system_group }}"
     mode: '0755'
   become: true
+  loop:
+    - /var/cache/nginx
+    - /var/cache/nginx/wordpress
   when: wordpress_enable_nginx_cache | default(true)
-
-- name: Test Nginx configuration
-  ansible.builtin.command:
-    cmd: nginx -t
-  become: true
-  register: nginx_test
-  changed_when: false
-  check_mode: false
 
 - name: Create additional Nginx directories
   ansible.builtin.file:
@@ -164,8 +159,8 @@
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
-    owner: www-data
-    group: www-data
+    owner: "{{ wordpress_system_user }}"
+    group: "{{ wordpress_system_group }}"
     mode: '0755'
     recurse: true
   loop:
@@ -199,7 +194,7 @@
   ansible.builtin.lineinfile:
     path: /etc/nginx/nginx.conf
     regexp: '^worker_processes'
-    line: "worker_processes {{ ansible_processor_vcpus | default('auto') }};"
+    line: "worker_processes {{ ansible_facts.processor_vcpus | default('auto') }};"
   become: true
   notify: Reload nginx
 
@@ -210,6 +205,14 @@
     line: "\tworker_connections {{ wordpress_nginx_worker_connections | default('1024') }};"
   become: true
   notify: Reload nginx
+
+- name: Test Nginx configuration
+  ansible.builtin.command:
+    cmd: nginx -t
+  become: true
+  register: nginx_test
+  changed_when: false
+  check_mode: false
 
 - name: Enable and start Nginx service
   ansible.builtin.systemd:

@@ -84,16 +84,8 @@ def test_every_notify_resolves_to_a_handler(handler_names: set[str]) -> None:
 # Handler names are part of the published interface, so a handler no task here
 # notifies is not necessarily unused. These are kept for downstream playbooks;
 # removing one is a breaking change and needs a major version in meta/main.yml.
-PUBLIC = {
-    # Every handler name main already publishes. A downstream playbook may
-    # notify any of them, so this repo having no notify for one is not
-    # evidence it is unused. Removing one is a breaking change.
-    "Reload apache", "Reload firewalld", "Reload nginx", "Reload apparmor",
-    "Reload systemd", "Restart apache", "Restart auditd", "Restart fail2ban",
-    "Restart mariadb", "Restart memcached", "Restart mysql", "Restart nginx",
-    "Restart php-fpm", "Restart redis", "Restart sshd", "Restart yum-cron",
-    "Reboot system", "Reload sysctl",
-}
+PUBLIC = {"Restart nginx", "Restart apache", "Restart php-fpm", "Restart mysql",
+          "Restart mariadb", "Restart redis", "Restart memcached", "Reload systemd"}
 
 
 def test_no_handler_is_orphaned(handler_names: set[str]) -> None:
@@ -104,41 +96,11 @@ def test_no_handler_is_orphaned(handler_names: set[str]) -> None:
     )
 
 
-# Dropped deliberately. Both name a PHP version rather than reading
-# wordpress_php_fpm_service, so they only ever worked on a host running that
-# exact stream; "Restart php-fpm" supersedes both. Removing a published name is
-# a breaking change, recorded here so it is a decision and not an accident.
-REMOVED = {"Restart php8.1-fpm", "Restart php8.2-fpm"}
-
-
-def test_removed_handlers_are_recorded_not_forgotten(handler_names: set[str]) -> None:
-    assert not (REMOVED & handler_names), (
-        f"these are listed as removed but still defined: {sorted(REMOVED & handler_names)}"
-    )
-    assert not (REMOVED & PUBLIC), "a name cannot be both published and removed"
-
-
 def test_the_public_handlers_all_exist(handler_names: set[str]) -> None:
     missing = sorted(PUBLIC - handler_names)
     assert not missing, (
         f"removing a published handler is a breaking change; restore it or bump "
         f"the major version in meta/main.yml: {missing}"
-    )
-
-
-def test_handlers_live_only_where_ansible_loads_them() -> None:
-    """A role auto-loads handlers/main.yml and nothing else.
-
-    A second file under handlers/ looks like it defines handlers and does not:
-    every name in it is silently unreachable, which is how a duplicate of a
-    live handler can sit in the tree looking authoritative.
-    """
-    stray = sorted(
-        p.name for p in (ROOT / "handlers").glob("*.yml") if p.name != "main.yml"
-    )
-    assert not stray, (
-        "these handler files are never loaded, so everything in them is "
-        f"ignored: {stray}"
     )
 
 

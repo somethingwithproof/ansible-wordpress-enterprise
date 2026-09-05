@@ -64,12 +64,6 @@
     state: restarted
   become: true
 
-- name: Reload firewalld
-  ansible.builtin.systemd:
-    name: firewalld
-    state: reloaded
-  become: true
-
 - name: Restart fail2ban
   ansible.builtin.systemd:
     name: fail2ban
@@ -87,28 +81,34 @@
     name: auditd
     state: restarted
   become: true
+  changed_when: false
 
 - name: Reload apparmor
   ansible.builtin.systemd:
     name: apparmor
     state: reloaded
   become: true
-  when: ansible_os_family == "Debian"
+  when: ansible_facts.os_family == "Debian"
 
-- name: Reload sysctl
-  ansible.builtin.command:
-    cmd: sysctl --system
-  become: true
-  changed_when: false
-
-- name: Restart yum-cron
+- name: Restart dnf-automatic timer
   ansible.builtin.systemd:
-    name: yum-cron
+    name: dnf-automatic.timer
     state: restarted
     enabled: true
   become: true
-  when: ansible_os_family == "RedHat"
+  when: ansible_facts.os_family == "RedHat"
 
+- name: Compile the custom SELinux policy
+  ansible.builtin.shell: |
+    set -e
+    cd /etc/selinux/local
+    checkmodule -M -m -o wordpress_custom.mod wordpress_custom.te
+    semodule_package -o wordpress_custom.pp -m wordpress_custom.mod
+    semodule -i wordpress_custom.pp
+  become: true
+  changed_when: true
+
+# Runs as the web user so the flush touches the same cache the site writes.
 - name: Run wp-cli cache flush
   ansible.builtin.command:
     cmd: "{{ wordpress_wpcli_bin }} cache flush --path={{ wordpress_install_dir }}"

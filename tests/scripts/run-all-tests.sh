@@ -5,6 +5,14 @@
 
 set -e
 
+# docker compose v2 is a plugin; the v1 binary is gone from CI runners.
+if docker compose version >/dev/null 2>&1; then
+    COMPOSE="docker compose"
+else
+    COMPOSE="docker-compose"
+fi
+
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -140,12 +148,12 @@ check_prerequisites() {
     fi
     print_success "Docker is running"
 
-    # Check if docker-compose is available
-    if ! command -v docker-compose >/dev/null 2>&1; then
-        print_error "docker-compose is not installed or not in PATH"
+    # Check if $COMPOSE is available
+    if ! $COMPOSE version >/dev/null 2>&1; then
+        print_error "$COMPOSE is not installed or not in PATH"
         exit 1
     fi
-    print_success "docker-compose is available"
+    print_success "$COMPOSE is available"
 
     # Check if test compose file exists
     if [[ ! -f "$COMPOSE_FILE" ]]; then
@@ -172,9 +180,9 @@ build_images() {
     cd "$PROJECT_DIR"
 
     if [[ "$VERBOSE" == "true" ]]; then
-        docker-compose -f "$COMPOSE_FILE" build --no-cache
+        $COMPOSE -f "$COMPOSE_FILE" build --no-cache
     else
-        docker-compose -f "$COMPOSE_FILE" build --no-cache >/dev/null 2>&1
+        $COMPOSE -f "$COMPOSE_FILE" build --no-cache >/dev/null 2>&1
     fi
 
     print_success "Docker images built successfully"
@@ -187,13 +195,13 @@ start_environment() {
     cd "$PROJECT_DIR"
 
     # Stop any existing containers
-    docker-compose -f "$COMPOSE_FILE" down --remove-orphans >/dev/null 2>&1 || true
+    $COMPOSE -f "$COMPOSE_FILE" down --remove-orphans >/dev/null 2>&1 || true
 
     print_status "Starting services..."
     if [[ "$VERBOSE" == "true" ]]; then
-        docker-compose -f "$COMPOSE_FILE" up -d
+        $COMPOSE -f "$COMPOSE_FILE" up -d
     else
-        docker-compose -f "$COMPOSE_FILE" up -d >/dev/null 2>&1
+        $COMPOSE -f "$COMPOSE_FILE" up -d >/dev/null 2>&1
     fi
 
     # Wait for services to be healthy
@@ -202,7 +210,7 @@ start_environment() {
     local count=0
 
     while [[ $count -lt $max_wait ]]; do
-        if docker-compose -f "$COMPOSE_FILE" ps | grep -q "Up (healthy)"; then
+        if $COMPOSE -f "$COMPOSE_FILE" ps | grep -qE '\(healthy\)'; then
             break
         fi
         sleep 2
@@ -214,7 +222,7 @@ start_environment() {
 
     if [[ $count -ge $max_wait ]]; then
         print_error "Services failed to become healthy within $max_wait seconds"
-        docker-compose -f "$COMPOSE_FILE" ps
+        $COMPOSE -f "$COMPOSE_FILE" ps
         exit 1
     fi
 
@@ -222,7 +230,7 @@ start_environment() {
 
     # Show service status
     if [[ "$VERBOSE" == "true" ]]; then
-        docker-compose -f "$COMPOSE_FILE" ps
+        $COMPOSE -f "$COMPOSE_FILE" ps
     fi
 }
 
@@ -451,9 +459,9 @@ cleanup_environment() {
 
     print_status "Stopping and removing containers..."
     if [[ "$VERBOSE" == "true" ]]; then
-        docker-compose -f "$COMPOSE_FILE" down --remove-orphans --volumes
+        $COMPOSE -f "$COMPOSE_FILE" down --remove-orphans --volumes
     else
-        docker-compose -f "$COMPOSE_FILE" down --remove-orphans --volumes >/dev/null 2>&1
+        $COMPOSE -f "$COMPOSE_FILE" down --remove-orphans --volumes >/dev/null 2>&1
     fi
 
     print_success "Test environment cleaned up"

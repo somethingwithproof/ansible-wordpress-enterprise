@@ -1,6 +1,16 @@
 ---
 # Fail2ban Configuration Tasks
 
+# The role does not ship the templates below, so this file cannot finish.
+# Stop before anything is changed rather than abort partway through and
+# leave the host half configured.
+- name: Refuse to run without the templates this role does not ship
+  ansible.builtin.fail:
+    msg: >-
+      tasks/fail2ban.yml needs templates that are not in this role:
+      fail2ban-logrotate.j2, fail2ban-notify.sh.j2, fail2ban-status.sh.j2, fail2ban-unban.sh.j2, firewalld-wordpress.conf.j2, jail.local.j2, ufw-wordpress.conf.j2, wordpress-spam.conf.j2, wordpress.conf.j2.
+      Add them, or leave wordpress_enable_fail2ban off.
+
 - name: Install fail2ban
   ansible.builtin.package:
     name: fail2ban
@@ -33,8 +43,14 @@
   notify: Restart fail2ban
 
 - name: Create WordPress login fail2ban filter
-  ansible.builtin.template:
-    src: wordpress-auth.conf.j2
+  ansible.builtin.copy:
+    content: |
+      # WordPress authentication filter
+      [Definition]
+      failregex = ^<HOST> .* "POST .*wp-login\.php.*" (?:200|302)
+                  ^<HOST> .* "POST .*wp-admin.*" 401
+                  ^<HOST> .* "GET .*wp-login\.php.*" 200.*wp_attempt_focus
+      ignoreregex =
     dest: /etc/fail2ban/filter.d/wordpress-auth.conf
     owner: root
     group: root
@@ -74,7 +90,7 @@
     mode: '0644'
   become: true
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_enable_fail2ban | bool
     - wordpress_configure_firewall | bool
   notify: Restart fail2ban
@@ -88,7 +104,7 @@
     mode: '0644'
   become: true
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - wordpress_enable_fail2ban | bool
     - wordpress_configure_firewall | bool
   notify: Restart fail2ban
@@ -101,7 +117,7 @@
       # Log file paths
       [DEFAULT]
       {% if wordpress_web_server == 'apache' %}
-      {% if ansible_os_family == 'Debian' %}
+      {% if ansible_facts.os_family == 'Debian' %}
       apache_error_log = /var/log/apache2/error.log
       apache_access_log = /var/log/apache2/access.log
       {% else %}
@@ -190,7 +206,7 @@
       # Email notification settings
       [DEFAULT]
       destemail = {{ wordpress_admin_email }}
-      sender = fail2ban@{{ ansible_domain | default(ansible_hostname) }}
+      sender = fail2ban@{{ ansible_facts.domain | default(ansible_facts.hostname) }}
       mta = sendmail
       action = %(action_mwl)s
     backup: true
@@ -253,7 +269,7 @@
       enabled = true
       filter = wordpress-auth
       {% if wordpress_web_server == 'apache' %}
-      {% if ansible_os_family == 'Debian' %}
+      {% if ansible_facts.os_family == 'Debian' %}
       logpath = /var/log/apache2/access.log
       {% else %}
       logpath = /var/log/httpd/access_log
@@ -269,7 +285,7 @@
       enabled = true
       filter = wordpress-spam
       {% if wordpress_web_server == 'apache' %}
-      {% if ansible_os_family == 'Debian' %}
+      {% if ansible_facts.os_family == 'Debian' %}
       logpath = /var/log/apache2/access.log
       {% else %}
       logpath = /var/log/httpd/access_log
@@ -285,7 +301,7 @@
       enabled = true
       filter = {{ wordpress_web_server }}-badbots
       {% if wordpress_web_server == 'apache' %}
-      {% if ansible_os_family == 'Debian' %}
+      {% if ansible_facts.os_family == 'Debian' %}
       logpath = /var/log/apache2/access.log
       {% else %}
       logpath = /var/log/httpd/access_log

@@ -31,33 +31,33 @@
 - name: Validate operating system compatibility
   ansible.builtin.assert:
     that:
-      - ansible_os_family in ['Debian', 'RedHat']
-      - ansible_distribution in ['Ubuntu', 'Debian', 'CentOS', 'RHEL', 'Rocky', 'AlmaLinux']
-    fail_msg: "Unsupported operating system: {{ ansible_distribution }} {{ ansible_distribution_version }}"
-    success_msg: "Operating system validation passed: {{ ansible_distribution }} {{ ansible_distribution_version }}"
+      - ansible_facts.os_family in ['Debian', 'RedHat']
+      - ansible_facts.distribution in ['Ubuntu', 'Debian', 'CentOS', 'RHEL', 'Rocky', 'AlmaLinux']
+    fail_msg: "Unsupported operating system: {{ ansible_facts.distribution }} {{ ansible_facts.distribution_version }}"
+    success_msg: "Operating system validation passed: {{ ansible_facts.distribution }} {{ ansible_facts.distribution_version }}"
 
 - name: Validate system architecture
   ansible.builtin.assert:
     that:
-      - ansible_architecture in ['x86_64', 'aarch64', 'armv7l']
-    fail_msg: "Unsupported architecture: {{ ansible_architecture }}"
-    success_msg: "Architecture validation passed: {{ ansible_architecture }}"
+      - ansible_facts.architecture in ['x86_64', 'aarch64', 'armv7l']
+    fail_msg: "Unsupported architecture: {{ ansible_facts.architecture }}"
+    success_msg: "Architecture validation passed: {{ ansible_facts.architecture }}"
 
 - name: Check minimum system requirements
   ansible.builtin.assert:
     that:
-      - ansible_memtotal_mb >= 512
-      - ansible_processor_vcpus >= 1
+      - ansible_facts.memtotal_mb >= 512
+      - ansible_facts.processor_vcpus >= 1
     fail_msg: "System does not meet minimum requirements (512MB RAM, 1 CPU core)"
     success_msg: "System requirements check passed"
 
 - name: Validate disk space requirements
   ansible.builtin.assert:
     that:
-      - ansible_mounts | selectattr('mount', 'equalto', '/') | map(attribute='size_available') | first > 2147483648  # 2GB
+      - ansible_facts.mounts | selectattr('mount', 'equalto', '/') | map(attribute='size_available') | first > 2147483648 # 2GB
     fail_msg: "Insufficient disk space. At least 2GB free space required on root filesystem"
     success_msg: "Disk space validation passed"
-  when: ansible_mounts is defined
+  when: ansible_facts.mounts is defined
 
 # ============================================================================
 # WordPress Configuration Validation
@@ -389,8 +389,8 @@
   ansible.builtin.debug:
     msg:
       - "=== WordPress Enterprise Role Validation Complete ==="
-      - "✅ Operating System: {{ ansible_distribution }} {{ ansible_distribution_version }}"
-      - "✅ Architecture: {{ ansible_architecture }}"
+      - "✅ Operating System: {{ ansible_facts.distribution }} {{ ansible_facts.distribution_version }}"
+      - "✅ Architecture: {{ ansible_facts.architecture }}"
       - "✅ WordPress Version: {{ wordpress_version }}"
       - "✅ PHP Version: {{ wordpress_php_version }}"
       - "✅ Web Server: {{ wordpress_web_server }}"

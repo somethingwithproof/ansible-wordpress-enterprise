@@ -1,0 +1,81 @@
+---
+# Distribution support policy for this role.
+#
+# The rule: a distribution is supported only while its vendor still gives it
+# FULL support, and only while a Molecule scenario exercises it. Extended
+# phases do not count. tests/unit/test_platform_support.py enforces both, so
+# this file is the single source of truth for meta/main.yml and the Molecule
+# matrix, and the suite starts failing the day a supported release leaves full
+# support.
+#
+# "Full support" is a different vendor phase in each family, so the date below
+# comes from a different endoflife.date field for each:
+#
+#   EL      Full Support, before Maintenance Support   -> "support"
+#   Ubuntu  standard security maintenance, before ESM  -> "eol"
+#   Debian  regular support, before LTS                -> "eol"
+#
+# Dates checked 2026-08-25 against https://endoflife.date.
+#
+# To adopt a new release: set supported to true, add it to the Molecule matrix,
+# and run the suite.
+distributions:
+  - meta_name: EL
+    meta_version: "8"
+    image: geerlingguy/docker-rockylinux8-ansible
+    full_support_ends: "2024-05-31"
+    supported: false  # maintenance only since 2024-05-31
+
+  - meta_name: EL
+    meta_version: "9"
+    image: geerlingguy/docker-rockylinux9-ansible
+    full_support_ends: "2027-05-31"
+    supported: true
+
+  - meta_name: EL
+    meta_version: "10"
+    image: geerlingguy/docker-rockylinux10-ansible
+    full_support_ends: "2030-05-31"
+    supported: false  # not yet adopted; no verified run
+
+  - meta_name: Ubuntu
+    meta_version: focal
+    image: geerlingguy/docker-ubuntu2004-ansible
+    full_support_ends: "2025-05-31"
+    supported: false  # ESM only since 2025-05-31
+
+  - meta_name: Ubuntu
+    meta_version: jammy
+    image: geerlingguy/docker-ubuntu2204-ansible
+    full_support_ends: "2027-04-01"
+    supported: true
+
+  - meta_name: Ubuntu
+    meta_version: noble
+    image: geerlingguy/docker-ubuntu2404-ansible
+    full_support_ends: "2029-05-31"
+    supported: true
+
+  - meta_name: Ubuntu
+    meta_version: resolute
+    image: geerlingguy/docker-ubuntu2604-ansible
+    full_support_ends: "2031-04-30"
+    supported: false  # not yet adopted; no verified run
+
+  - meta_name: Debian
+    meta_version: bullseye
+    image: geerlingguy/docker-debian11-ansible
+    full_support_ends: "2024-08-14"
+    supported: false  # LTS only since 2024-08-14
+
+  - meta_name: Debian
+    meta_version: bookworm
+    image: geerlingguy/docker-debian12-ansible
+    full_support_ends: "2026-07-11"
+    supported: false  # LTS only since 2026-07-11
+
+  - meta_name: Debian
+    meta_version: trixie
+    image: geerlingguy/docker-debian13-ansible
+    full_support_ends: "2028-08-09"
+    supported: true

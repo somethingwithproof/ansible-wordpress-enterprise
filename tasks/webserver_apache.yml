@@ -7,7 +7,7 @@
     state: present
     update_cache: "{{ wordpress_update_cache | bool }}"
   become: true
-  when: ansible_os_family == "Debian"
+  when: ansible_facts.os_family == "Debian"
   notify: Restart apache
 
 - name: Install Apache web server (RedHat/CentOS)
@@ -15,7 +15,7 @@
     name: "{{ wordpress_web_server_package.apache }}"
     state: present
   become: true
-  when: ansible_os_family == "RedHat"
+  when: ansible_facts.os_family == "RedHat"
   notify: Restart apache
 
 - name: Enable Apache modules (Debian/Ubuntu)
@@ -23,7 +23,7 @@
     cmd: "a2enmod {{ item }}"
   loop: "{{ wordpress_apache_modules }}"
   become: true
-  when: ansible_os_family == "Debian"
+  when: ansible_facts.os_family == "Debian"
   register: apache_modules_result
   changed_when: "'already enabled' not in apache_modules_result.stdout"
   notify: Restart apache
@@ -43,7 +43,7 @@
   ansible.builtin.command:
     cmd: "a2ensite {{ wordpress_server_name }}.conf"
   become: true
-  when: ansible_os_family == "Debian"
+  when: ansible_facts.os_family == "Debian"
   register: enable_vhost_result
   changed_when: "'already enabled' not in enable_vhost_result.stdout"
   notify: Reload apache
@@ -52,7 +52,7 @@
   ansible.builtin.command:
     cmd: "a2dissite 000-default.conf"
   become: true
-  when: ansible_os_family == "Debian"
+  when: ansible_facts.os_family == "Debian"
   register: disable_default_result
   changed_when: "'already disabled' not in disable_default_result.stdout"
   notify: Reload apache
@@ -60,11 +60,11 @@
 - name: Configure Apache main configuration
   ansible.builtin.template:
     src: >-
-      {{ 'apache2.conf.j2' if ansible_os_family == 'Debian'
+      {{ 'apache2.conf.j2' if ansible_facts.os_family == 'Debian'
       else 'httpd.conf.j2' }}
     dest: >-
       {{ wordpress_apache_conf_path }}/{{
-      'apache2.conf' if ansible_os_family == 'Debian'
+      'apache2.conf' if ansible_facts.os_family == 'Debian'
       else 'conf/httpd.conf' }}
     owner: root
     group: root
@@ -78,7 +78,7 @@
     src: apache-security.conf.j2
     dest: >-
       {{ wordpress_apache_conf_path }}/{{
-      'conf-available/security.conf' if ansible_os_family == 'Debian'
+      'conf-available/security.conf' if ansible_facts.os_family == 'Debian'
       else 'conf.d/security.conf' }}
     owner: root
     group: root
@@ -91,7 +91,7 @@
   ansible.builtin.command:
     cmd: "a2enconf security"
   become: true
-  when: ansible_os_family == "Debian"
+  when: ansible_facts.os_family == "Debian"
   register: enable_security_result
   changed_when: "'already enabled' not in enable_security_result.stdout"
   notify: Reload apache
@@ -102,7 +102,7 @@
     dest: >-
       {{ wordpress_apache_conf_path }}/{{
       'conf-available/php-fpm.conf'
-      if ansible_os_family == 'Debian'
+      if ansible_facts.os_family == 'Debian'
       else 'conf.d/php-fpm.conf' }}
     owner: root
     group: root
@@ -115,7 +115,7 @@
   ansible.builtin.command:
     cmd: "a2enconf php-fpm"
   become: true
-  when: ansible_os_family == "Debian"
+  when: ansible_facts.os_family == "Debian"
   register: enable_php_fpm_result
   changed_when: "'already enabled' not in enable_php_fpm_result.stdout"
   notify: Reload apache
@@ -129,7 +129,7 @@
 
 - name: Test Apache configuration
   ansible.builtin.command:
-    cmd: "{{ 'apachectl' if ansible_os_family == 'RedHat' else 'apache2ctl' }} -t"
+    cmd: "{{ 'apachectl' if ansible_facts.os_family == 'RedHat' else 'apache2ctl' }} -t"
   become: true
   changed_when: false
   register: apache_config_test
@@ -143,8 +143,8 @@
   ansible.builtin.file:
     path: "{{ wordpress_log_dir }}/apache"
     state: directory
-    owner: "{{ 'apache' if ansible_os_family == 'RedHat' else 'www-data' }}"
-    group: "{{ 'apache' if ansible_os_family == 'RedHat' else 'www-data' }}"
+    owner: "{{ 'apache' if ansible_facts.os_family == 'RedHat' else 'www-data' }}"
+    group: "{{ 'apache' if ansible_facts.os_family == 'RedHat' else 'www-data' }}"
     mode: '0755'
   become: true
   when: wordpress_enable_logging | bool
@@ -175,12 +175,12 @@
     - >-
       {{ wordpress_apache_conf_path }}/{{
       'conf-available/security.conf'
-      if ansible_os_family == 'Debian'
+      if ansible_facts.os_family == 'Debian'
       else 'conf.d/security.conf' }}
     - >-
       {{ wordpress_apache_conf_path }}/{{
       'conf-available/php-fpm.conf'
-      if ansible_os_family == 'Debian'
+      if ansible_facts.os_family == 'Debian'
       else 'conf.d/php-fpm.conf' }}
 
 - name: Configure SELinux for Apache (RedHat/CentOS)
@@ -191,9 +191,9 @@
   become: true
   loop: "{{ wordpress_selinux_booleans }}"
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - wordpress_selinux_enabled | bool
-    - ansible_selinux.status | default('disabled') == 'enabled'
+    - ansible_facts.selinux.status | default('disabled') == 'enabled'
 
 - name: Set SELinux context for WordPress directory (RedHat/CentOS)
   community.general.sefcontext:
@@ -202,16 +202,16 @@
     state: present
   become: true
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - wordpress_selinux_enabled | bool
-    - ansible_selinux.status | default('disabled') == 'enabled'
+    - ansible_facts.selinux.status | default('disabled') == 'enabled'
 
 - name: Apply SELinux context to WordPress directory (RedHat/CentOS)
   ansible.builtin.command:
     cmd: "restorecon -Rv {{ wordpress_install_dir }}"
   become: true
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - wordpress_selinux_enabled | bool
-    - ansible_selinux.status | default('disabled') == 'enabled'
+    - ansible_facts.selinux.status | default('disabled') == 'enabled'
   changed_when: false

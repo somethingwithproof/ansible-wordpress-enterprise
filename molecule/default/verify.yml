@@ -3,7 +3,7 @@
   hosts: all
   gather_facts: true
   become: true
-  
+
   tasks:
     - name: Check WordPress directory exists
       ansible.builtin.stat:
@@ -22,7 +22,7 @@
         name: apache2
         state: started
       check_mode: true
-      when: ansible_os_family == "Debian"
+      when: ansible_facts.os_family == "Debian"
       register: apache_status
       failed_when: false
 
@@ -31,15 +31,15 @@
         name: httpd
         state: started
       check_mode: true
-      when: ansible_os_family == "RedHat"
+      when: ansible_facts.os_family == "RedHat"
       register: httpd_status
       failed_when: false
 
     - name: Verify web server is active
       ansible.builtin.assert:
         that:
-          - (ansible_os_family == "Debian" and apache_status is defined) or
-            (ansible_os_family == "RedHat" and httpd_status is defined)
+          - (ansible_facts.os_family == "Debian" and apache_status is defined) or
+            (ansible_facts.os_family == "RedHat" and httpd_status is defined)
         fail_msg: "Web server is not configured properly"
 
     - name: Check PHP is installed

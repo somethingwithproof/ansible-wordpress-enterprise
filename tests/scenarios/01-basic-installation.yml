@@ -12,7 +12,7 @@
     wordpress_version: "latest"
     wordpress_install_dir: "/var/www/wordpress"
     wordpress_site_title: "Test WordPress Site"
-    wordpress_site_url: "http://{{ ansible_default_ipv4.address }}"
+    wordpress_site_url: "http://{{ ansible_facts.default_ipv4.address }}"
 
     # Admin user
     wordpress_admin_user: "testadmin"
@@ -62,10 +62,10 @@
     wordpress_install_wpcli: true
     wordpress_enable_logging: true
     wordpress_debug: false
-    wordpress_enable_backups: false  # Disabled for testing
-    wordpress_enable_monitoring: false  # Disabled for testing
-    wordpress_configure_firewall: false  # Disabled for testing
-    wordpress_enable_fail2ban: false  # Disabled for testing
+    wordpress_enable_backups: false # Disabled for testing
+    wordpress_enable_monitoring: false # Disabled for testing
+    wordpress_configure_firewall: false # Disabled for testing
+    wordpress_enable_fail2ban: false # Disabled for testing
 
     # Testing-specific plugins
     wordpress_plugins:
@@ -94,26 +94,26 @@
 
   post_tasks:
     - name: Wait for services to be ready
-      wait_for:
+      ansible.builtin.wait_for:
         port: "{{ wordpress_http_port }}"
-        host: "{{ ansible_default_ipv4.address }}"
+        host: "{{ ansible_facts.default_ipv4.address }}"
         delay: 10
         timeout: 300
       delegate_to: localhost
 
     - name: Test WordPress installation
-      uri:
-        url: "http://{{ ansible_default_ipv4.address }}"
+      ansible.builtin.uri:
+        url: "http://{{ ansible_facts.default_ipv4.address }}"
         method: GET
         status_code: [200, 301, 302]
       delegate_to: localhost
       register: wp_response
 
     - name: Display test results
-      debug:
+      ansible.builtin.debug:
         msg:
           - "✅ WordPress installation test completed"
-          - "✅ Site accessible at: http://{{ ansible_default_ipv4.address }}"
+          - "✅ Site accessible at: http://{{ ansible_facts.default_ipv4.address }}"
           - "✅ Response status: {{ wp_response.status }}"
           - "✅ Web server: {{ wordpress_web_server }}"
           - "✅ PHP version: {{ wordpress_php_version }}"

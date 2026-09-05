@@ -6,8 +6,9 @@
 # ============================================================================
 wordpress_version: "latest"  # Specify version like "6.4.2" or "latest"
 wordpress_install_dir: "/var/www/wordpress"
+wordpress_wpcli_bin: "/usr/local/bin/wp"
 wordpress_download_url: "https://wordpress.org/wordpress-{{ wordpress_version }}.tar.gz"
-wordpress_site_url: "https://{{ ansible_fqdn }}"
+wordpress_site_url: "https://{{ ansible_facts.fqdn }}"
 wordpress_site_title: "Enterprise WordPress Site"
 
 # WordPress admin user
@@ -28,7 +29,7 @@ wordpress_credential_store: >-
      ~ '/.ansible/wordpress-credentials/' ~ inventory_hostname }}
 wordpress_admin_user: "wpadmin"
 wordpress_admin_password: "{{ lookup('password', wordpress_credential_store ~ '/admin_password length=32 chars=ascii_letters,digits') }}"
-wordpress_admin_email: "admin@{{ ansible_domain | default('example.com') }}"
+wordpress_admin_email: "admin@{{ ansible_facts.domain | default('example.com') }}"
 
 # ============================================================================
 # Database Configuration
@@ -53,7 +54,7 @@ wordpress_db_root_password: "{{ lookup('password', wordpress_credential_store ~ 
 wordpress_web_server: "nginx"
 wordpress_http_port: 80
 wordpress_https_port: 443
-wordpress_server_name: "{{ ansible_fqdn }}"
+wordpress_server_name: "{{ ansible_facts.fqdn }}"
 
 # PHP-FPM Configuration
 wordpress_php_version: "8.2"  # 7.4, 8.0, 8.1, 8.2, 8.3
@@ -72,13 +73,17 @@ wordpress_php_max_input_vars: "5000"
 # ============================================================================
 # SSL/TLS Configuration
 # ============================================================================
-wordpress_enable_ssl: true
+# Off by default: this feature needs templates the role does not ship
+# (see tests/unit/missing_templates.yml). Turning it on stops the play
+# immediately rather than part way through.
+wordpress_enable_ssl: false
 wordpress_ssl_certificate: "/etc/ssl/certs/{{ wordpress_server_name }}.crt"
 wordpress_ssl_certificate_key: "/etc/ssl/private/{{ wordpress_server_name }}.key"
+wordpress_nginx_brotli_enabled: false
+
 wordpress_ssl_protocols: "TLSv1.2 TLSv1.3"
-wordpress_ssl_ciphers: >-
-  ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:
-  ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384
+wordpress_ssl_ciphers: "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:\
+  ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384"
 wordpress_ssl_prefer_server_ciphers: true
 wordpress_ssl_session_timeout: "1d"
 wordpress_ssl_session_cache: "shared:SSL:50m"
@@ -225,7 +230,10 @@ wordpress_php_fpm_pool_path: "/etc/php/{{ wordpress_php_version }}/fpm/pool.d/ww
 # ============================================================================
 # Backup Configuration
 # ============================================================================
-wordpress_enable_backups: true
+# Off by default: this feature needs templates the role does not ship
+# (see tests/unit/missing_templates.yml). Turning it on stops the play
+# immediately rather than part way through.
+wordpress_enable_backups: false
 wordpress_backup_dir: "/var/backups/wordpress"
 wordpress_backup_retention_days: 30
 wordpress_backup_schedule_hour: "2"
@@ -273,14 +281,26 @@ wordpress_file_permissions: "0644"
 wordpress_dir_permissions: "0755"
 
 # Service control
-wordpress_enable_security: true
-wordpress_enable_caching: true
-wordpress_enable_monitoring: true
+# Off by default: this feature needs templates the role does not ship
+# (see tests/unit/missing_templates.yml). Turning it on stops the play
+# immediately rather than part way through.
+wordpress_enable_security: false
+# Off by default: this feature needs templates the role does not ship
+# (see tests/unit/missing_templates.yml). Turning it on stops the play
+# immediately rather than part way through.
+wordpress_enable_caching: false
+# Off by default: this feature needs templates the role does not ship
+# (see tests/unit/missing_templates.yml). Turning it on stops the play
+# immediately rather than part way through.
+wordpress_enable_monitoring: false
 
 # ============================================================================
 # Firewall and Security
 # ============================================================================
-wordpress_configure_firewall: true
+# Off by default: this feature needs templates the role does not ship
+# (see tests/unit/missing_templates.yml). Turning it on stops the play
+# immediately rather than part way through.
+wordpress_configure_firewall: false
 wordpress_allowed_ips: []
 # Example:
 # wordpress_allowed_ips:
@@ -288,7 +308,10 @@ wordpress_allowed_ips: []
 #   - "10.0.0.1"
 
 # Fail2ban
-wordpress_enable_fail2ban: true
+# Off by default: this feature needs templates the role does not ship
+# (see tests/unit/missing_templates.yml). Turning it on stops the play
+# immediately rather than part way through.
+wordpress_enable_fail2ban: false
 wordpress_fail2ban_maxretry: 5
 wordpress_fail2ban_findtime: "10m"
 wordpress_fail2ban_bantime: "1h"
@@ -327,7 +350,7 @@ wordpress_cloudflare_dns_records: []
 # wordpress_cloudflare_dns_records:
 #   - name: "{{ wordpress_server_name }}"
 #     type: "A"
-#     value: "{{ ansible_default_ipv4.address }}"
+#     value: "{{ ansible_facts.default_ipv4.address }}"
 #     proxied: true
 
 # DigitalOcean specific
@@ -552,7 +575,7 @@ wordpress_smtp_host: "smtp.sendgrid.net"
 wordpress_smtp_port: 587
 wordpress_smtp_user: ""
 wordpress_smtp_password: ""
-wordpress_smtp_from_email: "noreply@{{ ansible_domain | default('example.com') }}"
+wordpress_smtp_from_email: "noreply@{{ ansible_facts.domain | default('example.com') }}"
 wordpress_smtp_from_name: "{{ wordpress_site_title }}"
 wordpress_smtp_encryption: "tls"  # tls, ssl, none
 wordpress_smtp_auth: true
@@ -631,6 +654,9 @@ wordpress_password_policy: true
 # Logging paths (can be overridden per web server)
 wordpress_access_log_path: "{{
   '/var/log/nginx/access.log' if wordpress_web_server == 'nginx'
-  else '/var/log/apache2/access.log' if ansible_os_family == 'Debian'
+  else '/var/log/apache2/access.log' if ansible_facts.os_family == 'Debian'
   else '/var/log/httpd/access_log'
 }}"
+
+# XML-RPC is a common brute-force target and most sites do not use it.
+wordpress_disable_xmlrpc: true

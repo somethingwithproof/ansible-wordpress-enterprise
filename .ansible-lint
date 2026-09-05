@@ -1,20 +1,11 @@
 ---
 use_default_rules: true
 profile: production
+
+# Long lines are unavoidable in URL and Jinja values, and folding them into
+# block scalars changes the value. Every other rule is enforced.
 skip_list:
-  - yaml[line-length]  # Allow long lines
-  - key-order  # Cosmetic issue, not a bug
-  - risky-file-permissions  # File permissions are managed elsewhere
-  - no-handler  # Some tasks intentionally run when changed
-  - role-name[path]  # Role tests use relative paths to test the role in-place
-  - fqcn[action-core]  # Legacy test playbooks use short built-in module names
-  - name[casing]  # Existing handler names follow service-action casing
-  - no-changed-when  # Existing command tasks intentionally report changes
-  - ignore-errors  # Existing optional package/configuration tasks tolerate failures
-  - command-instead-of-module  # Existing checks use command output directly
-  - risky-shell-pipe  # Existing test checks use shell pipelines
-  - partial-become  # Existing test checks switch user inside controlled scenarios
-  - jinja[spacing]  # Existing complex service lookup expression is stable
+  - yaml[line-length]
 
 exclude_paths:
   - .github/

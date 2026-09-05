@@ -17,7 +17,7 @@
       - "php{{ wordpress_php_version }}-imagick"
     state: present
     update_cache: true
-  when: ansible_os_family == "Debian"
+  when: ansible_facts.os_family == "Debian"
   become: true
 
 - name: Install PHP packages for RedHat/CentOS
@@ -37,7 +37,7 @@
       - php-imagick
       - php-opcache
     state: present
-  when: ansible_os_family == "RedHat"
+  when: ansible_facts.os_family == "RedHat"
   become: true
 
 - name: Configure PHP-FPM pool
@@ -46,7 +46,7 @@
     dest: "{{ wordpress_php_fpm_pool_path }}"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   become: true
   notify: Restart php-fpm
 
@@ -57,44 +57,68 @@
     line: "{{ item.key }} = {{ item.value }}"
     state: present
   loop:
-    - { key: 'upload_max_filesize', value: '{{ wordpress_php_upload_max_filesize | default("64M") }}' }
-    - { key: 'post_max_size', value: '{{ wordpress_php_post_max_size | default("64M") }}' }
-    - { key: 'memory_limit', value: '{{ wordpress_php_memory_limit | default("256M") }}' }
-    - { key: 'max_execution_time', value: '{{ wordpress_php_max_execution_time | default("300") }}' }
-    - { key: 'max_input_time', value: '{{ wordpress_php_max_input_time | default("600") }}' }
-    - { key: 'max_input_vars', value: '{{ wordpress_php_max_input_vars | default("3000") }}' }
+    - { key: "upload_max_filesize", value: '{{ wordpress_php_upload_max_filesize | default("64M") }}' }
+    - { key: "post_max_size", value: '{{ wordpress_php_post_max_size | default("64M") }}' }
+    - { key: "memory_limit", value: '{{ wordpress_php_memory_limit | default("256M") }}' }
+    - { key: "max_execution_time", value: '{{ wordpress_php_max_execution_time | default("300") }}' }
+    - { key: "max_input_time", value: '{{ wordpress_php_max_input_time | default("600") }}' }
+    - { key: "max_input_vars", value: '{{ wordpress_php_max_input_vars | default("3000") }}' }
   become: true
   notify: Restart php-fpm
 
 - name: Install additional PHP extensions for WordPress
   ansible.builtin.apt:
     name:
-      - "php{{ wordpress_php_version }}-redis"
-      - "php{{ wordpress_php_version }}-memcached"
       - "php{{ wordpress_php_version }}-opcache"
       - "php{{ wordpress_php_version }}-apcu"
       - "php{{ wordpress_php_version }}-xdebug"
     state: present
   when:
-    - ansible_os_family == "Debian"
+    - ansible_facts.os_family == "Debian"
     - wordpress_php_install_extensions | default(true)
   become: true
-  ignore_errors: true
+  register: wordpress_php_extensions_apt
+  failed_when:
+    - wordpress_php_extensions_apt is failed
+    - >-
+      not (wordpress_php_extensions_apt.msg | default('') | lower)
+      is search('no installation candidate|unable to locate package|no package matching')
 
 - name: Install additional PHP extensions for WordPress (RedHat)
   ansible.builtin.dnf:
     name:
-      - php-redis
-      - php-memcached
       - php-opcache
       - php-apcu
       - php-xdebug
     state: present
   when:
-    - ansible_os_family == "RedHat"
+    - ansible_facts.os_family == "RedHat"
     - wordpress_php_install_extensions | default(true)
   become: true
-  ignore_errors: true
+  register: wordpress_php_extensions_dnf
+  failed_when:
+    - wordpress_php_extensions_dnf is failed
+    - >-
+      'no package' not in ((wordpress_php_extensions_dnf.msg | default('')) ~ ' ' ~
+      (wordpress_php_extensions_dnf.failures | default([]) | join(' '))) | lower
+
+- name: Install Redis PHP extension
+  ansible.builtin.package:
+    name: "{{ ('php' ~ wordpress_php_version ~ '-redis') if ansible_facts.os_family == 'Debian' else 'php-redis' }}"
+    state: present
+  become: true
+  when:
+    - wordpress_php_install_extensions | default(true)
+    - wordpress_enable_redis | default(false)
+
+- name: Install Memcached PHP extension
+  ansible.builtin.package:
+    name: "{{ ('php' ~ wordpress_php_version ~ '-memcached') if ansible_facts.os_family == 'Debian' else 'php-memcached' }}"
+    state: present
+  become: true
+  when:
+    - wordpress_php_install_extensions | default(true)
+    - wordpress_enable_memcached | default(false)
 
 - name: Configure PHP OPcache settings
   ansible.builtin.lineinfile:
@@ -103,13 +127,13 @@
     line: "{{ item.key }} = {{ item.value }}"
     state: present
   loop:
-    - { key: 'opcache.enable', value: '{{ wordpress_opcache_enable | default("1") }}' }
-    - { key: 'opcache.memory_consumption', value: '{{ wordpress_opcache_memory | default("256") }}' }
-    - { key: 'opcache.max_accelerated_files', value: '{{ wordpress_opcache_max_files | default("10000") }}' }
-    - { key: 'opcache.validate_timestamps', value: '{{ wordpress_opcache_validate_timestamps | default("0") }}' }
-    - { key: 'opcache.revalidate_freq', value: '{{ wordpress_opcache_revalidate_freq | default("2") }}' }
-    - { key: 'opcache.save_comments', value: '{{ wordpress_opcache_save_comments | default("1") }}' }
-    - { key: 'opcache.enable_file_override', value: '{{ wordpress_opcache_enable_file_override | default("1") }}' }
+    - { key: "opcache.enable", value: '{{ wordpress_opcache_enable | default("1") }}' }
+    - { key: "opcache.memory_consumption", value: '{{ wordpress_opcache_memory | default("256") }}' }
+    - { key: "opcache.max_accelerated_files", value: '{{ wordpress_opcache_max_files | default("10000") }}' }
+    - { key: "opcache.validate_timestamps", value: '{{ wordpress_opcache_validate_timestamps | default("0") }}' }
+    - { key: "opcache.revalidate_freq", value: '{{ wordpress_opcache_revalidate_freq | default("2") }}' }
+    - { key: "opcache.save_comments", value: '{{ wordpress_opcache_save_comments | default("1") }}' }
+    - { key: "opcache.enable_file_override", value: '{{ wordpress_opcache_enable_file_override | default("1") }}' }
   become: true
   notify: Restart php-fpm
   when: wordpress_opcache_enable | default(true)
@@ -121,15 +145,15 @@
     line: "{{ item.key }} = {{ item.value }}"
     state: present
   loop:
-    - { key: 'expose_php', value: '{{ wordpress_php_expose_php | default("Off") }}' }
-    - { key: 'allow_url_fopen', value: '{{ wordpress_php_allow_url_fopen | default("Off") }}' }
-    - { key: 'allow_url_include', value: '{{ wordpress_php_allow_url_include | default("Off") }}' }
-    - { key: 'display_errors', value: '{{ wordpress_php_display_errors | default("Off") }}' }
-    - { key: 'log_errors', value: '{{ wordpress_php_log_errors | default("On") }}' }
-    - { key: 'error_log', value: '{{ wordpress_php_error_log | default("/var/log/php_errors.log") }}' }
-    - { key: 'session.cookie_httponly', value: '{{ wordpress_php_session_cookie_httponly | default("1") }}' }
-    - { key: 'session.cookie_secure', value: '{{ wordpress_php_session_cookie_secure | default("1") }}' }
-    - { key: 'session.use_only_cookies', value: '{{ wordpress_php_session_use_only_cookies | default("1") }}' }
+    - { key: "expose_php", value: '{{ wordpress_php_expose_php | default("Off") }}' }
+    - { key: "allow_url_fopen", value: '{{ wordpress_php_allow_url_fopen | default("Off") }}' }
+    - { key: "allow_url_include", value: '{{ wordpress_php_allow_url_include | default("Off") }}' }
+    - { key: "display_errors", value: '{{ wordpress_php_display_errors | default("Off") }}' }
+    - { key: "log_errors", value: '{{ wordpress_php_log_errors | default("On") }}' }
+    - { key: "error_log", value: '{{ wordpress_php_error_log | default("/var/log/php_errors.log") }}' }
+    - { key: "session.cookie_httponly", value: '{{ wordpress_php_session_cookie_httponly | default("1") }}' }
+    - { key: "session.cookie_secure", value: '{{ wordpress_php_session_cookie_secure | default("1") }}' }
+    - { key: "session.use_only_cookies", value: '{{ wordpress_php_session_use_only_cookies | default("1") }}' }
   become: true
   notify: Restart php-fpm
 
@@ -140,12 +164,12 @@
     line: "{{ item.key }} = {{ item.value }}"
     state: present
   loop:
-    - { key: 'realpath_cache_size', value: '{{ wordpress_php_realpath_cache_size | default("4096K") }}' }
-    - { key: 'realpath_cache_ttl', value: '{{ wordpress_php_realpath_cache_ttl | default("600") }}' }
-    - { key: 'max_file_uploads', value: '{{ wordpress_php_max_file_uploads | default("20") }}' }
-    - { key: 'default_socket_timeout', value: '{{ wordpress_php_default_socket_timeout | default("60") }}' }
-    - { key: 'auto_prepend_file', value: '{{ wordpress_php_auto_prepend_file | default("") }}' }
-    - { key: 'auto_append_file', value: '{{ wordpress_php_auto_append_file | default("") }}' }
+    - { key: "realpath_cache_size", value: '{{ wordpress_php_realpath_cache_size | default("4096K") }}' }
+    - { key: "realpath_cache_ttl", value: '{{ wordpress_php_realpath_cache_ttl | default("600") }}' }
+    - { key: "max_file_uploads", value: '{{ wordpress_php_max_file_uploads | default("20") }}' }
+    - { key: "default_socket_timeout", value: '{{ wordpress_php_default_socket_timeout | default("60") }}' }
+    - { key: "auto_prepend_file", value: '{{ wordpress_php_auto_prepend_file | default("") }}' }
+    - { key: "auto_append_file", value: '{{ wordpress_php_auto_append_file | default("") }}' }
   become: true
   notify: Restart php-fpm
 
@@ -156,15 +180,16 @@
     line: "{{ item.key }} = {{ item.value }}"
     state: present
   loop:
-    - { key: 'pm.max_children', value: '{{ wordpress_php_fpm_max_children | default("50") }}' }
-    - { key: 'pm.start_servers', value: '{{ wordpress_php_fpm_start_servers | default("5") }}' }
-    - { key: 'pm.min_spare_servers', value: '{{ wordpress_php_fpm_min_spare_servers | default("5") }}' }
-    - { key: 'pm.max_spare_servers', value: '{{ wordpress_php_fpm_max_spare_servers | default("35") }}' }
-    - { key: 'pm.max_requests', value: '{{ wordpress_php_fpm_max_requests | default("1000") }}' }
-    - { key: 'pm.process_idle_timeout', value: '{{ wordpress_php_fpm_process_idle_timeout | default("10s") }}' }
-    - { key: 'request_terminate_timeout', value: '{{ wordpress_php_fpm_request_terminate_timeout | default("300") }}' }
-    - { key: 'rlimit_files', value: '{{ wordpress_php_fpm_rlimit_files | default("65536") }}' }
-    - { key: 'rlimit_core', value: '{{ wordpress_php_fpm_rlimit_core | default("0") }}' }
+    - { key: "pm.max_children", value: '{{ wordpress_php_fpm_max_children | default("50") }}' }
+    - { key: "pm.start_servers", value: '{{ wordpress_php_fpm_start_servers | default("5") }}' }
+    - { key: "pm.min_spare_servers", value: '{{ wordpress_php_fpm_min_spare_servers | default("5") }}' }
+    - { key: "pm.max_spare_servers", value: '{{ wordpress_php_fpm_max_spare_servers | default("35") }}' }
+    - { key: "pm.max_requests", value: '{{ wordpress_php_fpm_max_requests | default("1000") }}' }
+    - { key: "pm.process_idle_timeout", value: '{{ wordpress_php_fpm_process_idle_timeout | default("10s") }}' }
+    - key: "request_terminate_timeout"
+      value: '{{ wordpress_php_fpm_request_terminate_timeout | default("300") }}'
+    - { key: "rlimit_files", value: '{{ wordpress_php_fpm_rlimit_files | default("65536") }}' }
+    - { key: "rlimit_core", value: '{{ wordpress_php_fpm_rlimit_core | default("0") }}' }
   become: true
   notify: Restart php-fpm
 
@@ -194,7 +219,7 @@
     state: touch
     owner: "{{ wordpress_php_fpm_user }}"
     group: "{{ wordpress_php_fpm_group }}"
-    mode: '0644'
+    mode: "0644"
   become: true
 
 - name: Configure PHP session handling
@@ -204,11 +229,11 @@
     line: "{{ item.key }} = {{ item.value }}"
     state: present
   loop:
-    - { key: 'session.save_handler', value: '{{ wordpress_php_session_save_handler | default("files") }}' }
-    - { key: 'session.save_path', value: '{{ wordpress_php_session_save_path | default("/tmp") }}' }
-    - { key: 'session.gc_probability', value: '{{ wordpress_php_session_gc_probability | default("1") }}' }
-    - { key: 'session.gc_divisor', value: '{{ wordpress_php_session_gc_divisor | default("1000") }}' }
-    - { key: 'session.gc_maxlifetime', value: '{{ wordpress_php_session_gc_maxlifetime | default("1440") }}' }
+    - { key: "session.save_handler", value: '{{ wordpress_php_session_save_handler | default("files") }}' }
+    - { key: "session.save_path", value: '{{ wordpress_php_session_save_path | default("/tmp") }}' }
+    - { key: "session.gc_probability", value: '{{ wordpress_php_session_gc_probability | default("1") }}' }
+    - { key: "session.gc_divisor", value: '{{ wordpress_php_session_gc_divisor | default("1000") }}' }
+    - { key: "session.gc_maxlifetime", value: '{{ wordpress_php_session_gc_maxlifetime | default("1440") }}' }
   become: true
   notify: Restart php-fpm
   when: wordpress_php_session_save_handler | default('files') == 'files'
@@ -220,8 +245,9 @@
     line: "{{ item.key }} = {{ item.value }}"
     state: present
   loop:
-    - { key: 'session.save_handler', value: 'redis' }
-    - { key: 'session.save_path', value: '"tcp://{{ wordpress_redis_host | default("localhost") }}:{{ wordpress_redis_port | default("6379") }}"' }
+    - { key: "session.save_handler", value: "redis" }
+    - key: "session.save_path"
+      value: '"tcp://{{ wordpress_redis_host | default("localhost") }}:{{ wordpress_redis_port | default("6379") }}"'
   become: true
   notify: Restart php-fpm
   when:
@@ -232,7 +258,7 @@
   ansible.builtin.file:
     path: "/etc/systemd/system/{{ wordpress_php_fpm_service }}.service.d"
     state: directory
-    mode: '0755'
+    mode: "0755"
   become: true
 
 - name: Configure PHP-FPM systemd overrides
@@ -241,7 +267,7 @@
     dest: "/etc/systemd/system/{{ wordpress_php_fpm_service }}.service.d/override.conf"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   become: true
   notify:
     - Reload systemd
@@ -256,16 +282,14 @@
     daemon_reload: true
   become: true
 
-- name: Verify PHP-FPM is running
-  ansible.builtin.command:
-    cmd: "systemctl is-active {{ wordpress_php_fpm_service }}"
-  register: php_fpm_status
-  changed_when: false
-  failed_when: false
+- name: Collect service state
+  ansible.builtin.service_facts:
 
 - name: Display PHP-FPM status
   ansible.builtin.debug:
-    msg: "PHP-FPM service is {{ php_fpm_status.stdout | default('unknown') }}"
+    msg: >-
+      PHP-FPM service is
+      {{ ansible_facts.services[wordpress_php_fpm_service ~ '.service'].state | default('unknown') }}
   when: wordpress_debug | default(false)
 
 - name: Test PHP functionality
@@ -274,7 +298,7 @@
     dest: "{{ wordpress_install_dir }}/phpinfo.php"
     owner: "{{ wordpress_system_user }}"
     group: "{{ wordpress_system_group }}"
-    mode: '0644'
+    mode: "0644"
   become: true
   when: wordpress_php_create_phpinfo | default(false)
 

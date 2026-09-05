@@ -64,9 +64,9 @@ jobs:
           - scenario: default
             name: Ubuntu 22/24 and Rocky 9
           - scenario: debian
-            name: Debian (11, 12)
+            name: Debian 13
           - scenario: rhel
-            name: RHEL (8, 9)
+            name: Rocky 9
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -83,9 +83,7 @@ jobs:
 
       - name: Install Ansible collections
         run: |
-          ansible-galaxy collection install community.general
-          ansible-galaxy collection install community.mysql
-          ansible-galaxy collection install ansible.posix
+          ansible-galaxy collection install -r requirements.yml
 
       - name: Run Molecule test (${{ matrix.scenario }} scenario)
         run: molecule test --scenario-name ${{ matrix.scenario }}

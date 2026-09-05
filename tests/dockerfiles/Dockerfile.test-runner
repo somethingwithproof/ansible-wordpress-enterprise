@@ -20,8 +20,7 @@ RUN apt-get update && apt-get install -y \
     docker.io \
     docker-compose \
     xmlstarlet \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get clean
 
 # Install Ansible and testing dependencies
 RUN pip3 install --no-cache-dir \
@@ -39,12 +38,14 @@ RUN pip3 install --no-cache-dir \
     selenium \
     testinfra
 
-# Install Ansible collections needed for testing
-RUN ansible-galaxy collection install \
-    community.general \
-    community.mysql \
-    community.crypto \
-    ansible.posix
+# Install from requirements.yml so the runner cannot drift from the role's
+# own declared collections, as it had (community.mysql is deprecated in
+# favour of ansible.mysql).
+COPY requirements.yml /tmp/requirements.yml
+# Install system-wide: this image runs as the unprivileged tester user,
+# so collections under /root are unreadable at run time.
+RUN ansible-galaxy collection install -r /tmp/requirements.yml \
+    -p /usr/share/ansible/collections
 
 # Create working directory
 WORKDIR /ansible-workspace

@@ -3,19 +3,19 @@
   hosts: all
   gather_facts: false
   tasks:
-    - name: Ensure a supported Python is present
-      ansible.builtin.raw: test -x /usr/bin/python3.9 || dnf -y install python39
-      changed_when: false
+    - name: Wait for system to be ready
+      ansible.builtin.wait_for_connection:
+        timeout: 60
 
-    - name: Wait for container command execution
-      ansible.builtin.raw: /bin/true
-      register: container_ready
-      changed_when: false
-      retries: 30
-      delay: 2
-      until: container_ready.rc == 0
-
-    - name: Let sudo skip unavailable PAM account services in the container
+    # Converge escalates, and sudo has failed here with a PAM account error on
+    # the amd64 runner while working locally. Report the state it depends on so
+    # a failure names its cause instead of the symptom.
+    # The runner's containers fail sudo's PAM account phase for root, with an
+    # identical shadow, sudoers, nsswitch and system-auth to a host where it
+    # succeeds. Converge only needs escalation because the role asks for it; we
+    # are already root, so let sudo's account phase pass rather than chase a
+    # difference that is not in the config. Test scaffolding only.
+    - name: Let sudo skip account management in the container
       ansible.builtin.raw: |
         set -e
         for f in /etc/pam.d/system-auth /etc/pam.d/password-auth; do
@@ -25,7 +25,27 @@
         sed -i 's|^account.*system-auth|account    sufficient    pam_permit.so|' /etc/pam.d/sudo
       changed_when: false
 
-    - name: Install python for Ansible
-      ansible.builtin.raw: test -e /usr/bin/python3 || (dnf -y install python3)
+    - name: Report sudo and PAM state
+      ansible.builtin.raw: |
+        id
+        sudo -n true 2>&1; echo "sudo_rc=$?"
+        ls -l /etc/shadow /etc/sudoers
+        getent passwd root
+        grep -E '^(passwd|shadow)' /etc/nsswitch.conf
+        echo "--- pam.d/sudo ---"
+        grep -vE '^#|^$' /etc/pam.d/sudo
+        echo "--- caps and shadow readability ---"
+        grep -E '^Cap(Eff|Bnd)' /proc/self/status
+        head -c 12 /etc/shadow >/dev/null 2>&1 && echo "shadow_readable=yes" || echo "shadow_readable=no"
+        getent shadow root |
+          awk -F: '{ if ($2 == "") s = "empty";
+                     else if ($2 ~ /^[!*]/) s = "locked";
+                     else s = "set";
+                     print $1, "password=" s }'
+      register: rhel_sudo_state
       changed_when: false
       failed_when: false
+
+    - name: Show sudo and PAM state
+      ansible.builtin.debug:
+        var: rhel_sudo_state.stdout_lines

@@ -55,19 +55,29 @@ wordpress_db_service:
   mysql: "mysqld"
   mariadb: "mariadb"
 
+wordpress_php_fpm_listen: "/run/php-fpm/www.sock"
+
+wordpress_security_tools:
+  - "fail2ban"
+  - "logwatch"
+  - "rkhunter"
+
+wordpress_db_socket: "/var/lib/mysql/mysql.sock"
+
 wordpress_db_config_dir:
   mysql: "/etc/my.cnf.d"
   mariadb: "/etc/my.cnf.d"
 
-wordpress_php_fpm_service: "php{{ wordpress_php_version }}-fpm"
+wordpress_php_fpm_service: "php-fpm"
 wordpress_redis_service: "redis"
 wordpress_sshd_service: "sshd"
 wordpress_memcached_service: "memcached"
 
-# Paths (Remi PHP uses /etc/opt/remi/phpXY/ structure on RHEL)
-wordpress_php_ini_path: "/etc/opt/remi/php{{ wordpress_php_version | replace('.', '') }}/php.ini"
-wordpress_php_fpm_conf_path: "/etc/opt/remi/php{{ wordpress_php_version | replace('.', '') }}/php-fpm.conf"
-wordpress_php_fpm_pool_path: "/etc/opt/remi/php{{ wordpress_php_version | replace('.', '') }}/php-fpm.d/www.conf"
+# tasks/php.yml installs the unversioned AppStream php/php-fpm packages, so the
+# config lives at the stock locations, not under the Remi /etc/opt/remi tree.
+wordpress_php_ini_path: "/etc/php.ini"
+wordpress_php_fpm_conf_path: "/etc/php-fpm.conf"
+wordpress_php_fpm_pool_path: "/etc/php-fpm.d/www.conf"
 wordpress_nginx_conf_path: "/etc/nginx"
 wordpress_apache_conf_path: "/etc/httpd"
 wordpress_nginx_sites_available: "{{ wordpress_nginx_conf_path }}/conf.d"
@@ -76,7 +86,6 @@ wordpress_apache_sites_available: "{{ wordpress_apache_conf_path }}/conf.d"
 wordpress_apache_sites_enabled: "{{ wordpress_apache_conf_path }}/conf.d"
 
 # PHP-FPM socket/listen
-wordpress_php_fpm_listen_rhel: "/var/run/php-fpm/www.sock"
 
 # Firewall
 wordpress_firewall_service: "firewalld"
@@ -84,7 +93,7 @@ wordpress_firewall_http_service: "http"
 wordpress_firewall_https_service: "https"
 
 # SELinux
-wordpress_selinux_enabled: "{{ ansible_selinux.status == 'enabled' }}"
+wordpress_selinux_enabled: "{{ ansible_facts.selinux.status == 'enabled' }}"
 wordpress_selinux_booleans:
   - httpd_can_network_connect
   - httpd_can_network_connect_db
@@ -97,11 +106,9 @@ wordpress_enable_remi: true
 
 wordpress_remi_repo_url: >-
   https://rpms.remirepo.net/enterprise/remi-release-{{
-  ansible_distribution_major_version }}.rpm
+  ansible_facts.distribution_major_version }}.rpm
 wordpress_epel_repo_url: >-
   https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{
-  ansible_distribution_major_version }}.noarch.rpm
+  ansible_facts.distribution_major_version }}.noarch.rpm
 
 # System user defaults
-wordpress_php_fpm_user_rhel: "nginx"
-wordpress_php_fpm_group_rhel: "nginx"

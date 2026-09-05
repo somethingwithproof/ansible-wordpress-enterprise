@@ -3,17 +3,18 @@
 # Tests comprehensive security hardening including SELinux (RHEL/CentOS) and AppArmor (Ubuntu/Debian)
 
 - name: WordPress Enterprise Security Hardening Test
-  hosts: all
+  hosts: wordpress_servers
   become: true
   gather_facts: true
 
   vars:
     # Test configuration
     test_run_id: "{{ test_run_id | default('security_test') }}"
-    wordpress_path: "/var/www/html/wordpress"
+    wordpress_install_dir: "/var/www/html/wordpress"
     wordpress_db_name: "wordpress_security_test"
     wordpress_db_user: "wp_security_user"
     wordpress_db_password: "SecureTestPass123!"
+    wordpress_php_version: "8.1"
     wordpress_admin_user: "securityadmin"
     wordpress_admin_password: "AdminSecurePass456!"
     wordpress_admin_email: "security-admin@test.local"
@@ -49,33 +50,34 @@
     wordpress_password_policy: true
 
     # Web server configuration
-    wordpress_web_server: "{{ 'nginx' if ansible_os_family == 'Debian' else 'apache' }}"
+    wordpress_web_server: "{{ 'nginx' if ansible_facts.os_family == 'Debian' else 'apache' }}"
     wordpress_enable_ssl: true
     wordpress_ssl_certificate_type: "self-signed"
 
     # Caching configuration
     wordpress_enable_caching: true
-    wordpress_cache_type: "{{ 'redis' if ansible_os_family == 'Debian' else 'memcached' }}"
+    wordpress_cache_type: "{{ 'redis' if ansible_facts.os_family == 'Debian' else 'memcached' }}"
 
   pre_tasks:
     - name: Set test facts
       ansible.builtin.set_fact:
-        test_start_time: "{{ ansible_date_time.epoch }}"
-        expected_security_system: "{{ 'SELinux' if ansible_os_family == 'RedHat' else 'AppArmor' if ansible_os_family == 'Debian' else 'None' }}"
+        test_start_time: "{{ ansible_facts.date_time.epoch }}"
+        expected_security_system: "{{ 'SELinux' if ansible_facts.os_family == 'RedHat' else 'AppArmor' if ansible_facts.os_family == 'Debian'
+          else 'None' }}"
 
     - name: Display test information
       ansible.builtin.debug:
         msg: |
           Starting WordPress Security Hardening Test
           Test Run ID: {{ test_run_id }}
-          Target OS: {{ ansible_distribution }} {{ ansible_distribution_version }}
+          Target OS: {{ ansible_facts.distribution }} {{ ansible_facts.distribution_version }}
           Expected Security System: {{ expected_security_system }}
           Web Server: {{ wordpress_web_server }}
           Cache Type: {{ wordpress_cache_type }}
 
   roles:
     - role: ansible-wordpress-enterprise
-      tags: ['wordpress', 'security']
+      tags: ["wordpress", "security"]
 
   post_tasks:
     # Test 1: Verify Security System Installation
@@ -86,14 +88,14 @@
           register: selinux_status_check
           failed_when: false
           changed_when: false
-          when: ansible_os_family == "RedHat"
+          when: ansible_facts.os_family == "RedHat"
 
         - name: Check AppArmor status (Ubuntu/Debian)
           ansible.builtin.command: aa-status
           register: apparmor_status_check
           failed_when: false
           changed_when: false
-          when: ansible_os_family == "Debian"
+          when: ansible_facts.os_family == "Debian"
 
         - name: Verify SELinux is enforcing
           ansible.builtin.assert:
@@ -101,7 +103,7 @@
               - selinux_status_check.stdout == "Enforcing"
             fail_msg: "SELinux is not in enforcing mode"
             success_msg: "SELinux is properly enforcing"
-          when: ansible_os_family == "RedHat"
+          when: ansible_facts.os_family == "RedHat"
 
         - name: Verify AppArmor is active
           ansible.builtin.assert:
@@ -110,14 +112,14 @@
               - "'profiles are loaded' in apparmor_status_check.stdout"
             fail_msg: "AppArmor is not active or no profiles loaded"
             success_msg: "AppArmor is active with profiles loaded"
-          when: ansible_os_family == "Debian"
+          when: ansible_facts.os_family == "Debian"
 
     # Test 2: Verify WordPress File Contexts/Permissions
     - name: Test - Verify WordPress file security contexts
       block:
         - name: Check WordPress directory permissions
           ansible.builtin.stat:
-            path: "{{ wordpress_path }}"
+            path: "{{ wordpress_install_dir }}"
           register: wp_dir_stat
 
         - name: Verify WordPress directory ownership and permissions
@@ -130,10 +132,10 @@
             success_msg: "WordPress directory has correct permissions"
 
         - name: Check SELinux contexts on WordPress files (RHEL/CentOS)
-          ansible.builtin.command: ls -laZ {{ wordpress_path }}
+          ansible.builtin.command: ls -laZ {{ wordpress_install_dir }}
           register: wp_selinux_context
           changed_when: false
-          when: ansible_os_family == "RedHat"
+          when: ansible_facts.os_family == "RedHat"
 
         - name: Verify SELinux contexts are applied
           ansible.builtin.assert:
@@ -141,13 +143,13 @@
               - "'httpd_exec_t' in wp_selinux_context.stdout or 'httpd_sys_content_t' in wp_selinux_context.stdout"
             fail_msg: "WordPress files do not have proper SELinux contexts"
             success_msg: "WordPress files have proper SELinux contexts"
-          when: ansible_os_family == "RedHat"
+          when: ansible_facts.os_family == "RedHat"
 
         - name: Check AppArmor profiles are loaded (Ubuntu/Debian)
           ansible.builtin.command: aa-status
           register: apparmor_profiles
           changed_when: false
-          when: ansible_os_family == "Debian"
+          when: ansible_facts.os_family == "Debian"
 
         - name: Verify WordPress AppArmor profiles are loaded
           ansible.builtin.assert:
@@ -155,7 +157,7 @@
               - "'wordpress-php-fpm' in apparmor_profiles.stdout or 'php-fpm' in apparmor_profiles.stdout"
             fail_msg: "WordPress AppArmor profiles are not loaded"
             success_msg: "WordPress AppArmor profiles are loaded"
-          when: ansible_os_family == "Debian"
+          when: ansible_facts.os_family == "Debian"
 
     # Test 3: Verify Security Tools Installation
     - name: Test - Verify security tools are installed and configured
@@ -197,13 +199,13 @@
           ansible.builtin.systemd:
             name: firewalld
           register: firewalld_status
-          when: ansible_os_family == "RedHat"
+          when: ansible_facts.os_family == "RedHat"
 
         - name: Check ufw status (Ubuntu/Debian)
           ansible.builtin.command: ufw status
           register: ufw_status
           changed_when: false
-          when: ansible_os_family == "Debian"
+          when: ansible_facts.os_family == "Debian"
 
         - name: Verify firewall is active (RHEL/CentOS)
           ansible.builtin.assert:
@@ -211,7 +213,7 @@
               - firewalld_status.status.ActiveState == "active"
             fail_msg: "firewalld is not active"
             success_msg: "firewalld is active"
-          when: ansible_os_family == "RedHat"
+          when: ansible_facts.os_family == "RedHat"
 
         - name: Verify firewall is active (Ubuntu/Debian)
           ansible.builtin.assert:
@@ -219,7 +221,7 @@
               - "'Status: active' in ufw_status.stdout"
             fail_msg: "ufw is not active"
             success_msg: "ufw is active"
-          when: ansible_os_family == "Debian"
+          when: ansible_facts.os_family == "Debian"
 
     # Test 5: Verify Audit Logging
     - name: Test - Verify audit logging is configured
@@ -240,7 +242,7 @@
           ansible.builtin.stat:
             path: /etc/audit/rules.d/wordpress.rules
           register: audit_rules_stat
-          when: ansible_os_family == "RedHat"
+          when: ansible_facts.os_family == "RedHat"
 
         - name: Verify WordPress audit rules exist (RHEL/CentOS)
           ansible.builtin.assert:
@@ -248,10 +250,13 @@
               - audit_rules_stat.stat.exists
             fail_msg: "WordPress audit rules not found"
             success_msg: "WordPress audit rules exist"
-          when: ansible_os_family == "RedHat"
+          when: ansible_facts.os_family == "RedHat"
 
     # Test 6: Verify SELinux Booleans (RHEL/CentOS)
     - name: Test - Verify SELinux booleans are correctly set
+      when: ansible_facts.os_family == "RedHat"
+
+      # Test 7: Verify AppArmor Profiles (Ubuntu/Debian)
       block:
         - name: Check critical SELinux booleans
           ansible.builtin.command: getsebool {{ item }}
@@ -270,13 +275,15 @@
             fail_msg: "SELinux boolean {{ item.item }} is not enabled"
             success_msg: "SELinux boolean {{ item.item }} is enabled"
           loop: "{{ selinux_booleans_check.results }}"
-      when: ansible_os_family == "RedHat"
-
-    # Test 7: Verify AppArmor Profiles (Ubuntu/Debian)
     - name: Test - Verify AppArmor profiles are in correct mode
+      when: ansible_facts.os_family == "Debian"
+
+      # Test 8: Verify Security Scripts Installation
       block:
         - name: Check AppArmor profile modes
-          ansible.builtin.shell: aa-status | grep -E "(wordpress|php|nginx|apache)" | head -10
+          ansible.builtin.shell:
+            cmd: set -o pipefail && aa-status | grep -E "(wordpress|php|nginx|apache)" | head -10
+            executable: /bin/bash
           register: apparmor_profile_modes
           changed_when: false
 
@@ -290,9 +297,6 @@
               - apparmor_profile_modes.stdout != ""
             fail_msg: "No WordPress-related AppArmor profiles found"
             success_msg: "WordPress AppArmor profiles are loaded"
-      when: ansible_os_family == "Debian"
-
-    # Test 8: Verify Security Scripts Installation
     - name: Test - Verify security monitoring scripts are installed
       block:
         - name: Check security status script
@@ -325,7 +329,7 @@
           loop:
             - /usr/local/bin/wordpress-selinux-status
             - /usr/local/bin/wordpress-selinux-troubleshoot
-          when: ansible_os_family == "RedHat"
+          when: ansible_facts.os_family == "RedHat"
 
         - name: Verify SELinux scripts exist (RHEL/CentOS)
           ansible.builtin.assert:
@@ -335,7 +339,7 @@
             fail_msg: "SELinux script {{ item.item }} is not properly installed"
             success_msg: "SELinux script {{ item.item }} is installed"
           loop: "{{ selinux_scripts.results }}"
-          when: ansible_os_family == "RedHat"
+          when: ansible_facts.os_family == "RedHat"
 
         - name: Check AppArmor-specific scripts (Ubuntu/Debian)
           ansible.builtin.stat:
@@ -344,7 +348,7 @@
           loop:
             - /usr/local/bin/wordpress-apparmor-status
             - /usr/local/bin/wordpress-apparmor-troubleshoot
-          when: ansible_os_family == "Debian"
+          when: ansible_facts.os_family == "Debian"
 
         - name: Verify AppArmor scripts exist (Ubuntu/Debian)
           ansible.builtin.assert:
@@ -354,7 +358,7 @@
             fail_msg: "AppArmor script {{ item.item }} is not properly installed"
             success_msg: "AppArmor script {{ item.item }} is installed"
           loop: "{{ apparmor_scripts.results }}"
-          when: ansible_os_family == "Debian"
+          when: ansible_facts.os_family == "Debian"
 
     # Test 10: Verify Automatic Security Updates
     - name: Test - Verify automatic security updates are configured
@@ -364,7 +368,7 @@
           register: unattended_upgrades_check
           failed_when: false
           changed_when: false
-          when: ansible_os_family == "Debian"
+          when: ansible_facts.os_family == "Debian"
 
         - name: Verify unattended-upgrades is installed (Ubuntu/Debian)
           ansible.builtin.assert:
@@ -372,14 +376,14 @@
               - unattended_upgrades_check.rc == 0
             fail_msg: "unattended-upgrades is not installed"
             success_msg: "unattended-upgrades is installed"
-          when: ansible_os_family == "Debian"
+          when: ansible_facts.os_family == "Debian"
 
         - name: Check yum-cron (RHEL/CentOS)
           ansible.builtin.systemd:
             name: yum-cron
           register: yum_cron_status
           failed_when: false
-          when: ansible_os_family == "RedHat"
+          when: ansible_facts.os_family == "RedHat"
 
         - name: Verify yum-cron is enabled (RHEL/CentOS)
           ansible.builtin.assert:
@@ -387,14 +391,14 @@
               - yum_cron_status.status.UnitFileState == "enabled"
             fail_msg: "yum-cron is not enabled"
             success_msg: "yum-cron is enabled"
-          when: ansible_os_family == "RedHat"
+          when: ansible_facts.os_family == "RedHat"
 
     # Test 11: Verify WordPress Security Configuration
     - name: Test - Verify WordPress-specific security configurations
       block:
         - name: Check uploads directory protection (Apache)
           ansible.builtin.stat:
-            path: "{{ wordpress_path }}/wp-content/uploads/.htaccess"
+            path: "{{ wordpress_install_dir }}/wp-content/uploads/.htaccess"
           register: htaccess_protection
           when: wordpress_web_server == "apache"
 
@@ -408,7 +412,7 @@
 
         - name: Check wp-config.php permissions
           ansible.builtin.stat:
-            path: "{{ wordpress_path }}/wp-config.php"
+            path: "{{ wordpress_install_dir }}/wp-config.php"
           register: wp_config_stat
 
         - name: Verify wp-config.php has secure permissions
@@ -425,6 +429,7 @@
         - name: Check security maintenance cron job
           ansible.builtin.command: crontab -l
           register: cron_jobs
+          become: true
           become_user: root
           changed_when: false
 
@@ -455,18 +460,18 @@
           ansible.builtin.command: /usr/local/bin/wordpress-selinux-status
           register: selinux_status_output
           changed_when: false
-          when: ansible_os_family == "RedHat"
+          when: ansible_facts.os_family == "RedHat"
 
         - name: Execute platform-specific security status (AppArmor)
           ansible.builtin.command: /usr/local/bin/wordpress-apparmor-status
           register: apparmor_status_output
           changed_when: false
-          when: ansible_os_family == "Debian"
+          when: ansible_facts.os_family == "Debian"
 
         - name: Verify platform-specific scripts run successfully
           ansible.builtin.assert:
             that:
-              - "(selinux_status_output.rc == 0) if ansible_os_family == 'RedHat' else (apparmor_status_output.rc == 0)"
+              - "(selinux_status_output.rc == 0) if ansible_facts.os_family == 'RedHat' else (apparmor_status_output.rc == 0)"
             fail_msg: "Platform-specific security script failed"
             success_msg: "Platform-specific security scripts work correctly"
 
@@ -474,11 +479,11 @@
     - name: Test - Verify security system handles edge cases
       block:
         - name: Test file context restoration (SELinux)
-          ansible.builtin.command: restorecon -R -v -n {{ wordpress_path }}
+          ansible.builtin.command: restorecon -R -v -n {{ wordpress_install_dir }}
           register: restorecon_test
           changed_when: false
           failed_when: false
-          when: ansible_os_family == "RedHat"
+          when: ansible_facts.os_family == "RedHat"
 
         - name: Test AppArmor profile syntax (Ubuntu/Debian)
           ansible.builtin.command: apparmor_parser -T {{ item }}
@@ -490,7 +495,7 @@
             - /etc/apparmor.d/wordpress-nginx
             - /etc/apparmor.d/wordpress-apache
             - /etc/apparmor.d/wordpress-wpcli
-          when: ansible_os_family == "Debian"
+          when: ansible_facts.os_family == "Debian"
 
         - name: Verify AppArmor profiles have valid syntax
           ansible.builtin.assert:
@@ -500,7 +505,7 @@
             success_msg: "AppArmor profile {{ item.item | basename }} has valid syntax"
           loop: "{{ apparmor_syntax_test.results }}"
           when:
-            - ansible_os_family == "Debian"
+            - ansible_facts.os_family == "Debian"
             - apparmor_syntax_test is defined
 
     # Test 15: Performance and Resource Impact
@@ -536,14 +541,14 @@
       block:
         - name: Calculate test execution time
           ansible.builtin.set_fact:
-            test_duration: "{{ ansible_date_time.epoch | int - test_start_time | int }}"
+            test_duration: "{{ ansible_facts.date_time.epoch | int - test_start_time | int }}"
 
         - name: Generate test summary
           ansible.builtin.debug:
             msg: |
               ===== WORDPRESS SECURITY HARDENING TEST SUMMARY =====
               Test Run ID: {{ test_run_id }}
-              Target System: {{ ansible_distribution }} {{ ansible_distribution_version }}
+              Target System: {{ ansible_facts.distribution }} {{ ansible_facts.distribution_version }}
               Security System: {{ expected_security_system }}
               Web Server: {{ wordpress_web_server }}
               Test Duration: {{ test_duration }} seconds
@@ -573,11 +578,11 @@
           ansible.builtin.file:
             path: "/tmp/wordpress-security-test-{{ test_run_id }}-complete"
             state: touch
-            mode: '0644'
+            mode: "0644"
 
         - name: Log test completion
           ansible.builtin.lineinfile:
             path: "/var/log/wordpress-tests.log"
             create: true
-            line: "{{ ansible_date_time.iso8601 }}: Security hardening test {{ test_run_id }} completed successfully"
-            mode: '0644'
+            line: "{{ ansible_facts.date_time.iso8601 }}: Security hardening test {{ test_run_id }} completed successfully"
+            mode: "0644"

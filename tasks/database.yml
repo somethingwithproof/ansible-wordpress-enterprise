@@ -22,9 +22,7 @@
   ansible.mysql.mysql_user:
     name: root
     password: "{{ wordpress_db_root_password }}"
-    login_unix_socket: >-
-      {{ '/var/run/mysqld/mysqld.sock' if ansible_os_family == 'Debian'
-         else '/var/lib/mysql/mysql.sock' }}
+    login_unix_socket: "{{ wordpress_db_socket }}"
     state: present
   become: true
   when:
@@ -39,7 +37,7 @@
     dest: /root/.my.cnf
     owner: root
     group: root
-    mode: '0600'
+    mode: "0600"
   become: true
   when: not wordpress_use_external_db | bool
 
@@ -71,7 +69,7 @@
     login_password: "{{ wordpress_db_root_password }}"
   become: true
   loop:
-    - "{{ ansible_hostname }}"
+    - "{{ ansible_facts.hostname }}"
     - "127.0.0.1"
     - "::1"
     - "localhost.localdomain"
@@ -107,7 +105,7 @@
     dest: "{{ wordpress_db_config_dir[wordpress_db_engine] }}/wordpress.cnf"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
     backup: true
   become: true
   when: not wordpress_use_external_db | bool
@@ -121,7 +119,7 @@
     dest: "{{ wordpress_db_config_dir[wordpress_db_engine] }}/optimization.cnf"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
     backup: true
   become: true
   when: not wordpress_use_external_db | bool
@@ -133,28 +131,7 @@
     state: directory
     owner: root
     group: root
-    mode: '0750'
-  become: true
-  when: wordpress_enable_backups | bool
-
-- name: Create database backup script
-  ansible.builtin.template:
-    src: database-backup.sh.j2
-    dest: /usr/local/bin/wordpress-db-backup.sh
-    owner: root
-    group: root
-    mode: '0755'
-  become: true
-  when: wordpress_enable_backups | bool
-
-- name: Schedule database backup cron job
-  ansible.builtin.cron:
-    name: "WordPress Database Backup"
-    minute: "{{ wordpress_backup_schedule_minute }}"
-    hour: "{{ wordpress_backup_schedule_hour }}"
-    job: "/usr/local/bin/wordpress-db-backup.sh"
-    user: root
-    state: present
+    mode: "0750"
   become: true
   when: wordpress_enable_backups | bool
 
@@ -164,7 +141,7 @@
     dest: /etc/logrotate.d/mysql-wordpress
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   become: true
   when:
     - not wordpress_use_external_db | bool
@@ -196,10 +173,10 @@
 
 - name: Enable slow query log
   ansible.mysql.mysql_query:
-    query: |
-      SET GLOBAL slow_query_log = 'ON';
-      SET GLOBAL slow_query_log_file = '/var/log/mysql/slow.log';
-      SET GLOBAL long_query_time = 2;
+    query:
+      - "SET GLOBAL slow_query_log = 'ON'"
+      - "SET GLOBAL slow_query_log_file = '{{ wordpress_mysql_slow_query_log_file | default('/var/log/mysql/slow.log') }}'"
+      - "SET GLOBAL long_query_time = {{ wordpress_mysql_long_query_time | default(2) }}"
     login_user: root
     login_password: "{{ wordpress_db_root_password }}"
   become: true
@@ -218,7 +195,7 @@
         state: directory
         owner: mysql
         group: mysql
-        mode: '0750'
+        mode: "0750"
       become: true
 
     - name: Copy database SSL certificates
@@ -227,7 +204,7 @@
         dest: "{{ item.dest }}"
         owner: mysql
         group: mysql
-        mode: '0640'
+        mode: "0640"
       become: true
       loop:
         - { src: "{{ wordpress_external_db_ssl_ca }}", dest: "/etc/mysql/ssl/ca.pem" }
@@ -236,23 +213,3 @@
       when:
         - item.src != ""
         - item.src is defined
-
-- name: Create database monitoring script
-  ansible.builtin.template:
-    src: database-monitor.sh.j2
-    dest: /usr/local/bin/wordpress-db-monitor.sh
-    owner: root
-    group: root
-    mode: '0755'
-  become: true
-  when: wordpress_enable_logging | bool
-
-- name: Schedule database monitoring
-  ansible.builtin.cron:
-    name: "WordPress Database Monitoring"
-    minute: "*/5"
-    job: "/usr/local/bin/wordpress-db-monitor.sh"
-    user: root
-    state: present
-  become: true
-  when: wordpress_enable_logging | bool
