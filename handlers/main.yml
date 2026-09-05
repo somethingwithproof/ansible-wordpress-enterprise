@@ -81,6 +81,7 @@
     name: auditd
     state: restarted
   become: true
+  changed_when: false
 
 - name: Reload apparmor
   ansible.builtin.systemd:
