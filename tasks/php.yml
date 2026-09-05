@@ -69,8 +69,6 @@
 - name: Install additional PHP extensions for WordPress
   ansible.builtin.apt:
     name:
-      - "php{{ wordpress_php_version }}-redis"
-      - "php{{ wordpress_php_version }}-memcached"
       - "php{{ wordpress_php_version }}-opcache"
       - "php{{ wordpress_php_version }}-apcu"
       - "php{{ wordpress_php_version }}-xdebug"
@@ -89,8 +87,6 @@
 - name: Install additional PHP extensions for WordPress (RedHat)
   ansible.builtin.dnf:
     name:
-      - php-redis
-      - php-memcached
       - php-opcache
       - php-apcu
       - php-xdebug
@@ -105,6 +101,24 @@
     - >-
       'no package' not in ((wordpress_php_extensions_dnf.msg | default('')) ~ ' ' ~
       (wordpress_php_extensions_dnf.failures | default([]) | join(' '))) | lower
+
+- name: Install Redis PHP extension
+  ansible.builtin.package:
+    name: "{{ ('php' ~ wordpress_php_version ~ '-redis') if ansible_facts.os_family == 'Debian' else 'php-redis' }}"
+    state: present
+  become: true
+  when:
+    - wordpress_php_install_extensions | default(true)
+    - wordpress_enable_redis | default(false)
+
+- name: Install Memcached PHP extension
+  ansible.builtin.package:
+    name: "{{ ('php' ~ wordpress_php_version ~ '-memcached') if ansible_facts.os_family == 'Debian' else 'php-memcached' }}"
+    state: present
+  become: true
+  when:
+    - wordpress_php_install_extensions | default(true)
+    - wordpress_enable_memcached | default(false)
 
 - name: Configure PHP OPcache settings
   ansible.builtin.lineinfile:

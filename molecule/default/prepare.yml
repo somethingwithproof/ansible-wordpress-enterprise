@@ -6,8 +6,22 @@
     - name: Wait for system to be ready
       ansible.builtin.wait_for_connection:
         timeout: 60
-    
+
     - name: Install python for Ansible
-      ansible.builtin.raw: test -e /usr/bin/python3 || (apt-get -y update && apt-get install -y python3-minimal)
+      ansible.builtin.raw: >-
+        test -e /usr/bin/python3 ||
+        ((command -v apt-get >/dev/null && apt-get -y update && apt-get install -y python3-minimal) ||
+        (command -v dnf >/dev/null && dnf -y install python3))
       changed_when: false
       failed_when: false
+
+    - name: Let sudo skip unavailable PAM account services in test containers
+      ansible.builtin.raw: |
+        if [ -f /etc/redhat-release ]; then
+          for file in /etc/pam.d/system-auth /etc/pam.d/password-auth; do
+            [ -f "$file" ] && sed -i '/pam_sss\.so/d' "$file"
+          done
+          sed -i 's/^\(passwd:.*\)sss /\1/' /etc/nsswitch.conf
+          sed -i 's|^account.*system-auth|account    sufficient    pam_permit.so|' /etc/pam.d/sudo
+        fi
+      changed_when: false

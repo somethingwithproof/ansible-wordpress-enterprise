@@ -10,6 +10,8 @@
   vars:
     test_run_id: "{{ test_run_id | default('security_edge_test') }}"
     wordpress_install_dir: "/var/www/html/wordpress"
+    wordpress_system_user: "{{ 'apache' if ansible_facts.os_family == 'RedHat' else 'www-data' }}"
+    wordpress_system_group: "{{ 'apache' if ansible_facts.os_family == 'RedHat' else 'www-data' }}"
     # ubuntu:22.04 ships php8.1; the role default of 8.2 has no candidate.
     wordpress_php_version: "8.1"
 
