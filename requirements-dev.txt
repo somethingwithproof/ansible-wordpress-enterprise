@@ -4,7 +4,7 @@
 
 # Additional dev tools
 black>=26.5.1
-flake8>=7.3.0
+flake8>=7.4.1
 pre-commit>=4.6.2
 tox>=4.61.5
 coverage>=7.16.0
