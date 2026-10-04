@@ -36,12 +36,12 @@ runtime_platforms:
 
 ansible_core:
   release_line: "2.21"
-  minimum_version: "2.21.3"
+  minimum_version: "2.21.4"
   next_release: "2.22.0"
 
 ansible_package:
   release_line: "14"
-  minimum_version: "14.3.0"
+  minimum_version: "14.4.0"
   next_release: "15.0.0"
 
 distributions:
