@@ -24,7 +24,7 @@
     dest: "/etc/nginx/sites-available/wordpress"
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
   become: true
   notify: Reload nginx
 
@@ -52,7 +52,7 @@
     dest: /etc/nginx/nginx.conf
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
     backup: true
   become: true
   notify: Reload nginx
@@ -94,7 +94,7 @@
     dest: /etc/nginx/conf.d/security.conf
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
     backup: true
   become: true
   notify: Reload nginx
@@ -105,7 +105,7 @@
     dest: /etc/nginx/conf.d/performance.conf
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
     backup: true
   become: true
   notify: Reload nginx
@@ -116,7 +116,7 @@
     dest: /etc/nginx/conf.d/ssl.conf
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
     backup: true
   become: true
   when: wordpress_enable_ssl | default(true)
@@ -128,7 +128,7 @@
     dest: /etc/nginx/conf.d/cache.conf
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
     backup: true
   become: true
   when: wordpress_enable_nginx_cache | default(true)
@@ -140,7 +140,7 @@
     dest: /etc/nginx/conf.d/ratelimit.conf
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
     backup: true
   become: true
   when: wordpress_nginx_rate_limiting | default(true)
@@ -152,7 +152,7 @@
     dest: /etc/nginx/conf.d/gzip.conf
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
     backup: true
   become: true
   notify: Reload nginx
@@ -176,7 +176,7 @@
     dest: /etc/logrotate.d/nginx-wordpress
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
   become: true
   when: wordpress_logrotate_enabled | default(true)
 
@@ -186,7 +186,7 @@
     dest: /etc/nginx/conf.d/status.conf
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
   become: true
   when: wordpress_nginx_status_page | default(false)
   notify: Reload nginx

@@ -166,7 +166,7 @@ Use the `examples/oracle-cloud.yml` playbook or create your own:
     wordpress_version: "6.4.2"
     wordpress_site_url: "https://blog.example.com"
     wordpress_site_title: "OCI-Powered WordPress"
-    
+
     # OCI Configuration
     wordpress_cloud_provider: "oracle"
     wordpress_oci_enabled: true
@@ -174,24 +174,24 @@ Use the `examples/oracle-cloud.yml` playbook or create your own:
     wordpress_oci_user: "{{ vault_oci_user }}"
     wordpress_oci_fingerprint: "{{ vault_oci_fingerprint }}"
     wordpress_oci_region: "us-ashburn-1"
-    
+
     # OCI Compute
     wordpress_oci_compartment_id: "{{ vault_oci_compartment_id }}"
     wordpress_oci_shape: "VM.Standard.E4.Flex"
     wordpress_oci_ocpus: 2
     wordpress_oci_memory_gb: 16
-    
+
     # OCI Block Storage
     wordpress_oci_block_storage_enabled: true
     wordpress_oci_block_volume_size_gb: 100
     wordpress_oci_block_volume_performance: "Balanced"
-    
+
     # OCI Load Balancer
     wordpress_oci_load_balancer_enabled: true
     wordpress_oci_lb_shape: "flexible"
     wordpress_oci_lb_min_bandwidth_mbps: 10
     wordpress_oci_lb_max_bandwidth_mbps: 100
-    
+
     # OCI Object Storage
     wordpress_oci_object_storage_enabled: true
     wordpress_oci_object_storage_bucket: "{{ vault_oci_bucket_name }}"

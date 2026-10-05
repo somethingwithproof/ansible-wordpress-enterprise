@@ -7,7 +7,7 @@ thread_stack = {{ wordpress_mysql_thread_stack | default('256K') }}
 thread_cache_size = {{ wordpress_mysql_thread_cache_size | default('50') }}
 myisam_recover_options = BACKUP
 
-# Connection Settings  
+# Connection Settings
 max_connections = {{ wordpress_mysql_max_connections | default('500') }}
 max_connect_errors = {{ wordpress_mysql_max_connect_errors | default('100') }}
 

@@ -1,27 +1,5 @@
 ---
-version: '3.8'
-
 services:
-  # Ubuntu 22.04 test environment
-  ubuntu-22:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        BASE_IMAGE: ubuntu:22.04
-    image: wordpress-ansible:ubuntu-22.04
-    container_name: wordpress-ansible-ubuntu-22
-    hostname: ubuntu-wordpress
-    privileged: true
-    volumes:
-      - .:/workspace:rw
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    environment:
-      - ANSIBLE_FORCE_COLOR=true
-    command: /sbin/init
-    networks:
-      - wordpress-net
-
   # Ubuntu 24.04 test environment
   ubuntu-24:
     build:
@@ -68,7 +46,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        BASE_IMAGE: ubuntu:22.04
+        BASE_IMAGE: ubuntu:24.04
     image: wordpress-ansible:dev
     container_name: wordpress-dev
     hostname: wordpress-dev
@@ -149,7 +127,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        BASE_IMAGE: ubuntu:22.04
+        BASE_IMAGE: ubuntu:24.04
     image: wordpress-ansible:molecule
     container_name: wordpress-molecule
     hostname: molecule
@@ -160,7 +138,7 @@ services:
     working_dir: /workspace
     environment:
       - ANSIBLE_FORCE_COLOR=true
-      - MOLECULE_DISTRO=ubuntu2204
+      - MOLECULE_DISTRO=ubuntu2404
     command: molecule test
     networks:
       - wordpress-net

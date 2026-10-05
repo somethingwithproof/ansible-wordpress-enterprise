@@ -5,6 +5,11 @@
 
 set -e
 
+readonly JQ_SCENARIO='.scenario'
+readonly JQ_TARGET='.target'
+readonly JQ_RESULT='.result'
+readonly JQ_LOG_FILE='.log_file'
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -34,28 +39,33 @@ print_color() {
 
 # Function to print section headers
 print_header() {
+    local message="$1"
     echo
     print_color $PURPLE "=================================="
-    print_color $PURPLE "$1"
+    print_color $PURPLE "${message}"
     print_color $PURPLE "=================================="
     echo
 }
 
 # Function to print status
 print_status() {
-    print_color $BLUE "ℹ️  $1"
+    local message="$1"
+    print_color $BLUE "ℹ️  ${message}"
 }
 
 print_success() {
-    print_color $GREEN "✅ $1"
+    local message="$1"
+    print_color $GREEN "✅ ${message}"
 }
 
 print_warning() {
-    print_color $YELLOW "⚠️  $1"
+    local message="$1"
+    print_color $YELLOW "⚠️  ${message}"
 }
 
 print_error() {
-    print_color $RED "❌ $1"
+    local message="$1"
+    print_color $RED "❌ ${message}"
 }
 
 # Function to show usage
@@ -145,15 +155,15 @@ find_latest_run() {
         echo "$TEST_RUN_ID"
         return
     fi
-    
+
     local latest_summary
     latest_summary=$(ls -t "$REPORTS_DIR"/*_summary.json 2>/dev/null | head -1)
-    
+
     if [[ -z "$latest_summary" ]]; then
         print_error "No test results found in $REPORTS_DIR"
         exit 1
     fi
-    
+
     basename "$latest_summary" | sed 's/_summary\.json$//'
 }
 
@@ -161,12 +171,12 @@ find_latest_run() {
 get_test_summary() {
     local run_id="$1"
     local summary_file="$REPORTS_DIR/${run_id}_summary.json"
-    
+
     if [[ ! -f "$summary_file" ]]; then
         print_error "Summary file not found: $summary_file"
         exit 1
     fi
-    
+
     cat "$summary_file"
 }
 
@@ -174,13 +184,13 @@ get_test_summary() {
 get_test_reports() {
     local run_id="$1"
     local reports=()
-    
+
     while IFS= read -r -d '' file; do
         if [[ "$file" =~ ${run_id}_.*_report\.json$ ]]; then
             reports+=("$file")
         fi
     done < <(find "$REPORTS_DIR" -name "*_report.json" -print0 2>/dev/null)
-    
+
     printf '%s\n' "${reports[@]}" | sort
 }
 
@@ -190,7 +200,7 @@ format_duration() {
     local hours=$((duration / 3600))
     local minutes=$(((duration % 3600) / 60))
     local seconds=$((duration % 60))
-    
+
     if [[ $hours -gt 0 ]]; then
         printf "%02d:%02d:%02d" "$hours" "$minutes" "$seconds"
     elif [[ $minutes -gt 0 ]]; then
@@ -204,7 +214,7 @@ format_duration() {
 show_table_results() {
     local run_id="$1"
     local summary_json="$2"
-    
+
     # Parse summary
     local total_tests passed_tests failed_tests success_rate timestamp
     total_tests=$(echo "$summary_json" | jq -r '.total_tests')
@@ -212,38 +222,38 @@ show_table_results() {
     failed_tests=$(echo "$summary_json" | jq -r '.failed_tests')
     success_rate=$(echo "$summary_json" | jq -r '.success_rate')
     timestamp=$(echo "$summary_json" | jq -r '.timestamp')
-    
+
     print_header "Test Run Summary: $run_id"
-    
+
     echo "Timestamp:     $timestamp"
     echo "Total Tests:   $total_tests"
     echo "Passed:        $passed_tests"
     echo "Failed:        $failed_tests"
     echo "Success Rate:  $success_rate"
     echo
-    
+
     # Show individual test results
     print_header "Individual Test Results"
-    
+
     printf "%-35s %-15s %-10s %-10s %-8s\n" "Test" "Target" "Result" "Duration" "Log"
     printf "%-35s %-15s %-10s %-10s %-8s\n" "---" "---" "---" "---" "---"
-    
+
     local reports
     mapfile -t reports < <(get_test_reports "$run_id")
-    
+
     for report_file in "${reports[@]}"; do
         if [[ -f "$report_file" ]]; then
             local report_json scenario target result duration_seconds log_file
             report_json=$(cat "$report_file")
-            scenario=$(echo "$report_json" | jq -r '.scenario' | sed 's/\.yml$//')
-            target=$(echo "$report_json" | jq -r '.target')
-            result=$(echo "$report_json" | jq -r '.result')
+            scenario=$(echo "$report_json" | jq -r "$JQ_SCENARIO" | sed 's/\.yml$//')
+            target=$(echo "$report_json" | jq -r "$JQ_TARGET")
+            result=$(echo "$report_json" | jq -r "$JQ_RESULT")
             duration_seconds=$(echo "$report_json" | jq -r '.duration_seconds')
-            log_file=$(echo "$report_json" | jq -r '.log_file' | xargs basename)
-            
+            log_file=$(echo "$report_json" | jq -r "$JQ_LOG_FILE" | xargs basename)
+
             local duration_formatted result_colored log_indicator
             duration_formatted=$(format_duration "$duration_seconds")
-            
+
             case "$result" in
                 PASS)
                     result_colored="${GREEN}PASS${NC}"
@@ -258,19 +268,19 @@ show_table_results() {
                     log_indicator="📄"
                     ;;
             esac
-            
+
             printf "%-35s %-15s %-20s %-10s %-8s\n" \
                 "$scenario" "$target" "$result_colored" "$duration_formatted" "$log_indicator"
         fi
     done
-    
+
     echo
-    
+
     # Show failure details if requested
     if [[ "$SHOW_DETAILS" == "true" ]]; then
         show_failure_details "$run_id"
     fi
-    
+
     # Show log excerpts if requested
     if [[ "$SHOW_LOGS" == "true" ]]; then
         show_log_excerpts "$run_id"
@@ -281,31 +291,31 @@ show_table_results() {
 show_failure_details() {
     local run_id="$1"
     local failed_tests=()
-    
+
     local reports
     mapfile -t reports < <(get_test_reports "$run_id")
-    
+
     for report_file in "${reports[@]}"; do
         if [[ -f "$report_file" ]]; then
             local result
-            result=$(jq -r '.result' "$report_file")
+            result=$(jq -r "$JQ_RESULT" "$report_file")
             if [[ "$result" == "FAIL" ]]; then
                 failed_tests+=("$report_file")
             fi
         fi
     done
-    
+
     if [[ ${#failed_tests[@]} -gt 0 ]]; then
         print_header "Failed Test Details"
-        
+
         for report_file in "${failed_tests[@]}"; do
             local report_json scenario target duration_seconds log_file
             report_json=$(cat "$report_file")
-            scenario=$(echo "$report_json" | jq -r '.scenario')
-            target=$(echo "$report_json" | jq -r '.target')
+            scenario=$(echo "$report_json" | jq -r "$JQ_SCENARIO")
+            target=$(echo "$report_json" | jq -r "$JQ_TARGET")
             duration_seconds=$(echo "$report_json" | jq -r '.duration_seconds')
-            log_file=$(echo "$report_json" | jq -r '.log_file')
-            
+            log_file=$(echo "$report_json" | jq -r "$JQ_LOG_FILE")
+
             print_color $RED "❌ $scenario on $target"
             echo "   Duration: $(format_duration "$duration_seconds")"
             echo "   Log file: $log_file"
@@ -318,33 +328,33 @@ show_failure_details() {
 show_log_excerpts() {
     local run_id="$1"
     local failed_tests=()
-    
+
     local reports
     mapfile -t reports < <(get_test_reports "$run_id")
-    
+
     for report_file in "${reports[@]}"; do
         if [[ -f "$report_file" ]]; then
             local result
-            result=$(jq -r '.result' "$report_file")
+            result=$(jq -r "$JQ_RESULT" "$report_file")
             if [[ "$result" == "FAIL" ]]; then
                 failed_tests+=("$report_file")
             fi
         fi
     done
-    
+
     if [[ ${#failed_tests[@]} -gt 0 ]]; then
         print_header "Failed Test Log Excerpts"
-        
+
         for report_file in "${failed_tests[@]}"; do
             local report_json scenario target log_file
             report_json=$(cat "$report_file")
-            scenario=$(echo "$report_json" | jq -r '.scenario')
-            target=$(echo "$report_json" | jq -r '.target')
-            log_file=$(echo "$report_json" | jq -r '.log_file')
-            
+            scenario=$(echo "$report_json" | jq -r "$JQ_SCENARIO")
+            target=$(echo "$report_json" | jq -r "$JQ_TARGET")
+            log_file=$(echo "$report_json" | jq -r "$JQ_LOG_FILE")
+
             print_color $RED "❌ $scenario on $target"
             echo
-            
+
             if [[ -f "$log_file" ]]; then
                 echo "Last 20 lines of log:"
                 echo "----------------------"
@@ -362,10 +372,10 @@ show_log_excerpts() {
 show_json_results() {
     local run_id="$1"
     local summary_json="$2"
-    
+
     local reports
     mapfile -t reports < <(get_test_reports "$run_id")
-    
+
     local individual_results="[]"
     for report_file in "${reports[@]}"; do
         if [[ -f "$report_file" ]]; then
@@ -374,7 +384,7 @@ show_json_results() {
             individual_results=$(echo "$individual_results" | jq ". += [$report_json]")
         fi
     done
-    
+
     # Combine summary and individual results
     jq -n \
         --argjson summary "$summary_json" \
@@ -388,24 +398,24 @@ show_json_results() {
 # Function to show results in CSV format
 show_csv_results() {
     local run_id="$1"
-    
+
     echo "scenario,target,result,duration_seconds,start_time,end_time,log_file"
-    
+
     local reports
     mapfile -t reports < <(get_test_reports "$run_id")
-    
+
     for report_file in "${reports[@]}"; do
         if [[ -f "$report_file" ]]; then
             local report_json scenario target result duration_seconds start_time end_time log_file
             report_json=$(cat "$report_file")
-            scenario=$(echo "$report_json" | jq -r '.scenario')
-            target=$(echo "$report_json" | jq -r '.target')
-            result=$(echo "$report_json" | jq -r '.result')
+            scenario=$(echo "$report_json" | jq -r "$JQ_SCENARIO")
+            target=$(echo "$report_json" | jq -r "$JQ_TARGET")
+            result=$(echo "$report_json" | jq -r "$JQ_RESULT")
             duration_seconds=$(echo "$report_json" | jq -r '.duration_seconds')
             start_time=$(echo "$report_json" | jq -r '.start_time')
             end_time=$(echo "$report_json" | jq -r '.end_time')
-            log_file=$(echo "$report_json" | jq -r '.log_file')
-            
+            log_file=$(echo "$report_json" | jq -r "$JQ_LOG_FILE")
+
             echo "$scenario,$target,$result,$duration_seconds,$start_time,$end_time,$log_file"
         fi
     done
@@ -414,18 +424,18 @@ show_csv_results() {
 # Function to show all test runs summary
 show_all_runs() {
     print_header "All Test Runs Summary"
-    
+
     local summary_files
     mapfile -t summary_files < <(find "$REPORTS_DIR" -name "*_summary.json" -type f 2>/dev/null | sort -r)
-    
+
     if [[ ${#summary_files[@]} -eq 0 ]]; then
         print_warning "No test runs found"
         return
     fi
-    
+
     printf "%-25s %-20s %-6s %-6s %-6s %-10s\n" "Run ID" "Timestamp" "Total" "Pass" "Fail" "Success"
     printf "%-25s %-20s %-6s %-6s %-6s %-10s\n" "---" "---" "---" "---" "---" "---"
-    
+
     for summary_file in "${summary_files[@]}"; do
         local summary_json run_id timestamp total_tests passed_tests failed_tests success_rate
         summary_json=$(cat "$summary_file")
@@ -435,11 +445,11 @@ show_all_runs() {
         passed_tests=$(echo "$summary_json" | jq -r '.passed_tests')
         failed_tests=$(echo "$summary_json" | jq -r '.failed_tests')
         success_rate=$(echo "$summary_json" | jq -r '.success_rate')
-        
+
         printf "%-25s %-20s %-6s %-6s %-6s %-10s\n" \
             "$run_id" "$timestamp" "$total_tests" "$passed_tests" "$failed_tests" "$success_rate"
     done
-    
+
     echo
 }
 
@@ -448,18 +458,18 @@ main() {
     parse_args "$@"
     validate_format
     check_reports_dir
-    
+
     local run_id
     run_id=$(find_latest_run)
-    
+
     if [[ -z "$run_id" ]]; then
         print_error "No test run found"
         exit 1
     fi
-    
+
     local summary_json
     summary_json=$(get_test_summary "$run_id")
-    
+
     case "$OUTPUT_FORMAT" in
         table)
             show_table_results "$run_id" "$summary_json"
@@ -469,6 +479,10 @@ main() {
             ;;
         csv)
             show_csv_results "$run_id"
+            ;;
+        *)
+            print_error "Unsupported output format: $OUTPUT_FORMAT"
+            return 1
             ;;
     esac
 }

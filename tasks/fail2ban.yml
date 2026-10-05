@@ -25,7 +25,7 @@
     dest: /etc/fail2ban/jail.local
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
     backup: true
   become: true
   when: wordpress_enable_fail2ban | bool
@@ -37,7 +37,7 @@
     dest: /etc/fail2ban/filter.d/wordpress.conf
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
   become: true
   when: wordpress_enable_fail2ban | bool
   notify: Restart fail2ban
@@ -54,7 +54,7 @@
     dest: /etc/fail2ban/filter.d/wordpress-auth.conf
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
   become: true
   when: wordpress_enable_fail2ban | bool
   notify: Restart fail2ban
@@ -65,7 +65,7 @@
     dest: /etc/fail2ban/filter.d/wordpress-spam.conf
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
   become: true
   when: wordpress_enable_fail2ban | bool
   notify: Restart fail2ban
@@ -76,7 +76,7 @@
     dest: "/etc/fail2ban/filter.d/{{ wordpress_web_server }}-badbots.conf"
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
   become: true
   when: wordpress_enable_fail2ban | bool
   notify: Restart fail2ban
@@ -87,7 +87,7 @@
     dest: /etc/fail2ban/action.d/ufw-wordpress.conf
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
   become: true
   when:
     - ansible_facts.os_family == "Debian"
@@ -101,7 +101,7 @@
     dest: /etc/fail2ban/action.d/firewalld-wordpress.conf
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
   become: true
   when:
     - ansible_facts.os_family == "RedHat"
@@ -150,7 +150,7 @@
     dest: /usr/local/bin/fail2ban-status.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when: wordpress_enable_fail2ban | bool
 
@@ -160,7 +160,7 @@
     dest: /usr/local/bin/fail2ban-unban.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when: wordpress_enable_fail2ban | bool
 
@@ -182,7 +182,7 @@
     dest: /etc/logrotate.d/fail2ban
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
   become: true
   when:
     - wordpress_enable_fail2ban | bool
@@ -194,7 +194,7 @@
     dest: /usr/local/bin/fail2ban-notify.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when: wordpress_enable_fail2ban | bool
 

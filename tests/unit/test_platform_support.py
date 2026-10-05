@@ -89,7 +89,8 @@ def test_release_policy_has_the_required_shape() -> None:
     for name, releases in policy["runtime_platforms"].items():
         assert isinstance(name, str)
         assert isinstance(releases, list)
-        assert releases and all(isinstance(release, str) for release in releases)
+        assert releases
+        assert all(isinstance(release, str) for release in releases)
     for distribution in policy["distributions"]:
         if distribution.get("supported"):
             assert isinstance(distribution.get("runtime_release"), str)
@@ -493,8 +494,10 @@ def test_legacy_platform_images_follow_the_runtime_policy() -> None:
     rocky = (ROOT / "tests" / "dockerfiles" / "Dockerfile.centos").read_text()
     ubuntu_release = re.search(r"^FROM ubuntu:(\d+\.\d+)$", ubuntu, re.MULTILINE)
     rocky_release = re.search(r"^FROM rockylinux:(\d+)$", rocky, re.MULTILINE)
-    assert ubuntu_release and ubuntu_release.group(1) in policy["Ubuntu"]
-    assert rocky_release and rocky_release.group(1) in policy["Rocky"]
+    assert ubuntu_release
+    assert ubuntu_release.group(1) in policy["Ubuntu"]
+    assert rocky_release
+    assert rocky_release.group(1) in policy["Rocky"]
 
 
 def test_breaking_release_removals_are_documented() -> None:

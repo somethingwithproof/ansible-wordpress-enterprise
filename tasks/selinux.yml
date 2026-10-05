@@ -275,7 +275,9 @@
   ansible.builtin.template:
     src: selinux_troubleshoot.sh.j2
     dest: /usr/local/bin/wordpress-selinux-troubleshoot
-    mode: "0755"
+    owner: root
+    group: root
+    mode: '0750'
   when:
     - ansible_facts.os_family == "RedHat"
     - selinux_enabled | default(false)
@@ -298,7 +300,9 @@
       echo "=== Recent SELinux Denials ==="
       ausearch -m avc -ts recent 2>/dev/null | grep -i wordpress | tail -5 || echo "No recent denials found"
     dest: /usr/local/bin/wordpress-selinux-status
-    mode: "0755"
+    owner: root
+    group: root
+    mode: '0750'
   when:
     - ansible_facts.os_family == "RedHat"
     - selinux_enabled | default(false)

@@ -42,23 +42,27 @@ print_color() {
 }
 
 print_header() {
+    local message="$1"
     echo
     print_color $PURPLE "=================================="
-    print_color $PURPLE "$1"
+    print_color $PURPLE "${message}"
     print_color $PURPLE "=================================="
     echo
 }
 
 print_status() {
-    print_color $BLUE "ℹ️  $1"
+    local message="$1"
+    print_color $BLUE "ℹ️  ${message}"
 }
 
 print_success() {
-    print_color $GREEN "✅ $1"
+    local message="$1"
+    print_color $GREEN "✅ ${message}"
 }
 
 print_error() {
-    print_color $RED "❌ $1"
+    local message="$1"
+    print_color $RED "❌ ${message}"
 }
 
 usage() {
@@ -87,10 +91,10 @@ usage() {
 
 check_dependencies() {
     print_header "Checking Dependencies"
-    
+
     # Check for performance testing tools
     local missing_tools=()
-    
+
     if ! command -v ab >/dev/null 2>&1; then
         if command -v brew >/dev/null 2>&1; then
             print_status "Installing Apache Bench (ab)..."
@@ -99,29 +103,27 @@ check_dependencies() {
             missing_tools+=("ab (Apache Bench)")
         fi
     fi
-    
+
     if ! command -v curl >/dev/null 2>&1; then
         missing_tools+=("curl")
     fi
-    
+
     if ! command -v jq >/dev/null 2>&1; then
         missing_tools+=("jq")
     fi
-    
+
     # Try to install wrk if available
-    if ! command -v wrk >/dev/null 2>&1; then
-        if command -v brew >/dev/null 2>&1; then
-            print_status "Installing wrk for advanced load testing..."
-            brew install wrk || print_status "wrk installation failed, will use ab instead"
-        fi
+    if ! command -v wrk >/dev/null 2>&1 && command -v brew >/dev/null 2>&1; then
+        print_status "Installing wrk for advanced load testing..."
+        brew install wrk || print_status "wrk installation failed, will use ab instead"
     fi
-    
+
     if [[ ${#missing_tools[@]} -gt 0 ]]; then
         print_error "Missing required tools: ${missing_tools[*]}"
         print_status "Install with: brew install httpd curl jq wrk"
         exit 1
     fi
-    
+
     print_success "All dependencies available"
     mkdir -p "$REPORTS_DIR"
 }
@@ -129,19 +131,18 @@ check_dependencies() {
 get_wordpress_info() {
     local base_url="$1"
     local info_file="$REPORTS_DIR/${PERF_RUN_ID}_wp_info.json"
-    
+
     print_status "Gathering WordPress information..."
-    
+
     local wp_version=""
     local theme_info=""
-    local plugin_count=""
-    
+
     # Try to get WordPress version from generator meta tag
     wp_version=$(curl -s "$base_url" | grep -o 'WordPress [0-9.]*' | head -1 || echo "Unknown")
-    
+
     # Try to get active theme info
     theme_info=$(curl -s "$base_url" | grep -o 'wp-content/themes/[^/]*' | head -1 | cut -d'/' -f3 || echo "Unknown")
-    
+
     # Create WordPress info JSON
     cat > "$info_file" << EOF
 {
@@ -157,7 +158,7 @@ get_wordpress_info() {
   }
 }
 EOF
-    
+
     print_success "WordPress info saved to $info_file"
 }
 
@@ -165,16 +166,16 @@ run_apache_bench_test() {
     local url="$1"
     local endpoint="$2"
     local test_name="$3"
-    
+
     local ab_output="$REPORTS_DIR/${PERF_RUN_ID}_ab_${test_name}.txt"
     local ab_json="$REPORTS_DIR/${PERF_RUN_ID}_ab_${test_name}.json"
-    
+
     print_status "Running Apache Bench test for $test_name..."
-    
+
     # Run Apache Bench
     ab -n "$TOTAL_REQUESTS" -c "$CONCURRENT_USERS" -g "$REPORTS_DIR/${PERF_RUN_ID}_ab_${test_name}.gnuplot" \
        "$url$endpoint" > "$ab_output" 2>&1 || true
-    
+
     # Parse Apache Bench output to JSON
     if [[ -f "$ab_output" ]]; then
         local requests_per_sec time_per_request transfer_rate failed_requests
@@ -182,7 +183,7 @@ run_apache_bench_test() {
         time_per_request=$(grep "Time per request:" "$ab_output" | head -1 | awk '{print $4}' || echo "0")
         transfer_rate=$(grep "Transfer rate:" "$ab_output" | awk '{print $3}' || echo "0")
         failed_requests=$(grep "Failed requests:" "$ab_output" | awk '{print $3}' || echo "0")
-        
+
         cat > "$ab_json" << EOF
 {
   "test_name": "$test_name",
@@ -202,27 +203,27 @@ run_wrk_test() {
     local url="$1"
     local endpoint="$2"
     local test_name="$3"
-    
+
     if ! command -v wrk >/dev/null 2>&1; then
         return
     fi
-    
+
     local wrk_output="$REPORTS_DIR/${PERF_RUN_ID}_wrk_${test_name}.txt"
     local wrk_json="$REPORTS_DIR/${PERF_RUN_ID}_wrk_${test_name}.json"
-    
+
     print_status "Running wrk test for $test_name..."
-    
+
     # Run wrk with custom Lua script for detailed stats
     wrk -t4 -c"$CONCURRENT_USERS" -d"${TEST_DURATION}s" --timeout 30s \
         "$url$endpoint" > "$wrk_output" 2>&1 || true
-    
+
     # Parse wrk output to JSON (simplified)
     if [[ -f "$wrk_output" ]]; then
         local requests_per_sec avg_latency transfer_rate
         requests_per_sec=$(grep "Requests/sec:" "$wrk_output" | awk '{print $2}' || echo "0")
         avg_latency=$(grep "Latency" "$wrk_output" | awk '{print $2}' || echo "0")
         transfer_rate=$(grep "Transfer/sec:" "$wrk_output" | awk '{print $2}' || echo "0")
-        
+
         cat > "$wrk_json" << EOF
 {
   "test_name": "$test_name",
@@ -241,32 +242,32 @@ run_response_time_test() {
     local url="$1"
     local endpoint="$2"
     local test_name="$3"
-    
+
     print_status "Measuring detailed response times for $test_name..."
-    
+
     local response_times=()
     local status_codes=()
-    
+
     # Take 10 samples for detailed timing
     for i in {1..10}; do
         local result
         result=$(curl -o /dev/null -s -w "%{http_code},%{time_total},%{time_connect},%{time_starttransfer}" "$url$endpoint")
-        
+
         local status_code time_total time_connect time_starttransfer
         IFS=',' read -r status_code time_total time_connect time_starttransfer <<< "$result"
-        
+
         response_times+=("$time_total")
         status_codes+=("$status_code")
-        
+
         sleep 0.5
     done
-    
+
     # Calculate statistics
     local min_time max_time avg_time
     min_time=$(printf '%s\n' "${response_times[@]}" | sort -n | head -1)
     max_time=$(printf '%s\n' "${response_times[@]}" | sort -n | tail -1)
     avg_time=$(printf '%s\n' "${response_times[@]}" | awk '{sum+=$1} END {print sum/NR}')
-    
+
     # Save detailed timing results
     cat > "$REPORTS_DIR/${PERF_RUN_ID}_timing_${test_name}.json" << EOF
 {
@@ -286,13 +287,13 @@ EOF
 
 generate_performance_report() {
     print_header "Generating Performance Report"
-    
+
     local summary_report="$REPORTS_DIR/${PERF_RUN_ID}_summary.json"
     local html_report="$REPORTS_DIR/${PERF_RUN_ID}_report.html"
-    
+
     # Combine all JSON results
     local combined_results="[]"
-    
+
     for json_file in "$REPORTS_DIR"/${PERF_RUN_ID}_*.json; do
         if [[ -f "$json_file" ]]; then
             local content
@@ -300,7 +301,7 @@ generate_performance_report() {
             combined_results=$(echo "$combined_results" | jq ". += [$content]")
         fi
     done
-    
+
     # Create summary report
     cat > "$summary_report" << EOF
 {
@@ -309,7 +310,7 @@ generate_performance_report() {
   "test_results": $combined_results
 }
 EOF
-    
+
     # Generate HTML report
     cat > "$html_report" << 'EOF'
 <!DOCTYPE html>
@@ -334,17 +335,17 @@ EOF
         <p>Test Run ID: PERF_RUN_ID</p>
         <p>Generated: TIMESTAMP</p>
     </div>
-    
+
     <h2>Test Summary</h2>
     <div id="summary">
         <!-- Summary will be populated by JavaScript -->
     </div>
-    
+
     <h2>Detailed Results</h2>
     <div id="details">
         <!-- Details will be populated by JavaScript -->
     </div>
-    
+
     <script>
         // Load and display performance data
         // This would be populated with actual test results
@@ -352,11 +353,11 @@ EOF
 </body>
 </html>
 EOF
-    
+
     # Replace placeholders in HTML
     sed -i '' "s/PERF_RUN_ID/$PERF_RUN_ID/g" "$html_report"
     sed -i '' "s/TIMESTAMP/$(date)/g" "$html_report"
-    
+
     print_success "Performance report generated:"
     print_status "JSON: $summary_report"
     print_status "HTML: $html_report"
@@ -364,28 +365,28 @@ EOF
 
 run_performance_tests() {
     local target_url="$1"
-    
+
     print_header "Running Performance Tests"
     print_status "Target: $target_url"
     print_status "Parameters: $CONCURRENT_USERS concurrent users, $TOTAL_REQUESTS requests"
-    
+
     get_wordpress_info "$target_url"
-    
+
     # Test each endpoint
     for endpoint in "${ENDPOINTS[@]}"; do
         local test_name
         test_name=$(echo "$endpoint" | tr '/' '_' | tr -d '.')
         test_name="${test_name#_}"  # Remove leading underscore
         test_name="${test_name:-homepage}"  # Default name for root
-        
+
         print_status "Testing endpoint: $endpoint"
-        
+
         # Run different types of performance tests
         run_apache_bench_test "$target_url" "$endpoint" "$test_name"
         run_wrk_test "$target_url" "$endpoint" "$test_name"
         run_response_time_test "$target_url" "$endpoint" "$test_name"
     done
-    
+
     generate_performance_report
 }
 
@@ -438,13 +439,13 @@ fi
 main() {
     print_header "WordPress Enterprise Performance Testing"
     print_status "Performance test run: $PERF_RUN_ID"
-    
+
     check_dependencies
     run_performance_tests "$TARGET_URL"
-    
+
     print_header "Performance Testing Complete"
     print_success "Results saved to: $REPORTS_DIR"
-    
+
     # macOS notification
     if command -v osascript >/dev/null 2>&1; then
         osascript -e "display notification \"Performance testing completed\" with title \"WordPress Tests\""

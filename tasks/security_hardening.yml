@@ -296,7 +296,9 @@
   ansible.builtin.template:
     src: security_status.sh.j2
     dest: /usr/local/bin/wordpress-security-status
-    mode: "0755"
+    owner: root
+    group: root
+    mode: '0750'
   become: true
   when: wordpress_security_status_script | default(true)
 
@@ -342,7 +344,9 @@
       echo ""
       echo "Security maintenance completed at: $(date)"
     dest: /usr/local/bin/wordpress-security-maintenance
-    mode: "0755"
+    owner: root
+    group: root
+    mode: '0750'
   become: true
 
 - name: Set up security maintenance cron job

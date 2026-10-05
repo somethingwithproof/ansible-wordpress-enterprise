@@ -186,7 +186,7 @@
     dest: /etc/nginx/snippets/ssl-{{ wordpress_server_name }}.conf
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
     backup: true
   become: true
   when:
@@ -204,7 +204,7 @@
       else 'conf.d/ssl-' + wordpress_server_name + '.conf' }}
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
     backup: true
   become: true
   when:
@@ -333,7 +333,12 @@
     url: "https://{{ wordpress_server_name }}"
     method: HEAD
     status_code: [200, 301, 302]
-    validate_certs: false
+    validate_certs: true
+    ca_path: >-
+      {{ wordpress_ssl_ca_path | default(
+           wordpress_ssl_certificate if wordpress_enable_ssl | bool
+           and wordpress_generate_self_signed_cert | bool
+           and not wordpress_use_letsencrypt | bool else omit, true) }}
   register: ssl_verification
   when: wordpress_enable_ssl | bool
   ignore_errors: true

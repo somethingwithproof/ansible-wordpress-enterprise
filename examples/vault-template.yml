@@ -51,7 +51,7 @@ vault_gcp_service_account_key: |
     "type": "service_account",
     "project_id": "your-project",
     "private_key_id": "key-id",
-    "private_key": "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n",
+    "private_key": "REPLACE_WITH_PRIVATE_KEY_PEM",
     "client_email": "service-account@project.iam.gserviceaccount.com",
     "client_id": "123456789",
     "auth_uri": "https://accounts.google.com/o/oauth2/auth",
@@ -175,10 +175,7 @@ vault_ssl_certificate: |
   your-certificate-here
   -----END CERTIFICATE-----
 
-vault_ssl_certificate_key: |
-  -----BEGIN PRIVATE KEY-----
-  your-private-key-here
-  -----END PRIVATE KEY-----
+vault_ssl_certificate_key: "REPLACE_WITH_PRIVATE_KEY_PEM"
 
 vault_ssl_ca_bundle: |
   -----BEGIN CERTIFICATE-----

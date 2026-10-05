@@ -259,7 +259,7 @@ ansible-galaxy collection install ansible.posix
 **Python Dependencies:**
 
 ```bash
-pip install -r requirements.txt
+pip install --require-hashes --only-binary=:all: -r requirements.lock
 ```
 
 ## 📦 Installation
@@ -655,6 +655,16 @@ wordpress_aide_schedule: "daily"
 ```
 
 ### SSL/TLS Configuration
+
+HTTPS verification checks both the certificate chain and hostname. Set
+`wordpress_ssl_ca_path` to a PEM CA bundle on the managed host when using a
+private CA. Locally generated development certificates are trusted explicitly;
+certificate validation remains enabled.
+
+Sensitive configuration and administrative scripts use restricted permissions.
+Public WordPress assets and command line binaries remain readable or executable
+by their intended users.
+
 
 ```yaml
 ---
@@ -1102,12 +1112,16 @@ wordpress_child_theme:
 
 ### Molecule Testing
 
+CI and Docker controllers install `requirements.lock` with hash verification
+and wheels only. After updating `requirements.txt`, regenerate the lock with
+`mise exec python@3.12 -- uv pip compile --python 3.12 --only-binary=:all: --generate-hashes requirements.txt -o requirements.lock`.
+
 The default Molecule scenario is the release contract: Ubuntu 24.04/Nginx and
 Rocky Linux 9/Apache must converge, be idempotent, and pass runtime checks.
 
 ```bash
 # Install testing dependencies
-mise exec python@3.12 -- python -m pip install -r requirements.txt
+mise exec python@3.12 -- python -m pip install --require-hashes --only-binary=:all: -r requirements.lock
 mise exec python@3.12 -- ansible-galaxy collection install -r requirements.yml
 
 # Run the complete release contract

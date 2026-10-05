@@ -91,6 +91,8 @@ wordpress_ssl_stapling: true
 
 # Self-signed certificate (for development)
 wordpress_generate_self_signed_cert: false
+# Optional PEM CA bundle for HTTPS probes; generated development certs are trusted explicitly.
+wordpress_ssl_ca_path: ""
 
 # Let's Encrypt
 wordpress_use_letsencrypt: false

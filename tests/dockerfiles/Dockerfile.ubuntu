@@ -5,63 +5,51 @@ FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
 
-# Install systemd and basic packages
-RUN apt-get update && apt-get install -y \
-    systemd \
-    systemd-sysv \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    apt-transport-https \
+    bc \
+    ca-certificates \
+    cron \
+    curl \
+    gnupg \
     init \
+    logrotate \
+    lsb-release \
     openssh-server \
     python3 \
     python3-pip \
-    curl \
-    wget \
-    gnupg \
-    lsb-release \
-    apt-transport-https \
-    ca-certificates \
+    rsyslog \
     software-properties-common \
     sudo \
-    rsyslog \
-    cron \
-    logrotate \
-    bc \
-    && apt-get clean
-
-# Configure systemd
-RUN systemctl set-default multi-user.target \
+    systemd \
+    systemd-sysv \
+    wget \
+    && rm -rf /var/lib/apt/lists/* && \
+    systemctl set-default multi-user.target \
     && systemctl enable ssh \
     && systemctl enable rsyslog \
-    && systemctl enable cron
-
-# Remove unnecessary systemd services
-RUN systemctl disable getty@tty1.service \
+    && systemctl enable cron && \
+    systemctl disable getty@tty1.service \
     && systemctl mask getty@tty1.service \
     && systemctl mask getty-static.service \
     && systemctl mask graphical-session.target \
     && systemctl mask systemd-logind.service \
-    && systemctl mask systemd-user-sessions.service
-
-# Create test user with sudo privileges
-RUN useradd -m -s /bin/bash -G sudo testuser \
-    && echo 'testuser:testpass123' | chpasswd \
-    && echo 'testuser ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-
-# Configure SSH
-RUN mkdir -p /var/run/sshd \
-    && echo 'root:testroot123' | chpasswd \
+    && systemctl mask systemd-user-sessions.service && \
+    useradd -m -s /bin/bash -G sudo testuser \
+    && echo 'testuser ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
+    mkdir -p /var/run/sshd \
     && sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config \
-    && sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
-
-# Create directory for WordPress installation
-RUN mkdir -p /var/www/html \
-    && chown -R www-data:www-data /var/www/html
+    && sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
+    mkdir -p /var/www/html \
+    && chown -R www-data:www-data /var/www/html \
+    && rm -f /etc/ssh/ssh_host_*
 
 # Create systemd-compatible init script
 COPY tests/fixtures/init-ubuntu.sh /usr/local/bin/init-ubuntu.sh
 RUN chmod +x /usr/local/bin/init-ubuntu.sh
 
-# Expose SSH and web ports
-EXPOSE 22 80 443
+# Web ports; test SSH is reachable only within the container network.
+EXPOSE 80 443
 
 # Use systemd as init system
 CMD ["/usr/local/bin/init-ubuntu.sh"]

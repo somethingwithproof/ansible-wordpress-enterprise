@@ -242,7 +242,7 @@
     dest: /etc/nginx/snippets/security-headers.conf
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
   become: true
   when: wordpress_web_server == "nginx"
   notify: Reload nginx
