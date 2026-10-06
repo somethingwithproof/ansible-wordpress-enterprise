@@ -182,15 +182,40 @@
     - name: Validate slow query log configuration
       ansible.builtin.assert:
         that:
-          - wordpress_mysql_slow_query_log_file is match('^/[A-Za-z0-9_./-]+$')
+          - wordpress_mysql_slow_query_log_file is match('^/[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)+\Z')
+          - (wordpress_mysql_slow_query_log_file | dirname) != '/'
           - "'..' not in wordpress_mysql_slow_query_log_file.split('/')"
+          - "'.' not in wordpress_mysql_slow_query_log_file.split('/')"
           - wordpress_mysql_long_query_time | float >= 0
         fail_msg: Slow query logging requires a safe absolute path and nonnegative threshold
+
+    - name: Inspect slow query log paths without following symbolic links
+      ansible.builtin.stat:
+        path: "{{ item }}"
+        follow: false
+      loop:
+        - "{{ wordpress_mysql_slow_query_log_file | dirname }}"
+        - "{{ wordpress_mysql_slow_query_log_file }}"
+      register: wordpress_slow_log_paths
+
+    - name: Reject shared directories and nonregular slow query log paths
+      ansible.builtin.assert:
+        that:
+          - >-
+            not wordpress_slow_log_paths.results[0].stat.exists or
+            (wordpress_slow_log_paths.results[0].stat.isdir and
+             not wordpress_slow_log_paths.results[0].stat.islnk and
+             wordpress_slow_log_paths.results[0].stat.pw_name == 'mysql')
+          - >-
+            not wordpress_slow_log_paths.results[1].stat.exists or
+            wordpress_slow_log_paths.results[1].stat.isreg
+        fail_msg: Slow query logs require a new or MySQL-owned directory and a regular nonsymlink file
 
     - name: Create private slow query log directory
       ansible.builtin.file:
         path: "{{ wordpress_mysql_slow_query_log_file | dirname }}"
         state: directory
+        follow: false
         owner: mysql
         group: mysql
         mode: '0750'
@@ -199,6 +224,7 @@
       ansible.builtin.file:
         path: "{{ wordpress_mysql_slow_query_log_file }}"
         state: touch
+        follow: false
         access_time: preserve
         modification_time: preserve
         owner: mysql

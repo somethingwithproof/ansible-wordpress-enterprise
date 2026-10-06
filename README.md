@@ -625,8 +625,7 @@ wordpress_mysql_table_open_cache: 4000
 
 # Slow Query Logging
 wordpress_enable_logging: true
-# Default on Debian; Red Hat uses /var/log/mariadb/wordpress/slow.log.
-wordpress_mysql_slow_query_log_file: "/var/log/mysql/wordpress/slow.log"
+# Keep the distribution-specific slow-query log path default.
 wordpress_mysql_long_query_time: 2
 
 # Database Maintenance
@@ -639,6 +638,9 @@ For a local database, the role creates the slow-query log directory with mode
 settings across database restarts and configures rotation for this specific
 file. Keep custom paths within directories permitted by your distribution's
 AppArmor or SELinux policy. External databases retain their own logging policy.
+Custom log paths must name a regular file inside a dedicated directory. The
+role rejects root-level paths, traversal and symbolic links, and will not take
+ownership of an existing directory owned by another user.
 The private base log directory is created even when `wordpress_enable_logging`
 is false because PHP-FPM and Nginx still write their standard service logs.
 
