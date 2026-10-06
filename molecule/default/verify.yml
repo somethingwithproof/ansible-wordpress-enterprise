@@ -10,6 +10,19 @@
     expected_web_service: "{{ 'nginx' if ansible_facts.os_family == 'Debian' else 'httpd' }}"
     expected_php_service: "{{ 'php' ~ wordpress_php_version ~ '-fpm' if ansible_facts.os_family == 'Debian' else 'php-fpm' }}"
 
+  pre_tasks:
+    - name: Read role defaults without replacing inventory overrides
+      ansible.builtin.include_vars:
+        file: ../../defaults/main.yml
+        name: wordpress_role_defaults
+
+    - name: Resolve logging defaults for the standalone verifier
+      ansible.builtin.set_fact:
+        wordpress_log_dir: "{{ wordpress_log_dir | default(wordpress_role_defaults.wordpress_log_dir) }}"
+        wordpress_mysql_slow_query_log_file: >-
+          {{ wordpress_mysql_slow_query_log_file |
+             default(wordpress_role_defaults.wordpress_mysql_slow_query_log_file) }}
+
   tasks:
     - name: Collect service state
       ansible.builtin.service_facts:
