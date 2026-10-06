@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
 ---
 # Minimal test playbook for CI syntax validation
 # This is used by the CI workflow for ansible-playbook --syntax-check

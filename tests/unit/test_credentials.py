@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
 """Generated credentials survive between runs.
 
 A password lookup pointed at /dev/null generates a new value every time it is

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
 """Validate SemVer and build the project's archives and native release artifacts."""
 
 from __future__ import annotations
@@ -21,7 +23,7 @@ from typing import Any
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-ROLE_PATHS = ("defaults", "vars", "handlers", "meta", "tasks", "templates", "docs", "examples")
+ROLE_PATHS = ("defaults", "vars", "handlers", "meta", "tasks", "templates", "docs", "examples", "LICENSES")
 SEMVER_IDENTIFIER = re.compile(r"[A-Za-z\d-]+", re.ASCII)
 
 
@@ -96,7 +98,7 @@ def copy_role(payload: Path) -> None:
             shutil.copytree(
                 source, destination / name, ignore=shutil.ignore_patterns("__pycache__", "*.pyc")
             )
-    for name in ("README.md", "LICENSE", "VERSION", "requirements.yml"):
+    for name in ("README.md", "LICENSE", "REUSE.toml", "VERSION", "requirements.yml"):
         shutil.copy2(ROOT / name, destination / name)
 
 

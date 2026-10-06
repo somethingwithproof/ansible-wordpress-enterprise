@@ -1,4 +1,6 @@
 #!/bin/bash
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
 
 # WordPress Enterprise Test Coverage Report Generator
 # Generates comprehensive test coverage reports for all security features

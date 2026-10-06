@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2025 Thomas Vincent
+SPDX-License-Identifier: MIT
+-->
+
 # Changelog
 
 ## 2.22.0 — 2026-10-06

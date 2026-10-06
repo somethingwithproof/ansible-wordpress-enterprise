@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
 """A requirement update must refresh the dependency lock used by CI."""
 
 from __future__ import annotations

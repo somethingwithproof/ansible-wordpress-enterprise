@@ -1,4 +1,6 @@
 #!/bin/bash
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
 
 # WordPress Enterprise Test Environment Cleanup Script
 # This script cleans up the test environment and removes containers, images, and volumes

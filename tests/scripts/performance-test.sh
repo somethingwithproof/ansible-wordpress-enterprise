@@ -1,4 +1,6 @@
 #!/bin/bash
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
 
 # WordPress Enterprise Performance Testing Script
 # Runs load tests and performance benchmarks against deployed WordPress instances

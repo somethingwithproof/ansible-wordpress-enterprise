@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
 """Every variable a task reads comes from somewhere Ansible actually loads.
 
 A role auto-loads defaults/main.yml and vars/main.yml only. Anything else under

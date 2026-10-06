@@ -1,4 +1,6 @@
 #!/bin/bash
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
 
 # WordPress Enterprise End-to-End Test Runner
 # This script runs comprehensive tests for the WordPress Enterprise Ansible role

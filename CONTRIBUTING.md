@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2025 Thomas Vincent
+SPDX-License-Identifier: MIT
+-->
+
 # Contributing to WordPress Enterprise Ansible Role
 
 Thank you for your interest in contributing! This document provides guidelines for contributing to this project.

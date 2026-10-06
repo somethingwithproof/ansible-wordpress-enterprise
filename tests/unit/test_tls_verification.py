@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
 """Exercise the role's HTTPS probes against real trusted and invalid certificates."""
 
 from __future__ import annotations

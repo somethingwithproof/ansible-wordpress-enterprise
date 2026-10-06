@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
 # Development controller for supported Ubuntu and Rocky Linux targets.
 ARG BASE_IMAGE=ubuntu:24.04
 # Docker CLI 29.8.2, pinned by digest.

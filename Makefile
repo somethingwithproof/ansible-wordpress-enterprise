@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
 # docker compose v2 ships as a docker plugin; the standalone v1 binary was
 # removed from the GitHub runner images, which broke check-test-prereqs.
 # Prefer v2 and fall back to v1 so existing local setups keep working.

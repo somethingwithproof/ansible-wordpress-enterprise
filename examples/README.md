@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2025 Thomas Vincent
+SPDX-License-Identifier: MIT
+-->
+
 # WordPress Enterprise Role - Example Configurations
 
 > Release contract: Ubuntu 24.04/Nginx and EL9/Apache with PHP 8.3, plus verified

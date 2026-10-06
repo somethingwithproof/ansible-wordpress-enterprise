@@ -1,4 +1,6 @@
 #!/bin/bash
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
 
 # WordPress Enterprise Test Results Analyzer
 # This script analyzes test results and generates comprehensive reports

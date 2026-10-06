@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
 """The declared platforms, runtime gates and support policy agree.
 
 meta/platform_support.yml is the source of truth. These tests fail when a

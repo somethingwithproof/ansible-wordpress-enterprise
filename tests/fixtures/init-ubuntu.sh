@@ -1,4 +1,6 @@
 #!/bin/bash
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
 set -euo pipefail
 
 # Credentials are supplied only to these isolated test containers at runtime.
