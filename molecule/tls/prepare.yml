@@ -1,0 +1,44 @@
+---
+- name: Prepare TLS hosts
+  ansible.builtin.import_playbook: ../default/prepare.yml
+
+- name: Prepare isolated hostname and supplied-certificate fixture
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Resolve the isolated TLS hostname locally
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "127.0.0.1 tls.example.test"
+        unsafe_writes: true
+
+    - name: Create the fixture private key directory
+      ansible.builtin.file:
+        path: /etc/ssl/private
+        state: directory
+        mode: '0700'
+      when: inventory_hostname == 'rocky-9-apache-tls'
+
+    - name: Generate the supplied-certificate fixture
+      ansible.builtin.command:
+        argv:
+          - openssl
+          - req
+          - -x509
+          - -newkey
+          - rsa:2048
+          - -nodes
+          - -days
+          - '365'
+          - -subj
+          - /CN=tls.example.test
+          - -addext
+          - subjectAltName=DNS:tls.example.test
+          - -keyout
+          - /etc/ssl/private/tls.example.test.key
+          - -out
+          - /etc/ssl/certs/tls.example.test.crt
+        creates: /etc/ssl/certs/tls.example.test.crt
+      when: inventory_hostname == 'rocky-9-apache-tls'
+      no_log: true

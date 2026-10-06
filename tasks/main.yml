@@ -52,6 +52,11 @@
   ansible.builtin.include_tasks: php.yml
   tags: [php]
 
+- name: Phase 4 | Prepare and validate the TLS certificate
+  ansible.builtin.include_tasks: ssl_certificate.yml
+  when: wordpress_enable_ssl | bool
+  tags: [ssl, security]
+
 - name: Phase 5 | Configure Apache
   ansible.builtin.include_tasks: webserver_apache.yml
   when: wordpress_web_server == "apache"

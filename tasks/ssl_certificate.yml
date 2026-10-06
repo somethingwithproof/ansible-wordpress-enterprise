@@ -1,0 +1,192 @@
+---
+# Prepare certificates before a web server can reference them.
+- name: Require one certificate provider
+  ansible.builtin.assert:
+    that:
+      - not (wordpress_use_letsencrypt | bool and wordpress_generate_self_signed_cert | bool)
+      - wordpress_server_name is match('^[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:[.][A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*$')
+    fail_msg: Choose Let's Encrypt, a development certificate, or existing PEM files for one hostname
+
+- name: Select Let's Encrypt certificate paths
+  ansible.builtin.set_fact:
+    wordpress_ssl_certificate: "/etc/letsencrypt/live/{{ wordpress_server_name }}/fullchain.pem"
+    wordpress_ssl_certificate_key: "/etc/letsencrypt/live/{{ wordpress_server_name }}/privkey.pem"
+  when: wordpress_use_letsencrypt | bool
+
+- name: Install certificate tooling
+  ansible.builtin.package:
+    name:
+      - openssl
+      - ca-certificates
+      - python3-cryptography
+    state: present
+  become: true
+
+- name: Inspect certificate directories without changing shared system directories
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  loop:
+    - "{{ wordpress_ssl_certificate | dirname }}"
+    - "{{ wordpress_ssl_certificate_key | dirname }}"
+  register: wordpress_tls_directories
+  become: true
+  when: not wordpress_use_letsencrypt | bool
+
+- name: Create missing private certificate directories
+  ansible.builtin.file:
+    path: "{{ item.item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+  loop: "{{ wordpress_tls_directories.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  become: true
+  when:
+    - not wordpress_use_letsencrypt | bool
+    - not item.stat.exists
+
+- name: Generate the development private key
+  community.crypto.openssl_privatekey:
+    path: "{{ wordpress_ssl_certificate_key }}"
+    size: 2048
+    type: RSA
+    owner: root
+    group: root
+    mode: '0600'
+  become: true
+  when: wordpress_generate_self_signed_cert | bool
+  no_log: true
+
+- name: Generate the development certificate request
+  community.crypto.openssl_csr:
+    path: "{{ wordpress_ssl_certificate_key | dirname }}/{{ wordpress_server_name }}.csr"
+    privatekey_path: "{{ wordpress_ssl_certificate_key }}"
+    common_name: "{{ wordpress_server_name }}"
+    subject_alt_name:
+      - "DNS:{{ wordpress_server_name }}"
+    owner: root
+    group: root
+    mode: '0600'
+  become: true
+  when: wordpress_generate_self_signed_cert | bool
+
+- name: Generate the development certificate
+  community.crypto.x509_certificate:
+    path: "{{ wordpress_ssl_certificate }}"
+    privatekey_path: "{{ wordpress_ssl_certificate_key }}"
+    csr_path: "{{ wordpress_ssl_certificate_key | dirname }}/{{ wordpress_server_name }}.csr"
+    provider: selfsigned
+    selfsigned_not_after: "+365d"
+    ignore_timestamps: true
+    owner: root
+    group: root
+    mode: '0640'
+  become: true
+  when: wordpress_generate_self_signed_cert | bool
+
+- name: Inspect the requested certificate
+  ansible.builtin.stat:
+    path: "{{ wordpress_ssl_certificate }}"
+  register: wordpress_requested_certificate
+  become: true
+
+- name: Install certbot
+  ansible.builtin.package:
+    name: certbot
+    state: present
+  become: true
+  when: wordpress_use_letsencrypt | bool
+
+- name: Inspect running services before an ACME challenge
+  ansible.builtin.service_facts:
+  when:
+    - wordpress_use_letsencrypt | bool
+    - not wordpress_requested_certificate.stat.exists
+
+- name: Record whether an existing web server needs restoring
+  ansible.builtin.set_fact:
+    wordpress_acme_restore_service: >-
+      {{ ansible_facts.services.get(wordpress_web_server_service[wordpress_web_server] ~ '.service', {}).get('state') == 'running' }}
+  when:
+    - wordpress_use_letsencrypt | bool
+    - not wordpress_requested_certificate.stat.exists
+
+- name: Obtain the initial ACME certificate and restore the previous service
+  when:
+    - wordpress_use_letsencrypt | bool
+    - not wordpress_requested_certificate.stat.exists
+  become: true
+  block:
+    - name: Stop the existing service for the standalone challenge
+      ansible.builtin.service:
+        name: "{{ wordpress_web_server_service[wordpress_web_server] }}"
+        state: stopped
+      when: wordpress_acme_restore_service | bool
+
+    - name: Request the initial Let's Encrypt certificate
+      ansible.builtin.command:
+        argv:
+          - certbot
+          - certonly
+          - --standalone
+          - --non-interactive
+          - --agree-tos
+          - --email
+          - "{{ wordpress_letsencrypt_email }}"
+          - --domains
+          - "{{ wordpress_server_name }}"
+          - --cert-name
+          - "{{ wordpress_server_name }}"
+        creates: "{{ wordpress_ssl_certificate }}"
+  always:
+    - name: Restore the service even if certificate issuance failed
+      ansible.builtin.service:
+        name: "{{ wordpress_web_server_service[wordpress_web_server] }}"
+        state: started
+      when: wordpress_acme_restore_service | bool
+
+- name: Inspect certificate validity
+  community.crypto.x509_certificate_info:
+    path: "{{ wordpress_ssl_certificate }}"
+    valid_at:
+      current: "+0s"
+  register: wordpress_tls_certificate_info
+  become: true
+
+- name: Inspect the private key identity
+  community.crypto.openssl_privatekey_info:
+    path: "{{ wordpress_ssl_certificate_key }}"
+  register: wordpress_tls_key_info
+  become: true
+  no_log: true
+
+- name: Read the certificate DNS names
+  ansible.builtin.set_fact:
+    wordpress_tls_dns_names: >-
+      {{ wordpress_tls_certificate_info.subject_alt_name | default([])
+         | select('match', '(?i)^DNS:') | map('regex_replace', '(?i)^DNS:', '') | map('lower') | list }}
+
+- name: Reject expired certificates and mismatched keys before configuration
+  ansible.builtin.assert:
+    that:
+      - wordpress_tls_certificate_info.valid_at.current
+      - >-
+        (wordpress_server_name | lower) in wordpress_tls_dns_names or
+        ('.' in wordpress_server_name and
+         ('*.' ~ wordpress_server_name.split('.', 1)[1] | lower) in wordpress_tls_dns_names)
+      - wordpress_tls_certificate_info.public_key_fingerprints.sha256 == wordpress_tls_key_info.public_key_fingerprints.sha256
+    fail_msg: The TLS certificate must be valid, cover the configured hostname, and match its private key
+
+- name: Protect the private key
+  ansible.builtin.file:
+    path: "{{ wordpress_ssl_certificate_key }}"
+    owner: root
+    group: root
+    mode: '0600'
+  become: true
+
+- name: Record that the validated certificate can be served
+  ansible.builtin.set_fact:
+    wordpress_ssl_ready: true

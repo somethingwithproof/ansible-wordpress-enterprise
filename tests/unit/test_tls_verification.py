@@ -93,8 +93,11 @@ def test_certificate_trust_and_hostname_are_enforced(source, name, tls_endpoint,
         probe = copy.deepcopy(original)
         probe["name"] = label
         probe["register"] = "probe"
+        probe["become"] = False
+        probe["ignore_errors"] = True
         probe["vars"] = {
-            "wordpress_server_name": f"{host}:{port}",
+            "wordpress_server_name": host,
+            "wordpress_https_port": port,
             "wordpress_enable_ssl": True,
             "wordpress_ssl_ca_path": ca_path,
             "wordpress_ssl_certificate": str(cert_path),
@@ -104,7 +107,7 @@ def test_certificate_trust_and_hostname_are_enforced(source, name, tls_endpoint,
         # This probe normally starts with HTTP and may redirect to HTTPS.
         # Point it at TLS directly to exercise its certificate policy.
         if name == "Test WordPress URL response":
-            probe["ansible.builtin.uri"]["url"] = "https://{{ wordpress_server_name }}"
+            probe["ansible.builtin.uri"]["url"] = "https://{{ wordpress_server_name }}:{{ wordpress_https_port }}"
         probe["ansible.builtin.uri"]["use_proxy"] = False
         tasks.append(probe)
         tasks.append({

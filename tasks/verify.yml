@@ -76,6 +76,11 @@
 - name: Test HTTP response
   ansible.builtin.uri:
     url: "http://127.0.0.1/"
+    ca_path: >-
+      {{ wordpress_ssl_ca_path | default(
+           wordpress_ssl_certificate if wordpress_enable_ssl | bool
+           and wordpress_generate_self_signed_cert | bool
+           and not wordpress_use_letsencrypt | bool else omit, true) }}
     method: GET
     headers:
       Host: "{{ wordpress_server_name }}"
@@ -89,7 +94,7 @@
 
 - name: Test HTTPS response (if SSL is enabled)
   ansible.builtin.uri:
-    url: "https://{{ wordpress_server_name }}"
+    url: "https://{{ wordpress_server_name }}:{{ wordpress_https_port }}"
     method: GET
     status_code: [200, 301, 302, 403]
     validate_certs: true

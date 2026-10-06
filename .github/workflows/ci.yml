@@ -52,7 +52,11 @@ jobs:
         run: pytest tests/unit -q
 
   molecule-test:
-    name: Molecule Test (Ubuntu 24/Nginx and Rocky 9/Apache)
+    name: Molecule Test (${{ matrix.scenario }})
+    strategy:
+      fail-fast: false
+      matrix:
+        scenario: [default, tls]
     runs-on: [self-hosted, linux, x64]
     timeout-minutes: 45  # Full multi-platform converge and idempotence takes over 20 minutes
     needs: lint
@@ -74,7 +78,7 @@ jobs:
           ansible-galaxy collection install -r requirements.yml
 
       - name: Run stable Molecule contract
-        run: molecule test --scenario-name default
+        run: molecule test --scenario-name "${{ matrix.scenario }}"
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'

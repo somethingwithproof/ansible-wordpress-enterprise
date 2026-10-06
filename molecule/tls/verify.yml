@@ -1,0 +1,117 @@
+---
+- name: Verify the stable platform contract
+  hosts: all
+  gather_facts: true
+  become: true
+
+  vars:
+    expected_web_service: "{{ 'nginx' if ansible_facts.os_family == 'Debian' else 'httpd' }}"
+    expected_php_service: "{{ 'php' ~ wordpress_php_version ~ '-fpm' if ansible_facts.os_family == 'Debian' else 'php-fpm' }}"
+
+  vars_files:
+    - ../../defaults/main.yml
+
+  tasks:
+    - name: Collect service state
+      ansible.builtin.service_facts:
+
+    - name: Verify required services are running
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.services[expected_web_service ~ '.service'].state == 'running'
+          - ansible_facts.services[expected_php_service ~ '.service'].state == 'running'
+          - ansible_facts.services['mariadb.service'].state == 'running'
+        fail_msg: Required WordPress services are not running
+
+    - name: Validate web server configuration
+      ansible.builtin.command:
+        cmd: "{{ 'nginx -t' if wordpress_web_server == 'nginx' else 'apachectl configtest' }}"
+      changed_when: false
+
+    - name: Verify PHP is executable
+      ansible.builtin.command:
+        cmd: php --version
+      register: php_version_output
+      changed_when: false
+
+    - name: Verify the requested PHP version is active
+      ansible.builtin.assert:
+        that:
+          - "('PHP ' ~ wordpress_php_version ~ '.') in php_version_output.stdout"
+        fail_msg: >-
+          Requested PHP {{ wordpress_php_version }}, but the active runtime is
+          {{ php_version_output.stdout_lines | first | default('unknown') }}
+
+    - name: Inspect WordPress core files
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      loop:
+        - "{{ wordpress_install_dir }}/wp-config.php"
+        - "{{ wordpress_install_dir }}/wp-settings.php"
+        - "{{ wordpress_install_dir }}/wp-load.php"
+        - "{{ wordpress_install_dir }}/index.php"
+      register: wordpress_core_files
+
+    - name: Verify WordPress core and wp-config permissions
+      ansible.builtin.assert:
+        that:
+          - wordpress_core_files.results | map(attribute='stat.exists') | min
+          - wordpress_core_files.results[0].stat.mode == '0600'
+        fail_msg: WordPress core is incomplete or wp-config.php is not mode 0600
+
+    - name: Verify the WordPress database is reachable
+      ansible.builtin.command:
+        argv:
+          - mysql
+          - "--user={{ wordpress_db_user }}"
+          - "--password={{ wordpress_db_password }}"
+          - "--host={{ wordpress_db_host }}"
+          - "--execute=USE {{ wordpress_db_name }};"
+      changed_when: false
+      no_log: true
+
+    - name: Inspect the TLS private key
+      ansible.builtin.stat:
+        path: "{{ wordpress_ssl_certificate_key }}"
+      register: tls_private_key
+
+    - name: Verify private key permissions
+      ansible.builtin.assert:
+        that:
+          - tls_private_key.stat.mode == '0600'
+
+    - name: Check expiration monitoring
+      ansible.builtin.command:
+        argv: [/usr/local/bin/ssl-monitor.sh]
+      changed_when: false
+
+    - name: Request WordPress through the configured virtual host
+      ansible.builtin.uri:
+        url: "https://{{ wordpress_server_name }}:{{ wordpress_https_port }}"
+        ca_path: "{{ wordpress_ssl_certificate }}"
+        validate_certs: true
+        use_proxy: false
+        headers:
+          Host: "{{ wordpress_server_name }}"
+        status_code: 200
+        return_content: true
+      register: wordpress_http
+
+    - name: Verify WordPress served dynamic content
+      ansible.builtin.assert:
+        that:
+          - wordpress_http.content | length > 0
+        fail_msg: WordPress returned an empty response
+
+    - name: Find PHP files in uploads
+      ansible.builtin.find:
+        paths: "{{ wordpress_install_dir }}/wp-content/uploads"
+        patterns: "*.php"
+        file_type: file
+      register: php_uploads
+
+    - name: Verify uploads contain no PHP files
+      ansible.builtin.assert:
+        that:
+          - php_uploads.matched == 0
+        fail_msg: PHP files are present in the uploads directory

@@ -210,6 +210,11 @@
 - name: Verify Nginx is responding
   ansible.builtin.uri:
     url: "http://localhost/"
+    ca_path: >-
+      {{ wordpress_ssl_ca_path | default(
+           wordpress_ssl_certificate if wordpress_enable_ssl | bool
+           and wordpress_generate_self_signed_cert | bool
+           and not wordpress_use_letsencrypt | bool else omit, true) }}
     method: HEAD
     status_code: [200, 301, 302, 403, 404]
   register: nginx_response

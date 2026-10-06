@@ -59,7 +59,7 @@ platforms. They will be promoted only after they pass the same pinned-image,
 end-to-end contract without platform-specific exceptions.
 
 These features are **off by default and do not currently work**, because the
-role references templates it does not ship (59 of them, listed in
+role references templates it does not ship (56 of them, listed in
 `tests/unit/missing_templates.yml`):
 
 | Flag | Missing templates |
@@ -69,7 +69,6 @@ role references templates it does not ship (59 of them, listed in
 | `wordpress_enable_fail2ban` | 9 |
 | `wordpress_enable_security` | 9 |
 | `wordpress_enable_caching` | 6 |
-| `wordpress_enable_ssl` | 3 |
 | `wordpress_configure_firewall` | 2 |
 
 Turning one on stops the play immediately and names the missing templates,
@@ -665,18 +664,28 @@ Sensitive configuration and administrative scripts use restricted permissions.
 Public WordPress assets and command line binaries remain readable or executable
 by their intended users.
 
+Certificates are provisioned and checked before writing HTTPS virtual hosts.
+Expired certificates, incorrect hostnames, and mismatched private keys stop the
+play. Private keys use mode `0600`; protocols are limited to TLS 1.2 and TLS 1.3.
+The daily expiration check logs a warning and returns a failure within
+`wordpress_ssl_expiry_warning_days` (30 days by default).
 
 ```yaml
 ---
-# Certificate Management
-wordpress_ssl_provider: "letsencrypt"  # or "custom", "self-signed"
-wordpress_ssl_cert_path: "/etc/ssl/certs/{{ wordpress_server_name }}.crt"
-wordpress_ssl_key_path: "/etc/ssl/private/{{ wordpress_server_name }}.key"
+wordpress_enable_ssl: true
+wordpress_server_name: "wordpress.example.com"
+wordpress_site_url: "https://wordpress.example.com"
 
-# Let's Encrypt
-wordpress_letsencrypt_email: "{{ wordpress_admin_email }}"
-wordpress_letsencrypt_staging: false
-wordpress_letsencrypt_webroot: "/var/www/letsencrypt"
+# Supply existing PEM files and, for a private CA, its trust bundle.
+wordpress_ssl_certificate: "/etc/ssl/certs/wordpress.example.com.crt"
+wordpress_ssl_certificate_key: "/etc/ssl/private/wordpress.example.com.key"
+# wordpress_ssl_ca_path: "/etc/ssl/certs/private-ca.pem"
+
+# Alternatively choose ONE provider:
+# wordpress_generate_self_signed_cert: true  # development only
+# wordpress_use_letsencrypt: true             # public DNS and TCP port 80 required
+# wordpress_letsencrypt_email: "admin@example.com"
+wordpress_ssl_expiry_warning_days: 30
 
 # SSL Configuration
 wordpress_ssl_protocols: "TLSv1.2 TLSv1.3"
@@ -695,6 +704,14 @@ wordpress_hsts_max_age: 31536000
 wordpress_hsts_include_subdomains: true
 wordpress_hsts_preload: true
 ```
+
+Let's Encrypt uses a standalone HTTP challenge. Initial issuance temporarily
+stops an existing running web service and restores it even if issuance fails.
+Renewal stops and restarts the configured service around the challenge, so plan
+for a brief interruption. Development certificates are generated once with a
+hostname SAN; they are suitable for local testing and require explicit trust
+on clients. CI exercises generated certificates on Nginx and supplied
+certificates on Apache; live ACME issuance requires a reachable public host.
 
 ## ⚡ Performance Tuning
 
@@ -1116,8 +1133,9 @@ CI and Docker controllers install `requirements.lock` with hash verification
 and wheels only. After updating `requirements.txt`, regenerate the lock with
 `mise exec python@3.12 -- uv pip compile --python 3.12 --only-binary=:all: --generate-hashes requirements.txt -o requirements.lock`.
 
-The default Molecule scenario is the release contract: Ubuntu 24.04/Nginx and
-Rocky Linux 9/Apache must converge, be idempotent, and pass runtime checks.
+Both Molecule scenarios form the release contract: Ubuntu 24.04/Nginx and
+Rocky Linux 9/Apache must converge, be idempotent, and pass runtime checks with
+HTTP and HTTPS.
 
 ```bash
 # Install testing dependencies
@@ -1126,6 +1144,7 @@ mise exec python@3.12 -- ansible-galaxy collection install -r requirements.yml
 
 # Run the complete release contract
 mise exec python@3.12 -- molecule test --scenario-name default
+mise exec python@3.12 -- molecule test --scenario-name tls
 
 # Interactive testing
 mise exec python@3.12 -- molecule converge --scenario-name default
@@ -1139,6 +1158,7 @@ mise exec python@3.12 -- molecule destroy --scenario-name default
 | Scenario | Platforms | Purpose |
 |----------|-----------|---------|
 | **default** | Ubuntu 24.04/Nginx, Rocky Linux 9/Apache | Stable release contract |
+| **tls** | Ubuntu 24.04/Nginx, Rocky Linux 9/Apache | Generated and supplied certificates, HTTPS and expiration checks |
 
 All scenarios include:
 - ✅ Syntax checking
