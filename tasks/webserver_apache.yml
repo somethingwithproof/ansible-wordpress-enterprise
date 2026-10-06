@@ -30,6 +30,16 @@
   changed_when: "'already enabled' not in apache_modules_result.stdout"
   notify: Restart apache
 
+- name: Create Apache log directory
+  ansible.builtin.file:
+    path: "{{ wordpress_log_dir }}/apache"
+    state: directory
+    owner: "{{ 'apache' if ansible_facts.os_family == 'RedHat' else 'www-data' }}"
+    group: "{{ 'apache' if ansible_facts.os_family == 'RedHat' else 'www-data' }}"
+    mode: '0750'
+  become: true
+  when: wordpress_enable_logging | bool
+
 - name: Create Apache virtual host configuration
   ansible.builtin.template:
     src: apache-vhost.conf.j2
@@ -140,16 +150,6 @@
   ansible.builtin.debug:
     var: apache_config_test.stdout
   when: apache_config_test.stdout is defined
-
-- name: Create Apache log directory
-  ansible.builtin.file:
-    path: "{{ wordpress_log_dir }}/apache"
-    state: directory
-    owner: "{{ 'apache' if ansible_facts.os_family == 'RedHat' else 'www-data' }}"
-    group: "{{ 'apache' if ansible_facts.os_family == 'RedHat' else 'www-data' }}"
-    mode: '0750'
-  become: true
-  when: wordpress_enable_logging | bool
 
 - name: Configure Apache logrotate
   ansible.builtin.template:
