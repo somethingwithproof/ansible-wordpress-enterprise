@@ -88,6 +88,11 @@ Docker, so pull requests and releases do not depend on the shared ephemeral
 self-hosted queue or compete for identically named containers. The scheduled
 `Security Tests` workflow reruns the complete contract daily.
 
+With logging enabled, verification writes `verification-report.txt` in
+`wordpress_log_dir`. This snapshot changes only when the observed deployment
+state changes; verification checks still execute on every run. It replaces
+timestamped reports that made otherwise unchanged deployments non-idempotent.
+
 ## Adding platform coverage
 
 Platform support is a tested contract, not a metadata-only declaration. A new

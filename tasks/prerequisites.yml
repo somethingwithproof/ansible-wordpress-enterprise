@@ -72,7 +72,6 @@
     - "{{ wordpress_install_dir }}/wp-content/uploads"
     - "{{ wordpress_install_dir }}/wp-content/themes"
     - "{{ wordpress_install_dir }}/wp-content/plugins"
-    - /var/log/wordpress
 
 # wordpress_enable_ssl defaults true while no certificate source does, so the
 # web server config would reference a file that never exists and fail its own

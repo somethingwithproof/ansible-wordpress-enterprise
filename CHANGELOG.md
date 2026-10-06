@@ -12,6 +12,8 @@ SPDX-License-Identifier: MIT
 - Verify logging and private directory permissions in the two-platform contract.
 - Create private logs before configuring services, persist slow-query settings
   across database restarts, and rotate only the configured database log file.
+- Give the private WordPress log directory a single owner and keep a stable
+  verification snapshot so unchanged deployments remain idempotent.
 - Verify Dependabot's immutable PR author ID before merging.
 - Run core CI on GitHub-hosted Ubuntu 24.04 with Docker, independently of the
   legacy shared self-hosted runner queue.
