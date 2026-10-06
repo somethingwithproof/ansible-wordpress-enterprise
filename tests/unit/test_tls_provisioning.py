@@ -20,7 +20,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 TASKS = yaml.safe_load((ROOT / 'tasks/ssl_certificate.yml').read_text())
 
 
-def run_tasks(tmp_path, tasks, variables):
+def run_tasks(tmp_path, tasks, variables, selected_tag=None):
     playbook = tmp_path / 'playbook.yml'
     playbook.write_text(yaml.safe_dump([{
         'name': 'TLS safety regression', 'hosts': 'localhost', 'gather_facts': False,
@@ -33,10 +33,29 @@ def run_tasks(tmp_path, tasks, variables):
         'ANSIBLE_LIBRARY': str(tmp_path / 'library'),
         'ANSIBLE_NOCOLOR': '1',
     })
+    command = [sys.executable, '-m', 'ansible.cli.playbook', '-i', 'localhost,', '-c', 'local', str(playbook)]
+    if selected_tag:
+        command.extend(['--tags', selected_tag])
     return subprocess.run(
-        [sys.executable, '-m', 'ansible.cli.playbook', '-i', 'localhost,', '-c', 'local', str(playbook)],
+        command,
         capture_output=True, text=True, timeout=90, env=environment,
     )
+
+
+@pytest.mark.parametrize('selected_tag', ['ssl', 'nginx', 'apache', 'webserver'])
+def test_tls_preparation_runs_before_selected_webserver_phase(tmp_path, selected_tag):
+    phases = yaml.safe_load((ROOT / 'tasks/main.yml').read_text())
+    preparation = copy.deepcopy(next(task for task in phases if task['name'] == 'Phase 4 | Prepare and validate the TLS certificate'))
+    child = tmp_path / 'certificate-probe.yml'
+    child.write_text(yaml.safe_dump([{'name': 'Record validated certificate',
+                                    'ansible.builtin.set_fact': {'wordpress_ssl_ready': True}}]))
+    preparation['ansible.builtin.include_tasks']['file'] = str(child)
+    result = run_tasks(tmp_path, [preparation, {
+        'name': 'Require certificate readiness before the selected web server',
+        'ansible.builtin.assert': {'that': ['wordpress_ssl_ready | default(false) | bool']},
+        'tags': [selected_tag],
+    }], {'wordpress_enable_ssl': True}, selected_tag=selected_tag)
+    assert result.returncode == 0, result.stdout + result.stderr
 
 
 @pytest.mark.parametrize('expired,mismatched,dns_name,hostname,expected', [
