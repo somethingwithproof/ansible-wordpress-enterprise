@@ -29,3 +29,19 @@ source commit when assessing an artifact.
 The supported OS/runtime matrix and its lifecycle sources are documented in
 README.md and the project's machine-readable platform policy. Source examples
 for undeployed features are not additional platform support guarantees.
+
+Public WordPress source and static assets use the documented WordPress
+`0644` file / `0755` directory convention; neither mode permits writes by
+other users. Credentials and salts in `wp-config.php` remain owner-only
+(`0600`). Logs and cache directories are private to the service owner/group
+(`0750`), and private role security files use `0640` or tighter permissions.
+Root-owned system metadata and the system WP-CLI executable intentionally
+remain readable or executable by their unprivileged callers.
+
+The isolated Docker regression fixtures use HTTP for unauthenticated
+connectivity and redirect assertions with fake fixture configuration. The
+separate TLS scenario verifies HTTPS, certificate identity and expiration.
+These fixtures do not authorize cleartext production administration.
+
+WordPress's permissions guidance:
+https://developer.wordpress.org/advanced-administration/server/file-permissions/

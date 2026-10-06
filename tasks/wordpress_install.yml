@@ -160,7 +160,7 @@
     state: directory
     owner: "{{ wordpress_php_fpm_user }}"
     group: "{{ wordpress_php_fpm_group }}"
-    mode: '0755'
+    mode: '0750'
   become: true
   when: wordpress_enable_logging | bool
 

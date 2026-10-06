@@ -17,6 +17,7 @@
   loop:
     - /etc/nginx/sites-available
     - /etc/nginx/sites-enabled
+    - /etc/nginx/conf.d
     - /etc/nginx/snippets
   become: true
 
@@ -65,7 +66,7 @@
     state: directory
     owner: "{{ wordpress_system_user }}"
     group: "{{ wordpress_system_group }}"
-    mode: '0755'
+    mode: '0750'
   become: true
   loop:
     - /var/cache/nginx
@@ -78,9 +79,8 @@
     state: directory
     owner: "{{ item.owner }}"
     group: "{{ item.group }}"
-    mode: '0755'
+    mode: '0750'
   loop:
-    - {path: /etc/nginx/conf.d, owner: root, group: root}
     - {path: /var/log/nginx, owner: "{{ wordpress_system_user }}", group: "{{ wordpress_system_group }}"}
     - {path: /var/cache/nginx/fastcgi, owner: "{{ wordpress_system_user }}", group: "{{ wordpress_system_group }}"}
     - {path: /var/cache/nginx/proxy, owner: "{{ wordpress_system_user }}", group: "{{ wordpress_system_group }}"}
@@ -165,7 +165,7 @@
     state: directory
     owner: "{{ wordpress_system_user }}"
     group: "{{ wordpress_system_group }}"
-    mode: '0755'
+    mode: '0750'
   loop:
     - /var/cache/nginx
     - /var/log/nginx

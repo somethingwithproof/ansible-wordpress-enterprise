@@ -106,8 +106,10 @@ usage() {
 
 # Function to parse command line arguments
 parse_args() {
+    local option
     while [[ $# -gt 0 ]]; do
-        case $1 in
+        option="$1"
+        case "$option" in
             -h|--help)
                 usage
                 ;;
@@ -136,7 +138,7 @@ parse_args() {
                 shift
                 ;;
             *)
-                print_error "Unknown option: $1"
+                print_error "Unknown option: $option"
                 usage
                 ;;
         esac

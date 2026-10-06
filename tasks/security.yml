@@ -94,7 +94,7 @@
     dest: "{{ wordpress_install_dir }}/wp-security.conf"
     owner: "{{ wordpress_system_user }}"
     group: "{{ wordpress_system_group }}"
-    mode: '0644'
+    mode: '0640'
   become: true
 
 - name: Remove default WordPress files
@@ -123,7 +123,7 @@
     dest: "{{ wordpress_install_dir }}/.htaccess-security"
     owner: "{{ wordpress_system_user }}"
     group: "{{ wordpress_system_group }}"
-    mode: '0644'
+    mode: '0640'
   become: true
   when: wordpress_web_server == "apache"
 
@@ -171,7 +171,7 @@
     dest: /etc/rkhunter.conf
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
     backup: true
   become: true
 
@@ -197,7 +197,7 @@
     dest: /etc/logwatch/conf/logwatch.conf
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
     backup: true
   become: true
 
@@ -207,7 +207,7 @@
     dest: /usr/local/bin/wp-admin-security.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when: wordpress_install_wpcli | bool
 

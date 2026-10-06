@@ -5,6 +5,15 @@ SPDX-License-Identifier: MIT
 
 # Changelog
 
+## 2.22.1 — 2026-10-06
+
+- Add complete SPDX headers, REUSE annotations and CI license-coverage checks.
+- Restrict service logs/caches and private security files to their owner/group.
+- Verify logging and private directory permissions in the two-platform contract.
+- Verify Dependabot's immutable PR author ID before merging.
+- Resolve baseline shell findings and document reviewed public asset/test fixtures.
+- Remove obsolete documentation superseded by README and TESTING.
+
 ## 2.22.0 — 2026-10-06
 
 Verified certificate preparation, real HTTPS contracts and SemVer role archives/DEB/RPM releases.

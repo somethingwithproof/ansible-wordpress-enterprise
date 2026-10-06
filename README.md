@@ -8,18 +8,18 @@ SPDX-License-Identifier: MIT
 ![WordPress Enterprise](docs/assets/banner.svg)
 
 Project releases use the complete SemVer version in `VERSION`, independently
-of `meta/main.yml`'s minimum Ansible version. A matching `v2.22.0` tag on main
+of `meta/main.yml`'s minimum Ansible version. A matching `v2.22.1` tag on main
 or the manual Release workflow validates the source version, runs the full CI
 suite (including both Molecule scenarios), and publishes a Galaxy-compatible
 role archive, Debian package, RPM, `release.json` and `SHA256SUMS`.
 
 Verify downloads with `sha256sum --check SHA256SUMS`. Install native packages
-with `sudo apt install ./ansible-wordpress-enterprise_2.22.0_all.deb` on Ubuntu
-24.04 or `sudo dnf install ./ansible-wordpress-enterprise_2.22.0_noarch.rpm` on
+with `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` on Ubuntu
+24.04 or `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` on
 Rocky Linux 9. Both install the role under
 `/usr/share/ansible/roles/wordpress_enterprise`; supply a supported Ansible
 controller and install `requirements.yml` separately. The archive can be
-installed with `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.0.tar.gz`.
+installed with `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`.
 Native packages contain role sources and documentation and run no deployment
 scripts during installation. CI installs, checks and removes both formats.
 

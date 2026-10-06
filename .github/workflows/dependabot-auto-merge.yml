@@ -22,7 +22,7 @@ jobs:
   merge:
     if: >-
       github.event_name != 'pull_request_target' ||
-      github.actor_id == '49699333'
+      github.event.pull_request.user.id == 49699333
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -46,6 +46,9 @@ jobs:
               .number' |
           while read -r pr; do
             [ -n "$pr" ] || continue
+
+            author_id=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$pr" --jq '.user.id')
+            [ "$author_id" = 49699333 ] || continue
 
             states=$(gh pr checks "$pr" \
               --repo "$GITHUB_REPOSITORY" \

@@ -69,6 +69,25 @@
       changed_when: false
       no_log: true
 
+    - name: Inspect private service directories
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      loop: >-
+        {{ [wordpress_log_dir] +
+           (['/var/log/nginx', '/var/cache/nginx', '/var/cache/nginx/fastcgi',
+             '/var/cache/nginx/proxy', '/var/cache/nginx/scgi', '/var/cache/nginx/uwsgi']
+            if wordpress_web_server == 'nginx'
+            else [wordpress_log_dir ~ '/apache']) }}
+      register: private_service_directories
+
+    - name: Verify other users cannot inspect logs or caches
+      ansible.builtin.assert:
+        that:
+          - item.stat.isdir
+          - item.stat.mode == '0750'
+        fail_msg: "Private service directory {{ item.item }} is not mode 0750"
+      loop: "{{ private_service_directories.results }}"
+
     - name: Request WordPress through the configured virtual host
       ansible.builtin.uri:
         url: http://127.0.0.1/
