@@ -111,10 +111,12 @@ def role_archive(payload: Path, output: Path, epoch: int) -> None:
         for path in sorted(role.rglob("*")):
             if path.is_symlink():
                 raise ValueError("Role release sources must not contain symlinks")
-            info = archive.gettarinfo(
-                str(path),
-                arcname=f"wordpress_enterprise/{path.relative_to(role).as_posix()}",
-            )
+            relative = path.relative_to(role)
+            if any(part in {".", ".."} or "\\" in part for part in relative.parts):
+                raise ValueError("Role archive member names must be safe relative paths")
+            info = tarfile.TarInfo(f"wordpress_enterprise/{relative.as_posix()}")
+            info.type = tarfile.DIRTYPE if path.is_dir() else tarfile.REGTYPE
+            info.size = 0 if path.is_dir() else path.stat().st_size
             info.uid = info.gid = 0
             info.uname = info.gname = "root"
             info.mtime = epoch
