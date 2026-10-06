@@ -24,7 +24,7 @@ permissions:
 jobs:
   lint:
     name: Lint
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-24.04
     timeout-minutes: 15  # Prevent hung jobs
     steps:
       - name: Checkout code
@@ -63,7 +63,7 @@ jobs:
       fail-fast: false
       matrix:
         scenario: [default, tls]
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-24.04
     timeout-minutes: 45  # Full multi-platform converge and idempotence takes over 20 minutes
     needs: lint
     steps:
@@ -92,7 +92,7 @@ jobs:
 
   native-artifacts:
     name: Build and install release packages
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

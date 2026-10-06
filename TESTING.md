@@ -82,10 +82,11 @@ mise exec python@3.12 -- pytest -q tests/unit
 actionlint .github/workflows/ci.yml .github/workflows/security-tests.yml
 ```
 
-The scheduled `Security Tests` workflow reruns the complete contract daily.
-Pull requests and pushes execute the verifier through the main CI workflow, so
-the two workflows do not compete for identically named containers on the
-self-hosted runner.
+Core CI uses GitHub-hosted Ubuntu 24.04 for lint, unit tests, both Molecule
+scenarios and native package checks. Each job gets an isolated runner with
+Docker, so pull requests and releases do not depend on the shared ephemeral
+self-hosted queue or compete for identically named containers. The scheduled
+`Security Tests` workflow reruns the complete contract daily.
 
 ## Adding platform coverage
 

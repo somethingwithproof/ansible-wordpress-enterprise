@@ -13,6 +13,8 @@ SPDX-License-Identifier: MIT
 - Create private logs before configuring services, persist slow-query settings
   across database restarts, and rotate only the configured database log file.
 - Verify Dependabot's immutable PR author ID before merging.
+- Run core CI on GitHub-hosted Ubuntu 24.04 with Docker, independently of the
+  legacy shared self-hosted runner queue.
 - Resolve baseline shell findings and document reviewed public asset/test fixtures.
 - Remove obsolete documentation superseded by README and TESTING.
 
