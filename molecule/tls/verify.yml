@@ -8,9 +8,6 @@
     expected_web_service: "{{ 'nginx' if ansible_facts.os_family == 'Debian' else 'httpd' }}"
     expected_php_service: "{{ 'php' ~ wordpress_php_version ~ '-fpm' if ansible_facts.os_family == 'Debian' else 'php-fpm' }}"
 
-  vars_files:
-    - ../../defaults/main.yml
-
   tasks:
     - name: Collect service state
       ansible.builtin.service_facts:
@@ -72,7 +69,7 @@
 
     - name: Inspect the TLS private key
       ansible.builtin.stat:
-        path: "{{ wordpress_ssl_certificate_key }}"
+        path: "{{ wordpress_ssl_certificate_key | default('/etc/ssl/private/' ~ wordpress_server_name ~ '.key') }}"
       register: tls_private_key
 
     - name: Verify private key permissions
@@ -87,8 +84,8 @@
 
     - name: Request WordPress through the configured virtual host
       ansible.builtin.uri:
-        url: "https://{{ wordpress_server_name }}:{{ wordpress_https_port }}"
-        ca_path: "{{ wordpress_ssl_certificate }}"
+        url: "https://{{ wordpress_server_name }}:{{ wordpress_https_port | default(443) }}"
+        ca_path: "{{ wordpress_ssl_certificate | default('/etc/ssl/certs/' ~ wordpress_server_name ~ '.crt') }}"
         validate_certs: true
         use_proxy: false
         headers:
