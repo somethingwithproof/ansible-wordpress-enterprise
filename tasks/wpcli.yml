@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
 ---
 # WordPress CLI Installation and Configuration Tasks
 # This file handles the installation and configuration of WP-CLI for WordPress management

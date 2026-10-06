@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
+version = 1
+
+[[annotations]]
+path = [".secrets.baseline", "LICENSE", "VERSION"]
+precedence = "closest"
+SPDX-FileCopyrightText = "2025 Thomas Vincent"
+SPDX-License-Identifier = "MIT"

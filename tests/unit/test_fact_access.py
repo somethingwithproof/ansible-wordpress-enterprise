@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
 """Facts are read through ansible_facts, not the injected bare variables.
 
 ansible-core deprecates the injected ansible_<fact> variables, and they are

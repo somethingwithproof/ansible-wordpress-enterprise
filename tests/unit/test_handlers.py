@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
 """Every notify names a handler that exists.
 
 Ansible fails a play on an unknown handler only at runtime, and a handler that

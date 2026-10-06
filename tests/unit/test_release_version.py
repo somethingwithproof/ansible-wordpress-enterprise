@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
 """Reject ambiguous versions before release workflows can publish packages."""
 
 import importlib.util

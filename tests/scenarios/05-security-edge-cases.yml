@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
 ---
 # WordPress Enterprise Security Edge Cases Test Scenario
 # Tests edge cases, error conditions, and boundary scenarios for security hardening

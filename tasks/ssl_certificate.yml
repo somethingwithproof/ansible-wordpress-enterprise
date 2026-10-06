@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
 ---
 # Prepare certificates before a web server can reference them.
 - name: Require one certificate provider

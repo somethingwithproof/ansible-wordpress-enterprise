@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
 """Best-effort commands must remain observable without breaking idempotence."""
 
 from __future__ import annotations

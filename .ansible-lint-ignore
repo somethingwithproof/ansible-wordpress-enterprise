@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
 # This file contains ignores for ansible-lint
 
 # UFW module is from community.general collection which is installed as dependency

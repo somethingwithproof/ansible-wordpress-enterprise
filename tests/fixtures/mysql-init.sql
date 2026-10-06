@@ -1,3 +1,5 @@
+-- SPDX-FileCopyrightText: 2025 Thomas Vincent
+-- SPDX-License-Identifier: MIT
 -- MySQL initialization script for WordPress Enterprise testing
 -- This script sets up the test database with proper permissions
 

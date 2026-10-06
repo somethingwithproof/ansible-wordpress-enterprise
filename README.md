@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2025 Thomas Vincent
+SPDX-License-Identifier: MIT
+-->
+
 # Ansible WordPress Enterprise
 
 ![WordPress Enterprise](docs/assets/banner.svg)

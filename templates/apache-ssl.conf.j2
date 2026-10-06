@@ -1,3 +1,7 @@
+{#
+SPDX-FileCopyrightText: 2025 Thomas Vincent
+SPDX-License-Identifier: MIT
+-#}
 # Managed by Ansible: TLS listener and session protection.
 <IfModule mod_ssl.c>
 {% if ansible_facts.os_family == 'RedHat' or wordpress_https_port != 443 %}

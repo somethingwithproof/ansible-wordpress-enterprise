@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2025 Thomas Vincent
+SPDX-License-Identifier: MIT
+-->
+
 # WordPress Enterprise Test Automation
 
 This directory contains comprehensive end-to-end test automation for the WordPress Enterprise Ansible role. The testing framework provides isolated, reproducible testing environments using Docker containers and supports multiple operating systems and configurations.

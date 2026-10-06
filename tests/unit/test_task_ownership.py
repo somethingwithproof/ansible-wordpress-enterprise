@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
 """No two tasks fight over the same resource.
 
 Ansible applies whichever task runs last, so a second writer to the same
