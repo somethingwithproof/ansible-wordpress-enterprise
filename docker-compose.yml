@@ -2,6 +2,7 @@
 services:
   # Ubuntu 24.04 test environment
   ubuntu-24:
+    user: root  # systemd must run as root in this isolated test target.
     build:
       context: .
       dockerfile: Dockerfile
@@ -22,6 +23,7 @@ services:
 
   # Rocky Linux 9 test environment
   rocky-9:
+    user: root  # systemd must run as root in this isolated test target.
     build:
       context: .
       dockerfile: Dockerfile
@@ -42,6 +44,7 @@ services:
 
   # Development environment with all services
   wordpress-dev:
+    user: root  # systemd must run as root in this isolated development target.
     build:
       context: .
       dockerfile: Dockerfile
@@ -123,6 +126,7 @@ services:
 
   # Molecule test runner
   molecule:
+    user: root  # The mounted Docker socket belongs to root.
     build:
       context: .
       dockerfile: Dockerfile

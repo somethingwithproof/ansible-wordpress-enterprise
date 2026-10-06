@@ -1,5 +1,6 @@
 # Development controller for supported Ubuntu and Rocky Linux targets.
 ARG BASE_IMAGE=ubuntu:24.04
+FROM docker:29-cli@sha256:b1805116a6a86cc591b5d5f60a910a0715cdcc9d18d866ad68b1457ead25c35c AS docker-cli
 FROM ${BASE_IMAGE}
 
 LABEL maintainer="Thomas Vincent <thomasvincent@users.noreply.github.com>"
@@ -7,6 +8,8 @@ LABEL description="WordPress Enterprise Ansible development controller"
 ENV DEBIAN_FRONTEND=noninteractive LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH="/opt/ansible/bin:$PATH"
 
+# Molecule's community.docker.docker connection runs the Docker CLI.
+COPY --from=docker-cli /usr/local/bin/docker /usr/local/bin/docker
 COPY requirements.lock requirements.yml /tmp/dependencies/
 RUN if [ -f /etc/debian_version ]; then \
         apt-get update && apt-get install -y --no-install-recommends \
