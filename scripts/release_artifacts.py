@@ -198,6 +198,7 @@ def python_payload(payload: Path, wheel: Path, packager: str) -> None:
     documents.mkdir(parents=True)
     for name in ("README.md", "LICENSE"):
         shutil.copy2(ROOT / name, documents / name)
+    shutil.copytree(ROOT / "docs/source/_static", documents / "docs/source/_static")
 
 
 def package_contents(payload: Path) -> list[dict[str, Any]]:
@@ -276,10 +277,21 @@ def build_python_archives(output: Path, environment: dict[str, str]) -> Path:
     return wheels[0]
 
 
+def prepare_output(version: str) -> Path:
+    """Replace only the owned, non-symlink artifact directory for a valid version."""
+    validate_semver(version)
+    output = ROOT / "dist/release" / version
+    if any(path.is_symlink() for path in (ROOT / "dist", ROOT / "dist/release", output)):
+        raise ValueError("Release output paths must not be symlinks")
+    if output.exists():
+        shutil.rmtree(output)
+    output.mkdir(parents=True)
+    return output
+
+
 def build_artifacts(version: str) -> Path:
     """Build complete source, checksum and native artifacts for one source version."""
-    output = ROOT / "dist/release" / version
-    output.mkdir(parents=True, exist_ok=True)
+    output = prepare_output(version)
     config = yaml.safe_load((ROOT / "packaging/nfpm.yaml").read_text())
     role = (ROOT / "VERSION").is_file()
     epoch = commit_epoch()
