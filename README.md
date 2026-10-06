@@ -639,6 +639,8 @@ For a local database, the role creates the slow-query log directory with mode
 settings across database restarts and configures rotation for this specific
 file. Keep custom paths within directories permitted by your distribution's
 AppArmor or SELinux policy. External databases retain their own logging policy.
+The private base log directory is created even when `wordpress_enable_logging`
+is false because PHP-FPM and Nginx still write their standard service logs.
 
 ## 🔒 Security
 

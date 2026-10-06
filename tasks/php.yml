@@ -65,6 +65,7 @@
   become: true
 
 - name: Create private WordPress log directory before configuring services
+  # PHP-FPM and Nginx use this base directory even when optional logging is off.
   ansible.builtin.file:
     path: "{{ wordpress_log_dir }}"
     state: directory
@@ -72,7 +73,6 @@
     group: "{{ wordpress_php_fpm_group }}"
     mode: '0750'
   become: true
-  when: wordpress_enable_logging | bool
 
 - name: Configure PHP-FPM pool
   ansible.builtin.template:
