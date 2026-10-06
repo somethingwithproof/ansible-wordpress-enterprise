@@ -2,6 +2,7 @@
 name: CI
 
 on:
+  workflow_call:
   push:
     branches: [main, develop]
   pull_request:
@@ -83,62 +84,33 @@ jobs:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
 
-  release:
-    name: Release
-    runs-on: [self-hosted, linux, x64]
-    timeout-minutes: 15  # Prevent hung jobs
-    needs: [molecule-test]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+  native-artifacts:
+    name: Build and install release packages
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.12'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --require-hashes --only-binary=:all: -r requirements.lock
-
-      - name: Get version from meta
-        id: get_version
-        run: |
-          role_version=$(awk '/version:/ {gsub(/"/, "", $2); print $2; exit}' meta/main.yml)
-          echo "version=${role_version}" >> "$GITHUB_OUTPUT"
-
-      - name: Check if tag exists
-        id: check_tag
-        env:
-          ROLE_VERSION: ${{ steps.get_version.outputs.version }}
-        run: |
-          if git rev-parse "v${ROLE_VERSION}" >/dev/null 2>&1; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "exists=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Create Release
-        if: steps.check_tag.outputs.exists == 'false'
-        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
+      - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
         with:
-          tag_name: v${{ steps.get_version.outputs.version }}
-          name: Release v${{ steps.get_version.outputs.version }}
-          draft: false
-          prerelease: false
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Publish to Ansible Galaxy
-        if: steps.check_tag.outputs.exists == 'false'
-        env:
-          GALAXY_API_KEY: ${{ secrets.GALAXY_API_KEY }}
+          version: 2026.10.1
+          install: false
+          cache: false
+      - name: Install pinned release tools
         run: |
-          ansible-galaxy role import --api-key "$GALAXY_API_KEY" thomasvincent wordpress_enterprise
-        continue-on-error: true
+          mise install nfpm@2.47.0
+          python -m pip install --only-binary=:all: --require-hashes -r packaging/build-requirements.txt
+      - name: Build project and native artifacts
+        id: version
+        run: mise exec nfpm@2.47.0 -- python scripts/release_artifacts.py build
+      - name: Install, exercise and remove Debian and RPM packages
+        run: python scripts/smoke_native_packages.py "dist/release/${{ steps.version.outputs.version }}"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release-artifacts
+          path: dist/release/${{ steps.version.outputs.version }}/*
+          if-no-files-found: error
+          retention-days: 14

@@ -5,7 +5,7 @@ galaxy_info:
   author: Thomas Vincent
   description: Enterprise-grade WordPress installation and configuration for RHEL and Ubuntu
   company: Open Source
-  license: Apache-2.0
+  license: MIT
   min_ansible_version: "2.21"
 
   # Kept in step with meta/platform_support.yml by

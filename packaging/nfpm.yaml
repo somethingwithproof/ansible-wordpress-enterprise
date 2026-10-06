@@ -1,0 +1,12 @@
+---
+name: ansible-wordpress-enterprise
+arch: all
+platform: linux
+version: ${RELEASE_VERSION}
+release: 1
+section: admin
+priority: optional
+maintainer: Thomas Vincent <thomasvincent@gmail.com>
+description: Validated WordPress deployment role for Ansible controllers
+homepage: https://github.com/somethingwithproof/ansible-wordpress-enterprise
+license: MIT
