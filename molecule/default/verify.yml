@@ -83,10 +83,42 @@
     - name: Verify other users cannot inspect logs or caches
       ansible.builtin.assert:
         that:
+          - item.stat.exists
           - item.stat.isdir
           - item.stat.mode == '0750'
         fail_msg: "Private service directory {{ item.item }} is not mode 0750"
       loop: "{{ private_service_directories.results }}"
+
+    - name: Inspect the database slow query log
+      ansible.builtin.stat:
+        path: "{{ wordpress_mysql_slow_query_log_file }}"
+      register: database_slow_log
+
+    - name: Verify private database log ownership and permissions
+      ansible.builtin.assert:
+        that:
+          - database_slow_log.stat.exists
+          - database_slow_log.stat.mode == '0640'
+          - database_slow_log.stat.pw_name == 'mysql'
+
+    - name: Inspect logging after handlers have restarted the database
+      ansible.mysql.mysql_query:
+        query: "SHOW GLOBAL VARIABLES LIKE 'slow_query_log%'"
+        login_user: root
+        login_password: "{{ wordpress_db_root_password }}"
+      register: verified_slow_settings
+      changed_when: false
+      no_log: true
+
+    - name: Verify logging persists after service restarts
+      ansible.builtin.assert:
+        that:
+          - slow_settings.slow_query_log == 'ON'
+          - slow_settings.slow_query_log_file == wordpress_mysql_slow_query_log_file
+      vars:
+        slow_settings: >-
+          {{ verified_slow_settings.query_result[0] |
+             items2dict(key_name='Variable_name', value_name='Value') }}
 
     - name: Request WordPress through the configured virtual host
       ansible.builtin.uri:

@@ -173,18 +173,80 @@
     msg: "Database connection successful"
   when: db_connection_test is succeeded
 
-- name: Enable slow query log
-  ansible.mysql.mysql_query:
-    query:
-      - "SET GLOBAL slow_query_log = 'ON'"
-      - "SET GLOBAL slow_query_log_file = '{{ wordpress_mysql_slow_query_log_file | default('/var/log/mysql/slow.log') }}'"
-      - "SET GLOBAL long_query_time = {{ wordpress_mysql_long_query_time | default(2) }}"
-    login_user: root
-    login_password: "{{ wordpress_db_root_password }}"
+- name: Configure private local database logging
   become: true
   when:
     - not wordpress_use_external_db | bool
     - wordpress_enable_logging | bool
+  block:
+    - name: Validate slow query log configuration
+      ansible.builtin.assert:
+        that:
+          - wordpress_mysql_slow_query_log_file is match('^/[A-Za-z0-9_./-]+$')
+          - "'..' not in wordpress_mysql_slow_query_log_file.split('/')"
+          - wordpress_mysql_long_query_time | float >= 0
+        fail_msg: Slow query logging requires a safe absolute path and nonnegative threshold
+
+    - name: Create private slow query log directory
+      ansible.builtin.file:
+        path: "{{ wordpress_mysql_slow_query_log_file | dirname }}"
+        state: directory
+        owner: mysql
+        group: mysql
+        mode: '0750'
+
+    - name: Initialize the slow query log without resetting timestamps
+      ansible.builtin.file:
+        path: "{{ wordpress_mysql_slow_query_log_file }}"
+        state: touch
+        access_time: preserve
+        modification_time: preserve
+        owner: mysql
+        group: mysql
+        mode: '0640'
+
+    - name: Persist slow query logging across database restarts
+      ansible.builtin.copy:
+        content: |
+          [mysqld]
+          slow_query_log=1
+          slow_query_log_file={{ wordpress_mysql_slow_query_log_file }}
+          long_query_time={{ wordpress_mysql_long_query_time }}
+        dest: "{{ wordpress_db_config_dir[wordpress_db_engine] }}/wordpress-logging.cnf"
+        owner: root
+        group: mysql
+        mode: '0640'
+      notify: "Restart {{ wordpress_db_engine }}"
+
+    - name: Inspect active slow query settings
+      ansible.mysql.mysql_query:
+        query: >-
+          SHOW GLOBAL VARIABLES WHERE Variable_name IN
+          ('slow_query_log', 'slow_query_log_file', 'long_query_time')
+        login_user: root
+        login_password: "{{ wordpress_db_root_password }}"
+      register: wordpress_active_slow_query_settings
+      changed_when: false
+      no_log: true
+
+    - name: Enable slow query logging only when settings differ
+      ansible.mysql.mysql_query:
+        query:
+          - "SET GLOBAL slow_query_log_file = '{{ wordpress_mysql_slow_query_log_file }}'"
+          - "SET GLOBAL long_query_time = {{ wordpress_mysql_long_query_time }}"
+          - "SET GLOBAL slow_query_log = 'ON'"
+        login_user: root
+        login_password: "{{ wordpress_db_root_password }}"
+      vars:
+        active_slow_settings: >-
+          {{ wordpress_active_slow_query_settings.query_result[0] |
+             items2dict(key_name='Variable_name', value_name='Value') }}
+      when: >-
+        active_slow_settings.slow_query_log != 'ON' or
+        active_slow_settings.slow_query_log_file != wordpress_mysql_slow_query_log_file or
+        active_slow_settings.long_query_time | float != wordpress_mysql_long_query_time | float
+      changed_when: true
+      no_log: true
 
 - name: Configure external database SSL (if enabled)
   when:

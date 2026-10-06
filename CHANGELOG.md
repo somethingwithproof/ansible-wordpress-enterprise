@@ -10,6 +10,8 @@ SPDX-License-Identifier: MIT
 - Add complete SPDX headers, REUSE annotations and CI license-coverage checks.
 - Restrict service logs/caches and private security files to their owner/group.
 - Verify logging and private directory permissions in the two-platform contract.
+- Create private logs before configuring services, persist slow-query settings
+  across database restarts, and rotate only the configured database log file.
 - Verify Dependabot's immutable PR author ID before merging.
 - Resolve baseline shell findings and document reviewed public asset/test fixtures.
 - Remove obsolete documentation superseded by README and TESTING.

@@ -624,14 +624,21 @@ wordpress_mysql_thread_cache_size: 50
 wordpress_mysql_table_open_cache: 4000
 
 # Slow Query Logging
-wordpress_mysql_slow_query_log: true
-wordpress_mysql_slow_query_log_file: "/var/log/mysql/slow-query.log"
+wordpress_enable_logging: true
+# Default on Debian; Red Hat uses /var/log/mariadb/wordpress/slow.log.
+wordpress_mysql_slow_query_log_file: "/var/log/mysql/wordpress/slow.log"
 wordpress_mysql_long_query_time: 2
 
 # Database Maintenance
 wordpress_db_optimize_schedule: "weekly"
 wordpress_db_backup_before_optimize: true
 ```
+
+For a local database, the role creates the slow-query log directory with mode
+`0750` and its log file with mode `0640`, owned by `mysql`. It persists these
+settings across database restarts and configures rotation for this specific
+file. Keep custom paths within directories permitted by your distribution's
+AppArmor or SELinux policy. External databases retain their own logging policy.
 
 ## 🔒 Security
 
@@ -1028,7 +1035,7 @@ ansible wordpress_servers -m mysql_variables -a "variable=max_connections"
 
 ```yaml
 # Enable query monitoring
-wordpress_mysql_slow_query_log: true
+wordpress_enable_logging: true
 wordpress_mysql_long_query_time: 1
 
 # Enable performance profiling

@@ -2,7 +2,7 @@
 SPDX-FileCopyrightText: 2025 Thomas Vincent
 SPDX-License-Identifier: MIT
 -#}
-/var/log/mysql/*.log {
+"{{ wordpress_mysql_slow_query_log_file }}" {
     daily
     missingok
     rotate {{ wordpress_logrotate_retention | default('30') }}
