@@ -15,5 +15,5 @@ PyYAML>=6.0.3
 
 # Ansible collections (installed via ansible-galaxy, listed for reference)
 # ansible-galaxy collection install community.general
-# ansible-galaxy collection install community.mysql
+# ansible-galaxy collection install ansible.mysql
 # ansible-galaxy collection install ansible.posix

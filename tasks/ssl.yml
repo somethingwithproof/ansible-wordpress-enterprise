@@ -1,346 +1,124 @@
 ---
-# SSL Certificate Configuration Tasks
-
-# The role does not ship the templates below, so this file cannot finish.
-# Stop before anything is changed rather than abort partway through and
-# leave the host half configured.
-- name: Refuse to run without the templates this role does not ship
-  ansible.builtin.fail:
-    msg: >-
-      tasks/ssl.yml needs templates that are not in this role:
-      apache-ssl.conf.j2, ssl-monitor.sh.j2, ssl-security.conf.j2.
-      Add them, or leave wordpress_enable_ssl off.
-
-- name: Install SSL/TLS packages
-  ansible.builtin.package:
-    name:
-      - openssl
-      - ca-certificates
-    state: present
-    update_cache: "{{ wordpress_update_cache | bool }}"
-  become: true
-
-- name: Create SSL certificate directory
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: directory
-    owner: root
-    group: root
-    mode: '0755'
-  become: true
-  loop:
-    - /etc/ssl/certs
-    - /etc/ssl/private
-
-- name: Install certbot for Let's Encrypt (Debian/Ubuntu)
-  ansible.builtin.package:
-    name:
-      - certbot
-      - "python3-certbot-{{ 'apache' if wordpress_web_server == 'apache' else 'nginx' }}"
-    state: present
-    update_cache: "{{ wordpress_update_cache | bool }}"
-  become: true
-  when:
-    - ansible_facts.os_family == "Debian"
-    - wordpress_use_letsencrypt | bool
-    - wordpress_enable_ssl | bool
-
-- name: Install certbot for Let's Encrypt (RedHat/CentOS)
-  ansible.builtin.package:
-    name:
-      - certbot
-      - "python3-certbot-{{ 'apache' if wordpress_web_server == 'apache' else 'nginx' }}"
-    state: present
-  become: true
-  when:
-    - ansible_facts.os_family == "RedHat"
-    - wordpress_use_letsencrypt | bool
-    - wordpress_enable_ssl | bool
-
-- name: Generate private key for self-signed certificate
-  community.crypto.openssl_privatekey:
-    path: "{{ wordpress_ssl_certificate_key }}"
-    size: 2048
-    type: RSA
-    owner: root
-    group: root
-    mode: '0600'
-  become: true
-  when:
-    - wordpress_generate_self_signed_cert | bool
-    - wordpress_enable_ssl | bool
-    - not wordpress_use_letsencrypt | bool
-
-- name: Generate certificate signing request for self-signed certificate
-  community.crypto.openssl_csr:
-    path: "/tmp/{{ wordpress_server_name }}.csr"
-    privatekey_path: "{{ wordpress_ssl_certificate_key }}"
-    common_name: "{{ wordpress_server_name }}"
-    subject_alt_name:
-      - "DNS:{{ wordpress_server_name }}"
-      - "DNS:www.{{ wordpress_server_name }}"
-    country_name: "US"
-    state_or_province_name: "State"
-    locality_name: "City"
-    organization_name: "Organization"
-    organizational_unit_name: "IT Department"
-    email_address: "{{ wordpress_admin_email }}"
-  become: true
-  when:
-    - wordpress_generate_self_signed_cert | bool
-    - wordpress_enable_ssl | bool
-    - not wordpress_use_letsencrypt | bool
-
-- name: Generate self-signed certificate
-  community.crypto.x509_certificate:
-    path: "{{ wordpress_ssl_certificate }}"
-    privatekey_path: "{{ wordpress_ssl_certificate_key }}"
-    csr_path: "/tmp/{{ wordpress_server_name }}.csr"
-    provider: selfsigned
-    selfsigned_not_after: "+365d"
-    owner: root
-    group: root
-    mode: '0644'
-  become: true
-  when:
-    - wordpress_generate_self_signed_cert | bool
-    - wordpress_enable_ssl | bool
-    - not wordpress_use_letsencrypt | bool
-
-- name: Remove temporary CSR file
-  ansible.builtin.file:
-    path: "/tmp/{{ wordpress_server_name }}.csr"
-    state: absent
-  become: true
-  when:
-    - wordpress_generate_self_signed_cert | bool
-    - wordpress_enable_ssl | bool
-    - not wordpress_use_letsencrypt | bool
-
-- name: Stop web server before obtaining Let's Encrypt certificate
-  ansible.builtin.service:
-    name: "{{ wordpress_web_server_service[wordpress_web_server] }}"
-    state: stopped
-  become: true
-  when:
-    - wordpress_use_letsencrypt | bool
-    - wordpress_enable_ssl | bool
-  register: webserver_stopped
-
-- name: Obtain Let's Encrypt certificate (standalone)
-  ansible.builtin.command:
-    cmd: >
-      certbot certonly
-      --standalone
-      --non-interactive
-      --agree-tos
-      --email {{ wordpress_letsencrypt_email }}
-      --domains {{ wordpress_server_name }},www.{{ wordpress_server_name }}
-      --cert-name {{ wordpress_server_name }}
-  become: true
-  when:
-    - wordpress_use_letsencrypt | bool
-    - wordpress_enable_ssl | bool
-    - webserver_stopped is changed
-  register: letsencrypt_result
-  changed_when: letsencrypt_result.rc == 0
-
-- name: Start web server after obtaining certificate
-  ansible.builtin.service:
-    name: "{{ wordpress_web_server_service[wordpress_web_server] }}"
-    state: started
-  become: true
-  when:
-    - wordpress_use_letsencrypt | bool
-    - wordpress_enable_ssl | bool
-    - webserver_stopped is changed
-
-- name: Update SSL certificate paths for Let's Encrypt
-  ansible.builtin.set_fact:
-    wordpress_ssl_certificate: "/etc/letsencrypt/live/{{ wordpress_server_name }}/fullchain.pem"
-    wordpress_ssl_certificate_key: "/etc/letsencrypt/live/{{ wordpress_server_name }}/privkey.pem"
-  when:
-    - wordpress_use_letsencrypt | bool
-    - wordpress_enable_ssl | bool
-    - letsencrypt_result is succeeded
-
-- name: Set up Let's Encrypt certificate renewal
+- name: Configure standalone certificate renewal with service recovery
   ansible.builtin.cron:
     name: "Renew Let's Encrypt certificates"
     minute: "0"
     hour: "12"
-    day: "*"
-    month: "*"
-    weekday: "*"
-    job: "/usr/bin/certbot renew --quiet && systemctl reload {{ wordpress_web_server_service[wordpress_web_server] }}"
     user: root
+    state: present
+    job: >-
+      /usr/bin/certbot renew --quiet --cert-name {{ wordpress_server_name | quote }}
+      --pre-hook {{ ('systemctl stop ' ~ wordpress_web_server_service[wordpress_web_server]) | quote }}
+      --post-hook {{ ('systemctl start ' ~ wordpress_web_server_service[wordpress_web_server]) | quote }}
+  become: true
+  when: wordpress_use_letsencrypt | bool
+
+- name: Install the Apache TLS module on Enterprise Linux
+  ansible.builtin.package:
+    name: mod_ssl
     state: present
   become: true
   when:
-    - wordpress_use_letsencrypt | bool
-    - wordpress_enable_ssl | bool
+    - wordpress_web_server == "apache"
+    - ansible_facts.os_family == "RedHat"
+  notify: Restart apache
 
-- name: Create SSL configuration snippet for Nginx
-  ansible.builtin.template:
-    src: nginx-ssl.conf.j2
-    dest: /etc/nginx/snippets/ssl-{{ wordpress_server_name }}.conf
-    owner: root
-    group: root
-    mode: '0644'
-    backup: true
+- name: Enable the Apache TLS module on Debian
+  ansible.builtin.command:
+    argv: [a2enmod, ssl]
   become: true
   when:
-    - wordpress_web_server == "nginx"
-    - wordpress_enable_ssl | bool
-  notify: Reload nginx
+    - wordpress_web_server == "apache"
+    - ansible_facts.os_family == "Debian"
+  register: wordpress_enable_ssl_module
+  changed_when: "'already enabled' not in wordpress_enable_ssl_module.stdout"
+  notify: Restart apache
 
-- name: Create SSL configuration snippet for Apache
+- name: Configure Apache TLS session settings
   ansible.builtin.template:
     src: apache-ssl.conf.j2
     dest: >-
       {{ wordpress_apache_conf_path }}/{{
-      'conf-available/ssl-' + wordpress_server_name + '.conf'
+      'conf-available/ssl-' ~ wordpress_server_name ~ '.conf'
       if ansible_facts.os_family == 'Debian'
-      else 'conf.d/ssl-' + wordpress_server_name + '.conf' }}
+      else 'conf.d/ssl.conf' }}
     owner: root
     group: root
-    mode: '0644'
-    backup: true
+    mode: '0640'
   become: true
-  when:
-    - wordpress_web_server == "apache"
-    - wordpress_enable_ssl | bool
+  when: wordpress_web_server == "apache"
   notify: Reload apache
 
-- name: Enable SSL configuration for Apache (Debian/Ubuntu)
-  ansible.builtin.command:
-    cmd: "a2enconf ssl-{{ wordpress_server_name }}"
-  become: true
-  when:
-    - ansible_facts.os_family == "Debian"
-    - wordpress_web_server == "apache"
-    - wordpress_enable_ssl | bool
-  register: enable_ssl_conf_result
-  changed_when: "'already enabled' not in enable_ssl_conf_result.stdout"
-  notify: Reload apache
-
-- name: Enable SSL module for Apache (Debian/Ubuntu)
-  ansible.builtin.command:
-    cmd: "a2enmod ssl"
-  become: true
-  when:
-    - ansible_facts.os_family == "Debian"
-    - wordpress_web_server == "apache"
-    - wordpress_enable_ssl | bool
-  register: enable_ssl_mod_result
-  changed_when: "'already enabled' not in enable_ssl_mod_result.stdout"
-  notify: Restart apache
-
-- name: Generate Diffie-Hellman parameters
-  community.crypto.openssl_dhparam:
-    path: /etc/ssl/certs/dhparam.pem
-    size: 2048
-    owner: root
-    group: root
-    mode: '0644'
-  become: true
-  when: wordpress_enable_ssl | bool
-
-- name: Create SSL security policy file
+- name: Install the TLS security policy
   ansible.builtin.template:
     src: ssl-security.conf.j2
     dest: >-
-      {{ '/etc/nginx/snippets/ssl-params.conf'
+      {{ '/etc/nginx/conf.d/ssl-security-params.conf'
       if wordpress_web_server == 'nginx'
-      else wordpress_apache_conf_path + '/conf-available/ssl-params.conf'
+      else wordpress_apache_conf_path ~ '/conf-available/ssl-params.conf'
       if ansible_facts.os_family == 'Debian'
-      else wordpress_apache_conf_path + '/conf.d/ssl-params.conf' }}
+      else wordpress_apache_conf_path ~ '/conf.d/ssl-params.conf' }}
     owner: root
     group: root
-    mode: '0644'
-    backup: true
+    mode: '0640'
   become: true
-  when: wordpress_enable_ssl | bool
   notify: "Reload {{ wordpress_web_server }}"
 
-- name: Enable SSL security parameters for Apache (Debian/Ubuntu)
+- name: Enable the Apache TLS configuration on Debian
   ansible.builtin.command:
-    cmd: "a2enconf ssl-params"
+    argv: [a2enconf, "{{ item }}"]
+  loop:
+    - "ssl-{{ wordpress_server_name }}"
+    - ssl-params
   become: true
   when:
-    - ansible_facts.os_family == "Debian"
     - wordpress_web_server == "apache"
-    - wordpress_enable_ssl | bool
-  register: enable_ssl_params_result
-  changed_when: "'already enabled' not in enable_ssl_params_result.stdout"
+    - ansible_facts.os_family == "Debian"
+  register: wordpress_enable_tls_configuration
+  changed_when: "'already enabled' not in wordpress_enable_tls_configuration.stdout"
   notify: Reload apache
 
-- name: Test SSL certificate validity
+- name: Validate the complete TLS web server configuration
   ansible.builtin.command:
-    cmd: "openssl x509 -in {{ wordpress_ssl_certificate }} -text -noout"
-  register: ssl_cert_test
+    argv: "{{ ['nginx', '-t'] if wordpress_web_server == 'nginx' else ['apachectl', 'configtest'] }}"
   changed_when: false
-  when: wordpress_enable_ssl | bool
-  ignore_errors: true
+  become: true
+  check_mode: false
 
-- name: Display SSL certificate information
-  ansible.builtin.debug:
-    msg: "SSL certificate is valid and configured"
-  when:
-    - wordpress_enable_ssl | bool
-    - ssl_cert_test is succeeded
+- name: Activate validated TLS configuration before probing it
+  ansible.builtin.meta: flush_handlers
 
-- name: Create SSL certificate monitoring script
+- name: Install certificate expiration monitoring
   ansible.builtin.template:
     src: ssl-monitor.sh.j2
     dest: /usr/local/bin/ssl-monitor.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
-  when: wordpress_enable_ssl | bool
 
-- name: Schedule SSL certificate monitoring
+- name: Schedule certificate expiration monitoring
   ansible.builtin.cron:
     name: "Monitor SSL certificate expiration"
     minute: "0"
     hour: "6"
-    day: "*"
-    month: "*"
-    weekday: "1"
-    job: "/usr/local/bin/ssl-monitor.sh"
     user: root
     state: present
+    job: /usr/local/bin/ssl-monitor.sh
   become: true
-  when: wordpress_enable_ssl | bool
-
-- name: Set proper permissions on SSL certificate files
-  ansible.builtin.file:
-    path: "{{ item.path }}"
-    owner: "{{ item.owner }}"
-    group: "{{ item.group }}"
-    mode: "{{ item.mode }}"
-  become: true
-  loop:
-    - { path: "{{ wordpress_ssl_certificate }}", owner: "root", group: "root", mode: "0644" }
-    - { path: "{{ wordpress_ssl_certificate_key }}", owner: "root", group: "root", mode: "0600" }
-  when:
-    - wordpress_enable_ssl | bool
-    - not wordpress_use_letsencrypt | bool
 
 - name: Verify SSL configuration
   ansible.builtin.uri:
-    url: "https://{{ wordpress_server_name }}"
+    url: "https://{{ wordpress_server_name }}:{{ wordpress_https_port }}"
     method: HEAD
     status_code: [200, 301, 302]
-    validate_certs: false
+    validate_certs: true
+    ca_path: >-
+      {{ wordpress_ssl_ca_path | default(
+           wordpress_ssl_certificate if wordpress_enable_ssl | bool
+           and wordpress_generate_self_signed_cert | bool
+           and not wordpress_use_letsencrypt | bool else omit, true) }}
+    use_proxy: false
   register: ssl_verification
   when: wordpress_enable_ssl | bool
-  ignore_errors: true
-
-- name: Display SSL verification result
-  ansible.builtin.debug:
-    msg: "SSL is properly configured and accessible"
-  when:
-    - wordpress_enable_ssl | bool
-    - ssl_verification is succeeded
+  become: true

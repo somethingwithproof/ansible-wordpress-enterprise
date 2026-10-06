@@ -34,7 +34,7 @@
     dest: "{{ wordpress_apache_sites_available }}/{{ wordpress_server_name }}.conf"
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
     backup: true
   become: true
   notify: Reload apache
@@ -68,7 +68,7 @@
       else 'conf/httpd.conf' }}
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
     backup: true
   become: true
   notify: Restart apache
@@ -82,7 +82,7 @@
       else 'conf.d/security.conf' }}
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
     backup: true
   become: true
   notify: Reload apache
@@ -106,7 +106,7 @@
       else 'conf.d/php-fpm.conf' }}
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
     backup: true
   become: true
   notify: Reload apache
@@ -155,7 +155,7 @@
     dest: /etc/logrotate.d/apache-wordpress
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
   become: true
   when:
     - wordpress_enable_logging | bool
@@ -166,7 +166,7 @@
     path: "{{ item }}"
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
   become: true
   loop:
     - >-

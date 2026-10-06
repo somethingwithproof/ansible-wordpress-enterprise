@@ -1,0 +1,89 @@
+driver:
+  name: docker
+platforms:
+- name: ubuntu-24-nginx-tls
+  image: geerlingguy/docker-ubuntu2404-ansible@sha256:8f71d6ef6617ce600a0c9f210a21bff095ef9cf2b7c5ac437f838e697ad5bbe5
+  command: /sbin/init
+  pre_build_image: true
+  privileged: true
+  cgroupns_mode: host
+  volumes:
+  - /sys/fs/cgroup:/sys/fs/cgroup:rw
+- name: rocky-9-apache-tls
+  image: geerlingguy/docker-rockylinux9-ansible@sha256:5b5b69fcad35dec33d41faf6432d7c25cebc1979b4d566c26fa1c05fd3ccebe1
+  command: /sbin/init
+  pre_build_image: true
+  privileged: true
+  cgroupns_mode: host
+  volumes:
+  - /sys/fs/cgroup:/sys/fs/cgroup:rw
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      interpreter_python: auto_silent
+      callback_whitelist: profile_tasks, timer, yaml
+      roles_path: ${MOLECULE_PROJECT_DIRECTORY}/../
+  inventory:
+    group_vars:
+      all:
+        wordpress_server_name: tls.example.test
+        wordpress_site_url: https://tls.example.test
+        wordpress_site_title: Test WordPress Site
+        wordpress_admin_user: admin
+        wordpress_admin_email: admin@example.com
+        wordpress_admin_password: TestPass123!  # pragma: allowlist secret
+        wordpress_db_engine: mariadb
+        wordpress_db_name: wordpress_test
+        wordpress_db_user: wp_user
+        wordpress_db_password: DbPass123!  # pragma: allowlist secret
+        wordpress_db_root_password: RootPass123!  # pragma: allowlist secret
+        wordpress_db_host: localhost
+        wordpress_use_external_db: false
+        wordpress_enable_ssl: true
+        wordpress_use_letsencrypt: false
+        wordpress_enable_fail2ban: false
+        wordpress_configure_firewall: false
+        wordpress_enable_backups: false
+        wordpress_enable_monitoring: false
+        wordpress_enable_security: false
+        wordpress_enable_caching: false
+        wordpress_enable_logging: false
+        wordpress_enable_redis: false
+        wordpress_enable_memcached: false
+        wordpress_enable_object_cache: false
+        wordpress_plugins: []
+        wordpress_themes: []
+        wordpress_install_dir: /var/www/wordpress
+        wordpress_ssl_stapling: false
+    host_vars:
+      ubuntu-24-nginx-tls:
+        ansible_python_interpreter: /usr/bin/python3
+        wordpress_php_version: '8.3'
+        wordpress_web_server: nginx
+        wordpress_generate_self_signed_cert: true
+      rocky-9-apache-tls:
+        ansible_python_interpreter: /usr/bin/python3
+        wordpress_php_version: '8.3'
+        wordpress_web_server: apache
+        wordpress_ssl_ca_path: /etc/ssl/certs/tls.example.test.crt
+  playbooks:
+    prepare: prepare.yml
+    converge: converge.yml
+    verify: verify.yml
+  lint:
+    name: ansible-lint
+    enabled: false
+verifier:
+  name: ansible
+scenario:
+  name: tls
+  test_sequence:
+  - destroy
+  - syntax
+  - create
+  - prepare
+  - converge
+  - idempotence
+  - verify
+  - destroy

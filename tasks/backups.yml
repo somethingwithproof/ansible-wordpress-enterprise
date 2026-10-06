@@ -17,7 +17,7 @@
     state: directory
     owner: root
     group: root
-    mode: '0755'
+    mode: '0700'
   become: true
   loop:
     - "{{ wordpress_backup_dir }}"
@@ -32,7 +32,7 @@
     dest: /usr/local/bin/wordpress-db-backup.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0700'
   become: true
   when: wordpress_enable_backups | bool
 
@@ -42,7 +42,7 @@
     dest: /usr/local/bin/wordpress-files-backup.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0700'
   become: true
   when: wordpress_enable_backups | bool
 
@@ -52,7 +52,7 @@
     dest: /usr/local/bin/wordpress-full-backup.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0700'
   become: true
   when: wordpress_enable_backups | bool
 
@@ -62,7 +62,7 @@
     dest: /usr/local/bin/wordpress-backup-cleanup.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0700'
   become: true
   when: wordpress_enable_backups | bool
 
@@ -139,7 +139,7 @@
     dest: /usr/local/bin/wordpress-backup-verify.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0700'
   become: true
   when: wordpress_enable_backups | bool
 
@@ -149,7 +149,7 @@
     dest: /usr/local/bin/wordpress-backup-restore.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0700'
   become: true
   when: wordpress_enable_backups | bool
 
@@ -159,7 +159,7 @@
     dest: /usr/local/bin/wordpress-backup-notify.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0700'
   become: true
   when:
     - wordpress_enable_backups | bool
@@ -171,7 +171,7 @@
     dest: /usr/local/bin/wordpress-backup-monitor.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0700'
   become: true
   when: wordpress_enable_backups | bool
 
@@ -194,7 +194,7 @@
     dest: /etc/logrotate.d/wordpress-backups
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
   become: true
   when:
     - wordpress_enable_backups | bool
@@ -222,7 +222,7 @@
     dest: /usr/local/bin/wordpress-backup-encrypt.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0700'
   become: true
   when:
     - wordpress_enable_backups | bool
@@ -243,7 +243,7 @@
     dest: /usr/local/bin/wordpress-backup-sync.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0700'
   become: true
   when:
     - wordpress_enable_backups | bool
@@ -268,7 +268,7 @@
     dest: /usr/local/bin/wordpress-backup-size-monitor.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0700'
   become: true
   when: wordpress_enable_backups | bool
 
@@ -301,7 +301,7 @@
     dest: /etc/wordpress-backup-exclude.txt
     owner: root
     group: root
-    mode: '0644'
+    mode: '0600'
   become: true
   when: wordpress_enable_backups | bool
 

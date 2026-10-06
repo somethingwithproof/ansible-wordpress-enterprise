@@ -35,46 +35,54 @@ print_color() {
 }
 
 print_header() {
+    local message="$1"
     echo
     print_color $PURPLE "=================================="
-    print_color $PURPLE "$1"
+    print_color $PURPLE "${message}"
     print_color $PURPLE "=================================="
     echo
 }
 
 print_status() {
-    print_color $BLUE "ℹ️  $1"
+    local message="$1"
+    print_color $BLUE "ℹ️  ${message}"
 }
 
 print_success() {
-    print_color $GREEN "✅ $1"
+    local message="$1"
+    print_color $GREEN "✅ ${message}"
 }
 
 print_warning() {
-    print_color $YELLOW "⚠️  $1"
+    local message="$1"
+    print_color $YELLOW "⚠️  ${message}"
 }
 
 print_error() {
-    print_color $RED "❌ $1"
+    local message="$1"
+    print_color $RED "❌ ${message}"
 }
 
 # Test result tracking functions
 test_pass() {
+    local message="$1"
     ((TOTAL_TESTS += 1))
     ((PASSED_TESTS += 1))
-    print_success "$1"
+    print_success "${message}"
 }
 
 test_fail() {
+    local message="$1"
     ((TOTAL_TESTS += 1))
     ((FAILED_TESTS += 1))
-    print_error "$1"
+    print_error "${message}"
 }
 
 test_skip() {
+    local message="$1"
     ((TOTAL_TESTS += 1))
     ((SKIPPED_TESTS += 1))
-    print_warning "$1 (SKIPPED)"
+    print_warning "${message} (SKIPPED)"
 }
 
 # Setup test environment

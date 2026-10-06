@@ -68,7 +68,7 @@
     dest: "{{ wordpress_php_fpm_pool_path }}"
     owner: root
     group: root
-    mode: "0644"
+    mode: '0640'
   become: true
   notify: Restart php-fpm
 
@@ -203,7 +203,7 @@
     modification_time: preserve
     owner: "{{ wordpress_php_fpm_user }}"
     group: "{{ wordpress_php_fpm_group }}"
-    mode: "0644"
+    mode: '0640'
   become: true
 
 - name: Configure PHP session handling
@@ -252,7 +252,7 @@
     dest: "/etc/systemd/system/{{ wordpress_php_fpm_service }}.service.d/override.conf"
     owner: root
     group: root
-    mode: "0644"
+    mode: '0640'
   become: true
   notify:
     - Reload systemd

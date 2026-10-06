@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.22.0 — 2026-10-06
+
+Verified certificate preparation, real HTTPS contracts and SemVer role archives/DEB/RPM releases.
+
+Documentation includes migration, installation, release checks, SVG project branding and operational diagrams.
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
@@ -163,5 +169,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CI/CD integration
 - Code review process
 
-[Unreleased]: https://github.com/thomasvincent/ansible-wordpress-enterprise/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/thomasvincent/ansible-wordpress-enterprise/releases/tag/v1.0.0
+[Unreleased]: https://github.com/somethingwithproof/ansible-wordpress-enterprise/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/somethingwithproof/ansible-wordpress-enterprise/releases/tag/v1.0.0

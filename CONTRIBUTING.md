@@ -27,7 +27,7 @@ This project follows the [Ansible Community Code of Conduct](https://docs.ansibl
 
 3. **Add upstream remote**:
    ```bash
-   git remote add upstream https://github.com/thomasvincent/ansible-wordpress-enterprise.git
+   git remote add upstream https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
    ```
 
 4. **Create a branch** for your changes:
@@ -39,9 +39,9 @@ This project follows the [Ansible Community Code of Conduct](https://docs.ansibl
 
 ### Prerequisites
 
-- Python 3.10+
+- Maintained Python 3.12–3.14
 - Docker and Docker Compose
-- Ansible 2.14+
+- ansible-core 2.21
 - Make (optional, for using Makefile commands)
 
 ### Quick Setup
@@ -350,13 +350,13 @@ Releases are automated via GitHub Actions when changes are merged to `main`:
 
 ## Getting Help
 
-- **GitHub Issues**: https://github.com/thomasvincent/ansible-wordpress-enterprise/issues
-- **Discussions**: https://github.com/thomasvincent/ansible-wordpress-enterprise/discussions
+- **GitHub Issues**: https://github.com/somethingwithproof/ansible-wordpress-enterprise/issues
+- **Discussions**: https://github.com/somethingwithproof/ansible-wordpress-enterprise/discussions
 - **Documentation**: [README.md](README.md)
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the Apache License 2.0.
+By contributing, you agree that your contributions will be licensed under the MIT License.
 
 ---
 

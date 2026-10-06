@@ -199,6 +199,10 @@
       - wordpress_ssl_certificate_key | length > 0
       - wordpress_ssl_protocols is defined
       - wordpress_ssl_protocols is string
+      - wordpress_ssl_protocols.split() | length > 0
+      - wordpress_ssl_protocols.split() | difference(['TLSv1.2', 'TLSv1.3']) | length == 0
+      - wordpress_ssl_expiry_warning_days | int >= 1
+      - wordpress_ssl_expiry_warning_days | int <= 365
     fail_msg: "Invalid SSL configuration when SSL is enabled"
     success_msg: "SSL configuration validation passed"
   when: wordpress_enable_ssl | default(true)

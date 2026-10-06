@@ -19,7 +19,9 @@
   ansible.builtin.file:
     path: "/tmp/wordpress-download"
     state: directory
-    mode: '0755'
+    owner: root
+    group: root
+    mode: '0700'
   become: true
   when: not wordpress_core_present.stat.exists
 
@@ -27,7 +29,9 @@
   ansible.builtin.get_url:
     url: "{{ wordpress_download_url }}"
     dest: "/tmp/wordpress-download/wordpress.tar.gz"
-    mode: '0644'
+    owner: root
+    group: root
+    mode: '0600'
     timeout: 300
   become: true
   register: wordpress_download
@@ -44,7 +48,9 @@
   ansible.builtin.get_url:
     url: "https://wordpress.org/latest.tar.gz"
     dest: "/tmp/wordpress-download/wordpress.tar.gz"
-    mode: '0644'
+    owner: root
+    group: root
+    mode: '0600'
     timeout: 300
   become: true
   register: wordpress_download_latest
@@ -164,7 +170,7 @@
     modification_time: preserve
     owner: "{{ wordpress_php_fpm_user }}"
     group: "{{ wordpress_php_fpm_group }}"
-    mode: '0644'
+    mode: '0640'
   become: true
   when: wordpress_enable_logging | bool
 

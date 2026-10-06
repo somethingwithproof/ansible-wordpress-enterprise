@@ -226,7 +226,7 @@
     dest: /usr/local/bin/firewall-check.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when: wordpress_configure_firewall | bool
 
@@ -312,7 +312,7 @@
     dest: /usr/local/bin/firewall-backup.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when: wordpress_configure_firewall | bool
 

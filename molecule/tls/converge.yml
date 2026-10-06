@@ -1,0 +1,8 @@
+---
+- name: Converge the TLS platform contract
+  hosts: all
+  become: true
+  tasks:
+    - name: Apply the role from this checkout
+      ansible.builtin.include_role:
+        name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}"

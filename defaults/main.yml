@@ -88,9 +88,12 @@ wordpress_ssl_prefer_server_ciphers: true
 wordpress_ssl_session_timeout: "1d"
 wordpress_ssl_session_cache: "shared:SSL:50m"
 wordpress_ssl_stapling: true
+wordpress_ssl_expiry_warning_days: 30
 
 # Self-signed certificate (for development)
 wordpress_generate_self_signed_cert: false
+# Optional PEM CA bundle for HTTPS probes; generated development certs are trusted explicitly.
+wordpress_ssl_ca_path: ""
 
 # Let's Encrypt
 wordpress_use_letsencrypt: false

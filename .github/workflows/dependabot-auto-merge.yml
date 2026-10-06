@@ -20,7 +20,7 @@ jobs:
   merge:
     if: >-
       github.event_name != 'pull_request_target' ||
-      github.actor == 'dependabot[bot]'
+      github.actor_id == '49699333'
     runs-on: ubuntu-latest
     permissions:
       contents: write

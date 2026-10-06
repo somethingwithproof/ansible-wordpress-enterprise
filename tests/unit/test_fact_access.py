@@ -75,7 +75,8 @@ def test_the_scanner_reports_a_bare_fact(tmp_path) -> None:
 
 def test_the_scanner_catches_a_fact_outside_the_curated_list(tmp_path) -> None:
     """FACTS is documentation; classification is driven by NOT_FACTS."""
-    assert "system" not in FACTS and "system" not in NOT_FACTS
+    assert "system" not in FACTS
+    assert "system" not in NOT_FACTS
     sample = tmp_path / "sample.yml"
     sample.write_text("when: ansible_system == 'Linux'\n")
     assert _scan([sample]) == [f"{sample}:1: ansible_system"]

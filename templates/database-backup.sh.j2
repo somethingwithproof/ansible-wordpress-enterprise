@@ -41,19 +41,19 @@ mysqldump \
 
 if [ $? -eq 0 ]; then
     log "Database backup completed successfully: $BACKUP_FILE"
-    
+
     # Compress the backup
     gzip "$BACKUP_FILE"
     COMPRESSED_FILE="${BACKUP_FILE}.gz"
     log "Backup compressed: $COMPRESSED_FILE"
-    
+
     # Set proper permissions
     chmod 600 "$COMPRESSED_FILE"
-    
+
     # Clean up old backups
     log "Cleaning up backups older than $RETENTION_DAYS days..."
     find "$BACKUP_DIR" -name "wordpress_*.sql.gz" -mtime +$RETENTION_DAYS -delete
-    
+
     log "Backup cleanup completed"
 else
     log "ERROR: Database backup failed!"
