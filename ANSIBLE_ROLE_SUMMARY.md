@@ -1,12 +1,19 @@
 # Ansible WordPress Enterprise Role - Summary
 
+> Release contract: Ubuntu 24.04/Nginx and EL9/Apache with PHP 8.3, plus verified
+> certificate provisioning and HTTPS. Only vendor-maintained platforms are supported.
+> Backup, monitoring, HA, advanced-security, CDN and object-storage template sets
+> remain incomplete and fail closed when enabled. Examples for those features are
+> design references, not executable release guarantees. See [README.md](README.md)
+> and the missing-template inventory before enabling optional features.
+
 ## 📋 Overview
 
 This is a comprehensive, production-ready Ansible role for deploying and managing enterprise-grade WordPress installations. The role follows Ansible best practices and idiomatic WordPress configuration patterns.
 
 **Created**: October 2025
-**Ansible Version**: 2.14+
-**License**: Apache 2.0
+**Ansible Version**: maintained ansible-core 2.21
+**License**: MIT
 
 ## ✨ Key Features
 
@@ -381,5 +388,5 @@ The role is designed to be extensible:
 ---
 
 **Created by**: Thomas Vincent
-**Repository**: https://github.com/thomasvincent/ansible-wordpress-enterprise
-**License**: Apache 2.0
+**Repository**: https://github.com/somethingwithproof/ansible-wordpress-enterprise
+**License**: MIT

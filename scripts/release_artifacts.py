@@ -22,25 +22,36 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 ROLE_PATHS = ("defaults", "vars", "handlers", "meta", "tasks", "templates", "docs", "examples")
-SEMVER = re.compile(
-    r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:-([0-9A-Za-z.-]+))?(?:\+([0-9A-Za-z.-]+))?"
-)
+SEMVER_IDENTIFIER = re.compile(r"[A-Za-z\d-]+", re.ASCII)
+
+
+def valid_numeric_identifier(value: str) -> bool:
+    """Require ASCII decimal identifiers with no unnecessary leading zeros."""
+    return value.isascii() and value.isdecimal() and (len(value) == 1 or not value.startswith("0"))
+
+
+def validate_identifiers(value: str) -> None:
+    """Reject empty identifiers and characters outside SemVer's ASCII alphabet."""
+    if not all(SEMVER_IDENTIFIER.fullmatch(part) for part in value.split(".")):
+        raise ValueError("SemVer identifiers must be nonempty ASCII letters, digits or hyphens")
 
 
 def validate_semver(version: str) -> str:
     """Accept complete SemVer, rejecting leading-zero numeric prerelease fields."""
-    matched = SEMVER.fullmatch(version)
-    if not matched:
+    release, metadata_separator, metadata = version.partition("+")
+    core, prerelease_separator, prerelease = release.partition("-")
+    numbers = core.split(".")
+    if len(numbers) != 3 or not all(valid_numeric_identifier(part) for part in numbers):
         raise ValueError("Release version must be complete SemVer, such as 1.2.3 or 1.2.3-rc.1")
-    prerelease, metadata = matched.group(4), matched.group(5)
-    for identifiers in (prerelease, metadata):
-        if identifiers and any(not part for part in identifiers.split(".")):
-            raise ValueError("SemVer identifiers must not be empty")
-    if prerelease and any(
-        part.isdecimal() and len(part) > 1 and part.startswith("0")
-        for part in prerelease.split(".")
-    ):
-        raise ValueError("Numeric prerelease identifiers must not have leading zeros")
+    if metadata_separator:
+        validate_identifiers(metadata)
+    if prerelease_separator:
+        validate_identifiers(prerelease)
+        if any(
+            part.isdecimal() and not valid_numeric_identifier(part)
+            for part in prerelease.split(".")
+        ):
+            raise ValueError("Numeric prerelease identifiers must not have leading zeros")
     return version
 
 
@@ -89,7 +100,7 @@ def copy_role(payload: Path) -> None:
         shutil.copy2(ROOT / name, destination / name)
 
 
-def role_archive(payload: Path, output: Path, version: str, epoch: int) -> None:
+def role_archive(payload: Path, output: Path, epoch: int) -> None:
     """Create a role-installable archive with stable ownership and timestamps."""
     role = payload / "usr/share/ansible/roles/wordpress_enterprise"
     with (
@@ -102,7 +113,7 @@ def role_archive(payload: Path, output: Path, version: str, epoch: int) -> None:
                 raise ValueError("Role release sources must not contain symlinks")
             info = archive.gettarinfo(
                 str(path),
-                arcname=f"wordpress_enterprise-{version}/{path.relative_to(role).as_posix()}",
+                arcname=f"wordpress_enterprise/{path.relative_to(role).as_posix()}",
             )
             info.uid = info.gid = 0
             info.uname = info.gname = "root"
@@ -249,6 +260,19 @@ def build_python_archives(output: Path, environment: dict[str, str]) -> Path:
         ],
         check=True,
     )
+    chart = ROOT / "charts/nagios-plugins-collection"
+    if chart.is_dir():
+        chart_metadata = yaml.safe_load((chart / "Chart.yaml").read_text())
+        if (
+            chart_metadata["version"] != declared_version()
+            or chart_metadata["appVersion"] != declared_version()
+        ):
+            raise ValueError("Helm chart and application versions must match the source version")
+        subprocess.run(
+            ["helm", "package", str(chart), "--destination", str(output)],
+            check=True,
+            env=environment,
+        )
     return wheels[0]
 
 
@@ -265,9 +289,7 @@ def build_artifacts(version: str) -> Path:
         if role:
             payload = workspace / "role"
             copy_role(payload)
-            role_archive(
-                payload, output / f"ansible-wordpress-enterprise-{version}.tar.gz", version, epoch
-            )
+            role_archive(payload, output / f"ansible-wordpress-enterprise-{version}.tar.gz", epoch)
         else:
             wheel = build_python_archives(output, environment)
         for packager in ("deb", "rpm"):

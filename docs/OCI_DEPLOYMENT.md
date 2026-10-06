@@ -1,5 +1,12 @@
 # Oracle Cloud Infrastructure (OCI) Deployment Guide
 
+> Release contract: Ubuntu 24.04/Nginx and EL9/Apache with PHP 8.3, plus verified
+> certificate provisioning and HTTPS. Only vendor-maintained platforms are supported.
+> Backup, monitoring, HA, advanced-security, CDN and object-storage template sets
+> remain incomplete and fail closed when enabled. Examples for those features are
+> design references, not executable release guarantees. See [../README.md](../README.md)
+> and the missing-template inventory before enabling optional features.
+
 ## Overview
 
 This guide provides comprehensive instructions for deploying WordPress on Oracle Cloud Infrastructure (OCI) using the ansible-wordpress-enterprise role. The deployment is optimized for OCI Free Tier resources and supports PAUSATF WordPress hosting requirements.
@@ -59,8 +66,8 @@ This guide provides comprehensive instructions for deploying WordPress on Oracle
 - API signing key pair generated
 
 ### Local Requirements
-- Ansible 2.14 or higher
-- Python 3.8 or higher
+- ansible-core 2.21 (use the hashed requirements.lock)
+- Python 3.12 or higher (maintained releases only)
 - OCI CLI configured (optional but recommended)
 - OCI Python SDK (for advanced features)
 
@@ -436,9 +443,9 @@ ansible-playbook -i inventories/oci.ini examples/oracle-cloud.yml \
 - [OCI Object Storage](https://docs.oracle.com/en-us/iaas/Content/Object/home.htm)
 
 ### Ansible Role
-- [GitHub Repository](https://github.com/thomasvincent/ansible-wordpress-enterprise)
-- [Issue Tracker](https://github.com/thomasvincent/ansible-wordpress-enterprise/issues)
+- [GitHub Repository](https://github.com/somethingwithproof/ansible-wordpress-enterprise)
+- [Issue Tracker](https://github.com/somethingwithproof/ansible-wordpress-enterprise/issues)
 
 ## License
 
-Apache License 2.0
+MIT License

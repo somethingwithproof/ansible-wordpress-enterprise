@@ -1,5 +1,7 @@
 # Ansible WordPress Enterprise
 
+![WordPress Enterprise](docs/assets/banner.svg)
+
 Project releases use the complete SemVer version in `VERSION`, independently
 of `meta/main.yml`'s minimum Ansible version. A matching `v2.22.0` tag on main
 or the manual Release workflow validates the source version, runs the full CI
@@ -16,13 +18,23 @@ installed with `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.
 Native packages contain role sources and documentation and run no deployment
 scripts during installation. CI installs, checks and removes both formats.
 
-[![CI](https://github.com/thomasvincent/ansible-wordpress-enterprise/workflows/CI/badge.svg)](https://github.com/thomasvincent/ansible-wordpress-enterprise/actions)
+[![CI](https://github.com/somethingwithproof/ansible-wordpress-enterprise/workflows/CI/badge.svg)](https://github.com/somethingwithproof/ansible-wordpress-enterprise/actions)
 [![Ansible Galaxy](https://img.shields.io/badge/ansible--galaxy-wordpress__enterprise-blue.svg)](https://galaxy.ansible.com/thomasvincent/wordpress_enterprise)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Ansible](https://img.shields.io/badge/ansible--core-2.21-blue)](https://docs.ansible.com/)
-[![Platform](https://img.shields.io/badge/platform-Ubuntu%2024.04%20LTS%20%7C%20EL9-lightgrey)](https://github.com/thomasvincent/ansible-wordpress-enterprise)
+[![Platform](https://img.shields.io/badge/platform-Ubuntu%2024.04%20LTS%20%7C%20EL9-lightgrey)](https://github.com/somethingwithproof/ansible-wordpress-enterprise)
 
 🚀 **Production-ready Ansible role for deploying and managing WordPress at scale** - Enterprise-grade WordPress deployment with support for multiple cloud providers, high availability, advanced security, and comprehensive monitoring.
+
+![Deployment flow](docs/assets/overview.svg)
+
+The support policy rejects expired OS and PHP records at runtime and in CI.
+Controller Python must be a maintained 3.12–3.14 release. Managed nodes use the
+supported OS's vendor-maintained system interpreter. EL9's system Python 3.9
+remains vendor-supported for that OS lifecycle; this is distinct from installing
+an unsupported standalone upstream Python 3.9. See the
+[vendor Python policy](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/9.0_release_notes/New-features)
+and [the role's support policy](meta/platform_support.yml).
 
 ## 📚 Table of Contents
 
@@ -176,7 +188,7 @@ advanced-feature sections as topology references until the templates exist.
 ansible-galaxy install thomasvincent.wordpress_enterprise
 
 # Clone from GitHub
-git clone https://github.com/thomasvincent/ansible-wordpress-enterprise.git
+git clone https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
 ```
 
 ### Minimal Playbook
@@ -242,7 +254,7 @@ git clone https://github.com/thomasvincent/ansible-wordpress-enterprise.git
 
         # Monitoring
         wordpress_enable_monitoring: true
-        wordpress_enable_backups: true
+        wordpress_enable_backups: false  # gated until its template set is complete
 ```
 
 ## 📋 Requirements
@@ -255,7 +267,7 @@ git clone https://github.com/thomasvincent/ansible-wordpress-enterprise.git
 
 - **Target Nodes**
   - Supported OS (see platform support)
-  - Python 3.9+ (ansible-core no longer supports older managed nodes)
+  - Vendor-maintained system Python on the supported OS (Ubuntu 24.04 or EL9)
   - Sudo/root access
   - Minimum 2GB RAM
   - 20GB disk space
@@ -323,7 +335,7 @@ ansible-galaxy install -r requirements.yml
 
 ```bash
 # Add as submodule
-git submodule add https://github.com/thomasvincent/ansible-wordpress-enterprise.git roles/wordpress_enterprise
+git submodule add https://github.com/somethingwithproof/ansible-wordpress-enterprise.git roles/wordpress_enterprise
 
 # Update submodule
 git submodule update --remote roles/wordpress_enterprise
@@ -1253,14 +1265,14 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 ## 📞 Support
 
-- **Documentation**: [Wiki](https://github.com/thomasvincent/ansible-wordpress-enterprise/wiki)
-- **Issues**: [GitHub Issues](https://github.com/thomasvincent/ansible-wordpress-enterprise/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/thomasvincent/ansible-wordpress-enterprise/discussions)
+- **Documentation**: [Wiki](https://github.com/somethingwithproof/ansible-wordpress-enterprise/wiki)
+- **Issues**: [GitHub Issues](https://github.com/somethingwithproof/ansible-wordpress-enterprise/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/somethingwithproof/ansible-wordpress-enterprise/discussions)
 - **Security**: Report security vulnerabilities to security@example.com
 
 ## 📄 License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 👤 Author
 
@@ -1277,12 +1289,14 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ## 📊 Stats
 
-![GitHub stars](https://img.shields.io/github/stars/thomasvincent/ansible-wordpress-enterprise?style=social)
-![GitHub forks](https://img.shields.io/github/forks/thomasvincent/ansible-wordpress-enterprise?style=social)
-![GitHub watchers](https://img.shields.io/github/watchers/thomasvincent/ansible-wordpress-enterprise?style=social)
+![GitHub stars](https://img.shields.io/github/stars/somethingwithproof/ansible-wordpress-enterprise?style=social)
+![GitHub forks](https://img.shields.io/github/forks/somethingwithproof/ansible-wordpress-enterprise?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/somethingwithproof/ansible-wordpress-enterprise?style=social)
 
 ---
 
 **Made with ❤️ by the open source community**
 
 ⭐ Star this project if you find it helpful!
+
+![Release validation flow](docs/assets/release-flow.svg)

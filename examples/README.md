@@ -1,5 +1,12 @@
 # WordPress Enterprise Role - Example Configurations
 
+> Release contract: Ubuntu 24.04/Nginx and EL9/Apache with PHP 8.3, plus verified
+> certificate provisioning and HTTPS. Only vendor-maintained platforms are supported.
+> Backup, monitoring, HA, advanced-security, CDN and object-storage template sets
+> remain incomplete and fail closed when enabled. Examples for those features are
+> design references, not executable release guarantees. See [../README.md](../README.md)
+> and the missing-template inventory before enabling optional features.
+
 This directory contains comprehensive example playbooks demonstrating various deployment scenarios for the WordPress Enterprise Ansible role.
 
 ## 📁 Available Examples
@@ -451,9 +458,9 @@ ansible all -m ping
 
 ## 📞 Support
 
-- GitHub Issues: https://github.com/thomasvincent/ansible-wordpress-enterprise/issues
-- Documentation: https://github.com/thomasvincent/ansible-wordpress-enterprise
+- GitHub Issues: https://github.com/somethingwithproof/ansible-wordpress-enterprise/issues
+- Documentation: https://github.com/somethingwithproof/ansible-wordpress-enterprise
 
 ## 📄 License
 
-Apache License 2.0
+MIT License

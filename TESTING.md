@@ -25,7 +25,7 @@ Install the pinned Python toolchain and Ansible collections:
 
 ```bash
 mise install python@3.12
-mise exec python@3.12 -- python -m pip install -r requirements.txt
+mise exec python@3.12 -- python -m pip install --require-hashes --only-binary=:all: -r requirements.lock
 mise exec python@3.12 -- ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -106,4 +106,4 @@ example `molecule --debug converge --scenario-name default`.
 
 - Molecule documentation: https://molecule.readthedocs.io/
 - Ansible documentation: https://docs.ansible.com/
-- Issue tracker: https://github.com/thomasvincent/ansible-wordpress-enterprise/issues
+- Issue tracker: https://github.com/somethingwithproof/ansible-wordpress-enterprise/issues
