@@ -1279,6 +1279,12 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+Project files carry SPDX license and copyright headers. `REUSE.toml` maps files
+that cannot contain comments, and `LICENSES/MIT.txt` supplies the canonical
+license text. Run `python scripts/check_spdx.py` to verify coverage; CI runs the
+same check. Use the existing license when adding files and preserve upstream
+notices for third-party material.
+
 ## 👤 Author
 
 **Thomas Vincent**
