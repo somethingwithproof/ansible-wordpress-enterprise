@@ -1,82 +1,26 @@
-# Security Policy
+# Security policy
 
-## Supported Versions
+Security fixes target the latest maintained 2.22.x release. Older project lines
+are outside the current support contract; upgrade using the release and migration
+documentation. A platform must still receive vendor security updates and belong
+to the verified release matrix. Expired support records block CI and publication.
 
-We release patches for security vulnerabilities. Which versions are eligible for receiving such patches depends on the CVSS v3.0 Rating:
+Report sensitive findings through a private GitHub security advisory:
+https://github.com/somethingwithproof/ansible-wordpress-enterprise/security/advisories/new
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 1.x.x   | :white_check_mark: |
-| < 1.0   | :x:                |
+If private reporting is unavailable to your account, contact the maintainer at
+the public author address, thomasvincent@gmail.com. Include affected versions,
+impact and a minimal redacted reproducer. Do not put passwords, API keys or
+private endpoint data in public issues. Response and fix timing depend on the
+finding; this policy does not promise an unverified response SLA.
 
-## Reporting a Vulnerability
+Use verified TLS and explicit private CA trust, least-privilege credentials and
+root-owned package files. Store deployment secrets in Ansible Vault or an
+appropriate runtime secret store. Third-party dependency installs used for
+release builds are hash-locked and wheel-only. Signed/attested artifacts and
+SHA256SUMS provide release verification evidence; review the workflow and its
+source commit when assessing an artifact.
 
-Please report (suspected) security vulnerabilities to **[security@example.com](mailto:security@example.com)**. You will receive a response from us within 48 hours. If the issue is confirmed, we will release a patch as soon as possible depending on complexity but historically within a few days.
-
-### Preferred Languages
-
-We prefer all communications to be in English.
-
-### Disclosure Policy
-
-When we receive a security bug report, we will assign it to a primary handler. This person will coordinate the fix and release process, involving the following steps:
-
-1. Confirm the problem and determine the affected versions.
-2. Audit code to find any potential similar problems.
-3. Prepare fixes for all releases still under maintenance.
-4. Release new versions of all affected versions.
-
-## Security Best Practices
-
-When using this Ansible role, please follow these security best practices:
-
-1. **Always use Ansible Vault** for sensitive data:
-   ```bash
-   ansible-vault encrypt_string 'your-secret' --name 'wordpress_db_password'
-   ```
-
-2. **Keep dependencies updated**:
-   ```bash
-   pip install --upgrade -r requirements.txt
-   ```
-
-3. **Use the latest stable version** of this role:
-   ```bash
-   ansible-galaxy install thomasvincent.wordpress_enterprise --force
-   ```
-
-4. **Enable all security features** in production:
-   ```yaml
-   wordpress_enable_ssl: true
-   wordpress_enable_fail2ban: true
-   wordpress_configure_firewall: true
-   wordpress_enable_security_headers: true
-   ```
-
-5. **Regularly audit your deployment**:
-   ```bash
-   ansible-playbook -i inventory security-audit.yml
-   ```
-
-## Dependencies
-
-This role uses the following dependencies with known security considerations:
-
-- **Ansible**: Version 8.5.0+ required (addresses CVE-2023-5764)
-- **ansible-core**: Version 2.15.0+ required
-- **Python**: Version 3.8+ recommended
-- **WordPress**: Always use the latest stable version
-
-## Security Features
-
-This role implements the following security features:
-
-- SSL/TLS configuration with modern ciphers
-- Fail2ban with WordPress-specific rules
-- Firewall configuration (firewalld/ufw)
-- Security headers (HSTS, CSP, X-Frame-Options)
-- File integrity monitoring
-- Automated security updates
-- WordPress hardening
-- Database security
-- SSH hardening (when configured)
+The supported OS/runtime matrix and its lifecycle sources are documented in
+README.md and the project's machine-readable platform policy. Source examples
+for undeployed features are not additional platform support guarantees.

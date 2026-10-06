@@ -1,12 +1,40 @@
 # Ansible WordPress Enterprise
 
-[![CI](https://github.com/thomasvincent/ansible-wordpress-enterprise/workflows/CI/badge.svg)](https://github.com/thomasvincent/ansible-wordpress-enterprise/actions)
+![WordPress Enterprise](docs/assets/banner.svg)
+
+Project releases use the complete SemVer version in `VERSION`, independently
+of `meta/main.yml`'s minimum Ansible version. A matching `v2.22.0` tag on main
+or the manual Release workflow validates the source version, runs the full CI
+suite (including both Molecule scenarios), and publishes a Galaxy-compatible
+role archive, Debian package, RPM, `release.json` and `SHA256SUMS`.
+
+Verify downloads with `sha256sum --check SHA256SUMS`. Install native packages
+with `sudo apt install ./ansible-wordpress-enterprise_2.22.0_all.deb` on Ubuntu
+24.04 or `sudo dnf install ./ansible-wordpress-enterprise_2.22.0_noarch.rpm` on
+Rocky Linux 9. Both install the role under
+`/usr/share/ansible/roles/wordpress_enterprise`; supply a supported Ansible
+controller and install `requirements.yml` separately. The archive can be
+installed with `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.0.tar.gz`.
+Native packages contain role sources and documentation and run no deployment
+scripts during installation. CI installs, checks and removes both formats.
+
+[![CI](https://github.com/somethingwithproof/ansible-wordpress-enterprise/workflows/CI/badge.svg)](https://github.com/somethingwithproof/ansible-wordpress-enterprise/actions)
 [![Ansible Galaxy](https://img.shields.io/badge/ansible--galaxy-wordpress__enterprise-blue.svg)](https://galaxy.ansible.com/thomasvincent/wordpress_enterprise)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Ansible](https://img.shields.io/badge/ansible--core-2.21-blue)](https://docs.ansible.com/)
-[![Platform](https://img.shields.io/badge/platform-Ubuntu%2024.04%20LTS%20%7C%20EL9-lightgrey)](https://github.com/thomasvincent/ansible-wordpress-enterprise)
+[![Platform](https://img.shields.io/badge/platform-Ubuntu%2024.04%20LTS%20%7C%20EL9-lightgrey)](https://github.com/somethingwithproof/ansible-wordpress-enterprise)
 
 🚀 **Production-ready Ansible role for deploying and managing WordPress at scale** - Enterprise-grade WordPress deployment with support for multiple cloud providers, high availability, advanced security, and comprehensive monitoring.
+
+![Deployment flow](docs/assets/overview.svg)
+
+The support policy rejects expired OS and PHP records at runtime and in CI.
+Controller Python must be a maintained 3.12–3.14 release. Managed nodes use the
+supported OS's vendor-maintained system interpreter. EL9's system Python 3.9
+remains vendor-supported for that OS lifecycle; this is distinct from installing
+an unsupported standalone upstream Python 3.9. See the
+[vendor Python policy](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/9.0_release_notes/New-features)
+and [the role's support policy](meta/platform_support.yml).
 
 ## 📚 Table of Contents
 
@@ -59,7 +87,7 @@ platforms. They will be promoted only after they pass the same pinned-image,
 end-to-end contract without platform-specific exceptions.
 
 These features are **off by default and do not currently work**, because the
-role references templates it does not ship (59 of them, listed in
+role references templates it does not ship (56 of them, listed in
 `tests/unit/missing_templates.yml`):
 
 | Flag | Missing templates |
@@ -69,7 +97,6 @@ role references templates it does not ship (59 of them, listed in
 | `wordpress_enable_fail2ban` | 9 |
 | `wordpress_enable_security` | 9 |
 | `wordpress_enable_caching` | 6 |
-| `wordpress_enable_ssl` | 3 |
 | `wordpress_configure_firewall` | 2 |
 
 Turning one on stops the play immediately and names the missing templates,
@@ -161,7 +188,7 @@ advanced-feature sections as topology references until the templates exist.
 ansible-galaxy install thomasvincent.wordpress_enterprise
 
 # Clone from GitHub
-git clone https://github.com/thomasvincent/ansible-wordpress-enterprise.git
+git clone https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
 ```
 
 ### Minimal Playbook
@@ -227,7 +254,7 @@ git clone https://github.com/thomasvincent/ansible-wordpress-enterprise.git
 
         # Monitoring
         wordpress_enable_monitoring: true
-        wordpress_enable_backups: true
+        wordpress_enable_backups: false  # gated until its template set is complete
 ```
 
 ## 📋 Requirements
@@ -240,7 +267,7 @@ git clone https://github.com/thomasvincent/ansible-wordpress-enterprise.git
 
 - **Target Nodes**
   - Supported OS (see platform support)
-  - Python 3.9+ (ansible-core no longer supports older managed nodes)
+  - Vendor-maintained system Python on the supported OS (Ubuntu 24.04 or EL9)
   - Sudo/root access
   - Minimum 2GB RAM
   - 20GB disk space
@@ -259,7 +286,7 @@ ansible-galaxy collection install ansible.posix
 **Python Dependencies:**
 
 ```bash
-pip install -r requirements.txt
+pip install --require-hashes --only-binary=:all: -r requirements.lock
 ```
 
 ## 📦 Installation
@@ -308,7 +335,7 @@ ansible-galaxy install -r requirements.yml
 
 ```bash
 # Add as submodule
-git submodule add https://github.com/thomasvincent/ansible-wordpress-enterprise.git roles/wordpress_enterprise
+git submodule add https://github.com/somethingwithproof/ansible-wordpress-enterprise.git roles/wordpress_enterprise
 
 # Update submodule
 git submodule update --remote roles/wordpress_enterprise
@@ -656,17 +683,37 @@ wordpress_aide_schedule: "daily"
 
 ### SSL/TLS Configuration
 
+HTTPS verification checks both the certificate chain and hostname. Set
+`wordpress_ssl_ca_path` to a PEM CA bundle on the managed host when using a
+private CA. Locally generated development certificates are trusted explicitly;
+certificate validation remains enabled.
+
+Sensitive configuration and administrative scripts use restricted permissions.
+Public WordPress assets and command line binaries remain readable or executable
+by their intended users.
+
+Certificates are provisioned and checked before writing HTTPS virtual hosts.
+Expired certificates, incorrect hostnames, and mismatched private keys stop the
+play. Private keys use mode `0600`; protocols are limited to TLS 1.2 and TLS 1.3.
+The daily expiration check logs a warning and returns a failure within
+`wordpress_ssl_expiry_warning_days` (30 days by default).
+
 ```yaml
 ---
-# Certificate Management
-wordpress_ssl_provider: "letsencrypt"  # or "custom", "self-signed"
-wordpress_ssl_cert_path: "/etc/ssl/certs/{{ wordpress_server_name }}.crt"
-wordpress_ssl_key_path: "/etc/ssl/private/{{ wordpress_server_name }}.key"
+wordpress_enable_ssl: true
+wordpress_server_name: "wordpress.example.com"
+wordpress_site_url: "https://wordpress.example.com"
 
-# Let's Encrypt
-wordpress_letsencrypt_email: "{{ wordpress_admin_email }}"
-wordpress_letsencrypt_staging: false
-wordpress_letsencrypt_webroot: "/var/www/letsencrypt"
+# Supply existing PEM files and, for a private CA, its trust bundle.
+wordpress_ssl_certificate: "/etc/ssl/certs/wordpress.example.com.crt"
+wordpress_ssl_certificate_key: "/etc/ssl/private/wordpress.example.com.key"
+# wordpress_ssl_ca_path: "/etc/ssl/certs/private-ca.pem"
+
+# Alternatively choose ONE provider:
+# wordpress_generate_self_signed_cert: true  # development only
+# wordpress_use_letsencrypt: true             # public DNS and TCP port 80 required
+# wordpress_letsencrypt_email: "admin@example.com"
+wordpress_ssl_expiry_warning_days: 30
 
 # SSL Configuration
 wordpress_ssl_protocols: "TLSv1.2 TLSv1.3"
@@ -685,6 +732,14 @@ wordpress_hsts_max_age: 31536000
 wordpress_hsts_include_subdomains: true
 wordpress_hsts_preload: true
 ```
+
+Let's Encrypt uses a standalone HTTP challenge. Initial issuance temporarily
+stops an existing running web service and restores it even if issuance fails.
+Renewal stops and restarts the configured service around the challenge, so plan
+for a brief interruption. Development certificates are generated once with a
+hostname SAN; they are suitable for local testing and require explicit trust
+on clients. CI exercises generated certificates on Nginx and supplied
+certificates on Apache; live ACME issuance requires a reachable public host.
 
 ## ⚡ Performance Tuning
 
@@ -1102,16 +1157,22 @@ wordpress_child_theme:
 
 ### Molecule Testing
 
-The default Molecule scenario is the release contract: Ubuntu 24.04/Nginx and
-Rocky Linux 9/Apache must converge, be idempotent, and pass runtime checks.
+CI and Docker controllers install `requirements.lock` with hash verification
+and wheels only. After updating `requirements.txt`, regenerate the lock with
+`mise exec python@3.12 -- uv pip compile --python 3.12 --only-binary=:all: --generate-hashes requirements.txt -o requirements.lock`.
+
+Both Molecule scenarios form the release contract: Ubuntu 24.04/Nginx and
+Rocky Linux 9/Apache must converge, be idempotent, and pass runtime checks with
+HTTP and HTTPS.
 
 ```bash
 # Install testing dependencies
-mise exec python@3.12 -- python -m pip install -r requirements.txt
+mise exec python@3.12 -- python -m pip install --require-hashes --only-binary=:all: -r requirements.lock
 mise exec python@3.12 -- ansible-galaxy collection install -r requirements.yml
 
 # Run the complete release contract
 mise exec python@3.12 -- molecule test --scenario-name default
+mise exec python@3.12 -- molecule test --scenario-name tls
 
 # Interactive testing
 mise exec python@3.12 -- molecule converge --scenario-name default
@@ -1125,6 +1186,7 @@ mise exec python@3.12 -- molecule destroy --scenario-name default
 | Scenario | Platforms | Purpose |
 |----------|-----------|---------|
 | **default** | Ubuntu 24.04/Nginx, Rocky Linux 9/Apache | Stable release contract |
+| **tls** | Ubuntu 24.04/Nginx, Rocky Linux 9/Apache | Generated and supplied certificates, HTTPS and expiration checks |
 
 All scenarios include:
 - ✅ Syntax checking
@@ -1203,14 +1265,14 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 ## 📞 Support
 
-- **Documentation**: [Wiki](https://github.com/thomasvincent/ansible-wordpress-enterprise/wiki)
-- **Issues**: [GitHub Issues](https://github.com/thomasvincent/ansible-wordpress-enterprise/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/thomasvincent/ansible-wordpress-enterprise/discussions)
+- **Documentation**: [Wiki](https://github.com/somethingwithproof/ansible-wordpress-enterprise/wiki)
+- **Issues**: [GitHub Issues](https://github.com/somethingwithproof/ansible-wordpress-enterprise/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/somethingwithproof/ansible-wordpress-enterprise/discussions)
 - **Security**: Report security vulnerabilities to security@example.com
 
 ## 📄 License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 👤 Author
 
@@ -1227,12 +1289,14 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ## 📊 Stats
 
-![GitHub stars](https://img.shields.io/github/stars/thomasvincent/ansible-wordpress-enterprise?style=social)
-![GitHub forks](https://img.shields.io/github/forks/thomasvincent/ansible-wordpress-enterprise?style=social)
-![GitHub watchers](https://img.shields.io/github/watchers/thomasvincent/ansible-wordpress-enterprise?style=social)
+![GitHub stars](https://img.shields.io/github/stars/somethingwithproof/ansible-wordpress-enterprise?style=social)
+![GitHub forks](https://img.shields.io/github/forks/somethingwithproof/ansible-wordpress-enterprise?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/somethingwithproof/ansible-wordpress-enterprise?style=social)
 
 ---
 
 **Made with ❤️ by the open source community**
 
 ⭐ Star this project if you find it helpful!
+
+![Release validation flow](docs/assets/release-flow.svg)

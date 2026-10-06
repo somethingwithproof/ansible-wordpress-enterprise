@@ -1,0 +1,11 @@
+.git
+.ansible
+.cache
+.venv*
+**/__pycache__
+**/.pytest_cache
+tests/reports
+.env
+.env.*
+*.pem
+*.key

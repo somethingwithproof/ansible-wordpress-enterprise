@@ -1,0 +1,10 @@
+# Managed by Ansible: TLS 1.2/1.3 policy.
+{% if wordpress_web_server == 'nginx' %}
+ssl_ecdh_curve auto;
+{% else %}
+<IfModule mod_ssl.c>
+    SSLProtocol -all {{ wordpress_ssl_protocols.split() | map('regex_replace', '^', '+') | join(' ') }}
+    SSLCipherSuite {{ wordpress_ssl_ciphers }}
+    SSLHonorCipherOrder {{ 'on' if wordpress_ssl_prefer_server_ciphers else 'off' }}
+</IfModule>
+{% endif %}

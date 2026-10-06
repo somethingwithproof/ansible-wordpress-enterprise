@@ -76,6 +76,11 @@
 - name: Test HTTP response
   ansible.builtin.uri:
     url: "http://127.0.0.1/"
+    ca_path: >-
+      {{ wordpress_ssl_ca_path | default(
+           wordpress_ssl_certificate if wordpress_enable_ssl | bool
+           and wordpress_generate_self_signed_cert | bool
+           and not wordpress_use_letsencrypt | bool else omit, true) }}
     method: GET
     headers:
       Host: "{{ wordpress_server_name }}"
@@ -89,10 +94,15 @@
 
 - name: Test HTTPS response (if SSL is enabled)
   ansible.builtin.uri:
-    url: "https://{{ ansible_facts.default_ipv4.address | default('localhost') }}"
+    url: "https://{{ wordpress_server_name }}:{{ wordpress_https_port }}"
     method: GET
     status_code: [200, 301, 302, 403]
-    validate_certs: false
+    validate_certs: true
+    ca_path: >-
+      {{ wordpress_ssl_ca_path | default(
+           wordpress_ssl_certificate if wordpress_enable_ssl | bool
+           and wordpress_generate_self_signed_cert | bool
+           and not wordpress_use_letsencrypt | bool else omit, true) }}
   register: https_response
   when: wordpress_enable_ssl | bool
   ignore_errors: true
@@ -349,7 +359,12 @@
     headers:
       Host: "{{ wordpress_server_name }}"
     status_code: [200, 301, 302]
-    validate_certs: false
+    validate_certs: true
+    ca_path: >-
+      {{ wordpress_ssl_ca_path | default(
+           wordpress_ssl_certificate if wordpress_enable_ssl | bool
+           and wordpress_generate_self_signed_cert | bool
+           and not wordpress_use_letsencrypt | bool else omit, true) }}
   register: wp_url_response
   ignore_errors: true
 
@@ -363,7 +378,7 @@
     dest: "{{ wordpress_log_dir }}/verification-report-{{ ansible_facts.date_time.epoch }}.txt"
     owner: root
     group: root
-    mode: "0644"
+    mode: '0640'
   become: true
   when: wordpress_enable_logging | bool
 

@@ -48,28 +48,33 @@ print_color() {
 
 # Function to print section headers
 print_header() {
+    local message="$1"
     echo
     print_color $PURPLE "=================================="
-    print_color $PURPLE "$1"
+    print_color $PURPLE "${message}"
     print_color $PURPLE "=================================="
     echo
 }
 
 # Function to print status
 print_status() {
-    print_color $BLUE "ℹ️  $1"
+    local message="$1"
+    print_color $BLUE "ℹ️  ${message}"
 }
 
 print_success() {
-    print_color $GREEN "✅ $1"
+    local message="$1"
+    print_color $GREEN "✅ ${message}"
 }
 
 print_warning() {
-    print_color $YELLOW "⚠️  $1"
+    local message="$1"
+    print_color $YELLOW "⚠️  ${message}"
 }
 
 print_error() {
-    print_color $RED "❌ $1"
+    local message="$1"
+    print_color $RED "❌ ${message}"
 }
 
 # Function to show usage
@@ -160,6 +165,10 @@ parse_args() {
                 ;;
             centos)
                 INVENTORY="centos.ini"
+                ;;
+            *)
+                print_error "Unsupported target: $TARGET"
+                return 1
                 ;;
         esac
     fi
@@ -308,6 +317,10 @@ run_test() {
         centos)
             target_host="wp-test-centos"
             ;;
+        *)
+            print_error "Unsupported target: $TARGET"
+            return 1
+            ;;
     esac
 
     local log_file="$REPORTS_DIR/${TEST_RUN_ID}_${TARGET}_${SCENARIO}.log"
@@ -360,7 +373,7 @@ run_test() {
   "start_time": "$start_time",
   "end_time": "$end_time",
   "duration_seconds": $duration,
-  "result": "$([ $test_result -eq 0 ] && echo "PASS" || echo "FAIL")",
+  "result": "$([[ $test_result -eq 0 ]] && echo "PASS" || echo "FAIL")",
   "log_file": "$log_file",
   "timestamp": "$(date -Iseconds)"
 }

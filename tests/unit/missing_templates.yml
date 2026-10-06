@@ -62,6 +62,3 @@ missing_templates:
   - security.yml:sshd_config.j2
   - security.yml:wp-admin-security.sh.j2
   - security.yml:wp-security.conf.j2
-  - ssl.yml:apache-ssl.conf.j2
-  - ssl.yml:ssl-monitor.sh.j2
-  - ssl.yml:ssl-security.conf.j2

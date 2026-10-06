@@ -1,0 +1,9 @@
+#!/bin/bash
+# Managed by Ansible. Nonzero status is delivered by cron and recorded by syslog.
+set -euo pipefail
+readonly certificate={{ wordpress_ssl_certificate | quote }}
+readonly warning_seconds={{ (wordpress_ssl_expiry_warning_days | int) * 86400 }}
+if ! openssl x509 -in "$certificate" -noout -checkend "$warning_seconds" >/dev/null; then
+    logger -p daemon.err -- "WordPress TLS certificate is missing, invalid, or expires within {{ wordpress_ssl_expiry_warning_days }} days"
+    exit 1
+fi

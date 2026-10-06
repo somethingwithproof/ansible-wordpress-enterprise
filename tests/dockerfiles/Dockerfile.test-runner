@@ -1,70 +1,25 @@
-# Test runner container with Ansible and testing tools
-FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
-ENV TZ=UTC
-
-# Install Python, Ansible and testing tools
-RUN apt-get update && apt-get install -y \
-    python3 \
-    python3-pip \
-    python3-venv \
-    python3-dev \
-    curl \
-    wget \
-    git \
-    openssh-client \
-    sshpass \
-    sudo \
-    jq \
-    docker.io \
-    docker-compose \
-    xmlstarlet \
-    && apt-get clean
-
-# Install Ansible and testing dependencies
-RUN pip3 install --no-cache-dir \
-    "ansible>=8.0.0" \
-    ansible-lint \
-    yamllint \
-    molecule \
-    molecule-plugins[docker] \
-    pytest \
-    pytest-ansible \
-    pytest-html \
-    pytest-json-report \
-    requests \
-    beautifulsoup4 \
-    selenium \
-    testinfra
-
-# Install from requirements.yml so the runner cannot drift from the role's
-# own declared collections, as it had (community.mysql is deprecated in
-# favour of ansible.mysql).
-COPY requirements.yml /tmp/requirements.yml
-# Install system-wide: this image runs as the unprivileged tester user,
-# so collections under /root are unreadable at run time.
-RUN ansible-galaxy collection install -r /tmp/requirements.yml \
-    -p /usr/share/ansible/collections
-
-# Create working directory
+# Python 3.12 test controller with the same dependency lock as CI.
+FROM ubuntu:24.04
+ENV DEBIAN_FRONTEND=noninteractive TZ=UTC
+ENV PATH="/opt/ansible/bin:$PATH"
+COPY requirements.lock requirements.yml /tmp/dependencies/
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        bc ca-certificates curl docker.io git jq openssh-client python3 python3-venv \
+        sshpass sudo wget xmlstarlet && \
+    rm -rf /var/lib/apt/lists/* && \
+    python3 -m venv /opt/ansible && \
+    python -m pip install --no-cache-dir --require-hashes --only-binary=:all: \
+        -r /tmp/dependencies/requirements.lock && \
+    ansible-galaxy collection install -r /tmp/dependencies/requirements.yml \
+        -p /usr/share/ansible/collections && \
+    useradd -m -s /bin/bash tester && \
+    echo 'tester ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/tester && \
+    chmod 0440 /etc/sudoers.d/tester && \
+    mkdir -p /home/tester/.ssh /ansible-workspace/tests/reports && \
+    printf 'Host *\n    StrictHostKeyChecking no\n    UserKnownHostsFile=/dev/null\n' \
+        > /home/tester/.ssh/config && \
+    chmod 0600 /home/tester/.ssh/config && \
+    chown -R tester:tester /home/tester/.ssh /ansible-workspace
 WORKDIR /ansible-workspace
-
-# Create test user
-RUN useradd -m -s /bin/bash tester \
-    && echo 'tester ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/tester
-
-# Configure SSH client
-RUN mkdir -p /home/tester/.ssh \
-    && echo "Host *\n    StrictHostKeyChecking no\n    UserKnownHostsFile=/dev/null" > /home/tester/.ssh/config \
-    && chown -R tester:tester /home/tester/.ssh \
-    && chmod 600 /home/tester/.ssh/config
-
-# Create test report directory
-RUN mkdir -p /ansible-workspace/tests/reports \
-    && chown -R tester:tester /ansible-workspace
-
 USER tester
-
-# Set default command
 CMD ["bash"]

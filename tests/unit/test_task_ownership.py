@@ -18,7 +18,7 @@ import yaml
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 TASKS = sorted((ROOT / "tasks").rglob("*.y*ml"))
-EXPECTED_TASK_FILE_COUNT = 26
+EXPECTED_TASK_FILE_COUNT = 27
 TEMPLATES = ROOT / "templates"
 BASELINE = pathlib.Path(__file__).with_name("missing_templates.yml")
 DEFAULT_VALUES = yaml.safe_load((ROOT / "defaults" / "main.yml").read_text())
@@ -30,7 +30,6 @@ FEATURE_FLAG = {
     "firewall.yml": "wordpress_configure_firewall",
     "monitoring.yml": "wordpress_enable_monitoring",
     "security.yml": "wordpress_enable_security",
-    "ssl.yml": "wordpress_enable_ssl",
 }
 
 # Modules that render a whole file: two of them on one destination conflict.
@@ -374,6 +373,14 @@ def _wp_config_modes(all_tasks) -> set[str]:
         for module, destination in WP_CONFIG_WRITERS.items():
             body = task.get(module)
             if not isinstance(body, dict) or not isinstance(body.get(destination), str):
+                continue
+            # A nonrecursive directory task cannot chmod a regular wp-config.php:
+            # Ansible rejects an existing file when state is directory.
+            if (
+                module == "ansible.builtin.file"
+                and body.get("state") == "directory"
+                and body.get("recurse", False) is False
+            ):
                 continue
             loop = task.get("loop")
             loop_values = " ".join(str(value) for value in body.values())
@@ -968,7 +975,7 @@ def test_the_missing_template_baseline_has_no_stale_entries(all_tasks, baseline)
 
 def test_the_missing_template_baseline_never_grows(baseline: set[str]) -> None:
     """The debt is capped at what was recorded when the ratchet went in."""
-    recorded = 59
+    recorded = 56
     assert len(baseline) == recorded, (
         f"the baseline changed to {len(baseline)} from {recorded}; update the "
         "ratchet deliberately when missing templates are added or supplied"
@@ -1124,8 +1131,8 @@ def test_examples_and_scenarios_do_not_enable_incomplete_features() -> None:
 
 @pytest.mark.parametrize("truthy", [True, "true", "True", "yes", "on"])
 def test_incomplete_feature_gate_understands_yaml_truthiness(truthy) -> None:
-    assert _enabled_incomplete_features({"vars": {"wordpress_enable_ssl": truthy}}) == {
-        "wordpress_enable_ssl"
+    assert _enabled_incomplete_features({"vars": {"wordpress_enable_backups": truthy}}) == {
+        "wordpress_enable_backups"
     }
 
 
@@ -1279,3 +1286,17 @@ def test_cron_guard_reports_duplicate_names() -> None:
 """)
     with pytest.raises(AssertionError, match="duplicate"):
         test_cron_entry_names_are_owned_by_one_task(tasks)
+
+
+def test_nonrecursive_directory_loops_cannot_chmod_wp_config() -> None:
+    tasks = _synthetic("""
+- name: Create a missing directory
+  ansible.builtin.file:
+    path: '{{ item.directory }}'
+    state: directory
+    mode: '0700'
+  loop: '{{ directory_results }}'
+""")
+    assert _wp_config_modes(tasks) == set()
+    tasks[0][1]["ansible.builtin.file"]["recurse"] = True
+    assert _wp_config_modes(tasks) == {"0700"}

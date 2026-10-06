@@ -38,7 +38,7 @@
     state: directory
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when: wordpress_enable_logging | bool
 
@@ -48,7 +48,7 @@
     dest: /usr/local/bin/monitoring/system-monitor.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when: wordpress_enable_logging | bool
 
@@ -58,7 +58,7 @@
     dest: /usr/local/bin/monitoring/wordpress-health-check.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when: wordpress_enable_logging | bool
 
@@ -68,7 +68,7 @@
     dest: /usr/local/bin/monitoring/database-monitor.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when: wordpress_enable_logging | bool
 
@@ -78,7 +78,7 @@
     dest: "/usr/local/bin/monitoring/{{ wordpress_web_server }}-monitor.sh"
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when: wordpress_enable_logging | bool
 
@@ -88,7 +88,7 @@
     dest: /usr/local/bin/monitoring/php-fpm-monitor.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when: wordpress_enable_logging | bool
 
@@ -98,7 +98,7 @@
     dest: /usr/local/bin/monitoring/cache-monitor.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when:
     - wordpress_enable_logging | bool
@@ -110,7 +110,7 @@
     dest: /usr/local/bin/monitoring/disk-usage-monitor.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when: wordpress_enable_logging | bool
 
@@ -120,7 +120,7 @@
     dest: /usr/local/bin/monitoring/network-monitor.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when: wordpress_enable_logging | bool
 
@@ -130,7 +130,7 @@
     dest: /usr/local/bin/monitoring/performance-monitor.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when: wordpress_enable_logging | bool
 
@@ -140,7 +140,7 @@
     dest: /usr/local/bin/monitoring/log-analysis.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when: wordpress_enable_logging | bool
 
@@ -150,7 +150,7 @@
     dest: /usr/local/bin/wordpress-monitor.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when: wordpress_enable_logging | bool
 
@@ -255,7 +255,7 @@
     dest: /etc/wordpress-monitoring.conf
     owner: root
     group: root
-    mode: '0644'
+    mode: '0600'
   become: true
   when: wordpress_enable_logging | bool
 
@@ -265,7 +265,7 @@
     state: directory
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when: wordpress_enable_logging | bool
 
@@ -275,7 +275,7 @@
     dest: /etc/logrotate.d/wordpress-monitoring
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
   become: true
   when:
     - wordpress_enable_logging | bool
@@ -287,7 +287,7 @@
     dest: /usr/local/bin/monitoring/alert-notify.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when:
     - wordpress_enable_logging | bool
@@ -299,7 +299,7 @@
     dest: /usr/local/bin/monitoring/uptime-monitor.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when: wordpress_enable_logging | bool
 
@@ -319,7 +319,7 @@
     dest: /usr/local/bin/monitoring/response-time-monitor.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when: wordpress_enable_logging | bool
 
@@ -339,7 +339,7 @@
     dest: /usr/local/bin/monitoring/security-monitor.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when: wordpress_enable_logging | bool
 
@@ -359,7 +359,7 @@
     dest: /usr/local/bin/wordpress-dashboard.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when: wordpress_enable_logging | bool
 
@@ -369,7 +369,7 @@
     dest: /usr/local/bin/monitoring/monitoring-report.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when: wordpress_enable_logging | bool
 

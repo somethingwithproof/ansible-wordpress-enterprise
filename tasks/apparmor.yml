@@ -51,7 +51,9 @@
   ansible.builtin.file:
     path: /etc/apparmor.d/local/wordpress
     state: directory
-    mode: "0755"
+    owner: root
+    group: root
+    mode: '0750'
   when:
     - ansible_facts.os_family == "Debian"
     - apparmor_enabled | default(false)
@@ -139,7 +141,9 @@
         #include <local/wordpress-php-fpm>
       }
     dest: /etc/apparmor.d/wordpress-php-fpm
-    mode: "0644"
+    owner: root
+    group: root
+    mode: '0640'
   when:
     - ansible_facts.os_family == "Debian"
     - apparmor_enabled | default(false)
@@ -210,7 +214,9 @@
         #include <local/wordpress-nginx>
       }
     dest: /etc/apparmor.d/wordpress-nginx
-    mode: "0644"
+    owner: root
+    group: root
+    mode: '0640'
   when:
     - ansible_facts.os_family == "Debian"
     - apparmor_enabled | default(false)
@@ -290,7 +296,9 @@
         #include <local/wordpress-apache>
       }
     dest: /etc/apparmor.d/wordpress-apache
-    mode: "0644"
+    owner: root
+    group: root
+    mode: '0640'
   when:
     - ansible_facts.os_family == "Debian"
     - apparmor_enabled | default(false)
@@ -362,7 +370,9 @@
         #include <local/wordpress-wpcli>
       }
     dest: /etc/apparmor.d/wordpress-wpcli
-    mode: "0644"
+    owner: root
+    group: root
+    mode: '0640'
   when:
     - ansible_facts.os_family == "Debian"
     - apparmor_enabled | default(false)
@@ -377,7 +387,9 @@
     state: touch
     access_time: preserve
     modification_time: preserve
-    mode: "0644"
+    owner: root
+    group: root
+    mode: '0640'
   loop:
     - wordpress-php-fpm
     - wordpress-nginx
@@ -464,7 +476,9 @@
           echo "No log files found"
       fi
     dest: /usr/local/bin/wordpress-apparmor-status
-    mode: "0755"
+    owner: root
+    group: root
+    mode: '0750'
   when:
     - ansible_facts.os_family == "Debian"
     - apparmor_enabled | default(false)
@@ -520,7 +534,9 @@
           echo ""
       fi
     dest: /usr/local/bin/wordpress-apparmor-troubleshoot
-    mode: "0755"
+    owner: root
+    group: root
+    mode: '0750'
   when:
     - ansible_facts.os_family == "Debian"
     - apparmor_enabled | default(false)

@@ -1,0 +1,11 @@
+# Managed by Ansible: TLS listener and session protection.
+<IfModule mod_ssl.c>
+{% if ansible_facts.os_family == 'RedHat' or wordpress_https_port != 443 %}
+    Listen {{ wordpress_https_port }} https
+{% endif %}
+{% if ansible_facts.os_family == 'RedHat' %}
+    SSLSessionCache shmcb:/run/httpd/sslcache(512000)
+    SSLSessionCacheTimeout 300
+{% endif %}
+    SSLSessionTickets off
+</IfModule>

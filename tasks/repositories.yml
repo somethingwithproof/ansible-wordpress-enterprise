@@ -103,7 +103,7 @@
 
 - name: Add official Nginx repository (Debian/Ubuntu)
   ansible.builtin.apt_repository:
-    repo: "deb http://nginx.org/packages/{{ ansible_facts.distribution | lower }}/ {{ ansible_facts.distribution_release }} nginx"
+    repo: "deb https://nginx.org/packages/{{ ansible_facts.distribution | lower }}/ {{ ansible_facts.distribution_release }} nginx"
     state: present
     filename: nginx-official
     update_cache: true
@@ -117,7 +117,7 @@
   ansible.builtin.yum_repository:
     name: nginx
     description: nginx repo
-    baseurl: "http://nginx.org/packages/{{ (ansible_facts.distribution == 'CentOS') | ternary('centos', 'rhel') }}/{{ ansible_facts.distribution_major_version
+    baseurl: "https://nginx.org/packages/{{ (ansible_facts.distribution == 'CentOS') | ternary('centos', 'rhel') }}/{{ ansible_facts.distribution_major_version
       }}/$basearch/"
     gpgkey: https://nginx.org/keys/nginx_signing.key
     gpgcheck: true
@@ -142,7 +142,7 @@
 
 - name: Add MariaDB repository (Debian/Ubuntu)
   ansible.builtin.apt_repository:
-    repo: "deb [arch=amd64,arm64,ppc64el] http://mirror.mariadb.org/repo/{{ wordpress_mariadb_version | default('10.11') }}/{{
+    repo: "deb [arch=amd64,arm64,ppc64el] https://mirror.mariadb.org/repo/{{ wordpress_mariadb_version | default('10.11') }}/{{
       ansible_facts.distribution | lower }} {{ ansible_facts.distribution_release }} main"
     state: present
     filename: mariadb
@@ -157,7 +157,7 @@
   ansible.builtin.yum_repository:
     name: mariadb
     description: MariaDB
-    baseurl: "http://mirror.mariadb.org/yum/{{ wordpress_mariadb_version | default('10.11') }}/{{ (ansible_facts.distribution ==
+    baseurl: "https://mirror.mariadb.org/yum/{{ wordpress_mariadb_version | default('10.11') }}/{{ (ansible_facts.distribution ==
       'CentOS') | ternary('centos', 'rhel') }}{{ ansible_facts.distribution_major_version }}-amd64"
     gpgkey: https://mirror.mariadb.org/yum/RPM-GPG-KEY-MariaDB
     gpgcheck: true

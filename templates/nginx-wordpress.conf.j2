@@ -39,7 +39,7 @@ server {
     ssl_prefer_server_ciphers {{ 'on' if wordpress_ssl_prefer_server_ciphers else 'off' }};
     ssl_session_timeout {{ wordpress_ssl_session_timeout }};
     ssl_session_cache {{ wordpress_ssl_session_cache }};
-    {% if wordpress_ssl_stapling %}
+    {% if wordpress_ssl_stapling and not wordpress_generate_self_signed_cert %}
     ssl_stapling on;
     ssl_stapling_verify on;
     ssl_trusted_certificate {{ wordpress_ssl_certificate }};

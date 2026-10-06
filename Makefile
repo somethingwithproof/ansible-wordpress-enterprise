@@ -53,14 +53,11 @@ help:
 
 install:
 	@echo "Installing Ansible and dependencies..."
-	pip install --upgrade pip
-	pip install ansible>=2.14 ansible-lint yamllint molecule molecule-plugins[docker] pytest-testinfra
+	python -m pip install --require-hashes --only-binary=:all: -r requirements.lock
 
 galaxy-install:
 	@echo "Installing Ansible Galaxy collections..."
-	ansible-galaxy collection install community.general
-	ansible-galaxy collection install community.mysql
-	ansible-galaxy collection install ansible.posix
+	ansible-galaxy collection install -r requirements.yml
 
 lint:
 	@echo "Running linters..."
@@ -73,7 +70,7 @@ test:
 
 docker-build:
 	@echo "Building Docker images..."
-	$(COMPOSE) build ubuntu-22 ubuntu-24 rocky-9
+	$(COMPOSE) build ubuntu-24 rocky-9
 
 docker-test:
 	@echo "Running tests in Docker..."

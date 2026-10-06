@@ -1,6 +1,4 @@
 ---
-version: '3.8'
-
 services:
   # Test database services
   mysql-test:
@@ -83,6 +81,9 @@ services:
       context: .
       dockerfile: tests/dockerfiles/Dockerfile.ubuntu
     container_name: wp-test-ubuntu
+    environment:
+      TEST_ROOT_PASSWORD: testroot123  # pragma: allowlist secret (isolated test account)
+      TEST_USER_PASSWORD: testpass123  # pragma: allowlist secret (isolated test account)
     privileged: true
     cgroup: host
     volumes:
@@ -106,6 +107,9 @@ services:
       context: .
       dockerfile: tests/dockerfiles/Dockerfile.centos
     container_name: wp-test-centos
+    environment:
+      TEST_ROOT_PASSWORD: testroot123  # pragma: allowlist secret (isolated test account)
+      TEST_USER_PASSWORD: testpass123  # pragma: allowlist secret (isolated test account)
     privileged: true
     cgroup: host
     volumes:

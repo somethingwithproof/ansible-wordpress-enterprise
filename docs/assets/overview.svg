@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 290" role="img" aria-labelledby="title desc">
+<title id="title">WordPress Enterprise operational flow</title><desc id="desc">WordPress Enterprise operational flow</desc>
+<style>text{font-family:system-ui,-apple-system,Segoe UI,sans-serif}.title{font-size:25px;font-weight:650;fill:#f8fafc}.label{font-size:17px;font-weight:600;fill:#e2e8f0}.small{font-size:14px;fill:#a5b4c9}</style>
+<rect width="1120" height="290" rx="20" fill="#0e192c"/><text x="32" y="46" class="title">Secure deployment, in dependency order</text><rect x="32" y="86" width="234" height="106" rx="16" fill="#16243b" stroke="#f6b756" stroke-width="1.5"/>
+<rect x="50" y="106" width="6" height="22" rx="3" fill="#f6b756"/>
+<text x="68" y="124" class="label">Platform gate</text><text x="50" y="160" class="small">Ubuntu 24.04 / EL9 + PHP 8.3</text><path d="M272 139h24m-8 -6 8 6-8 6" fill="none" stroke="#6b829f" stroke-width="2"/><rect x="306" y="86" width="234" height="106" rx="16" fill="#16243b" stroke="#f6b756" stroke-width="1.5"/>
+<rect x="324" y="106" width="6" height="22" rx="3" fill="#f6b756"/>
+<text x="342" y="124" class="label">Prepare trust</text><text x="324" y="160" class="small">Verify certificate and key</text><path d="M546 139h24m-8 -6 8 6-8 6" fill="none" stroke="#6b829f" stroke-width="2"/><rect x="580" y="86" width="234" height="106" rx="16" fill="#16243b" stroke="#f6b756" stroke-width="1.5"/>
+<rect x="598" y="106" width="6" height="22" rx="3" fill="#f6b756"/>
+<text x="616" y="124" class="label">Configure</text><text x="598" y="160" class="small">Database, PHP + web server</text><path d="M820 139h24m-8 -6 8 6-8 6" fill="none" stroke="#6b829f" stroke-width="2"/><rect x="854" y="86" width="234" height="106" rx="16" fill="#16243b" stroke="#f6b756" stroke-width="1.5"/>
+<rect x="872" y="106" width="6" height="22" rx="3" fill="#f6b756"/>
+<text x="890" y="124" class="label">Prove delivery</text><text x="872" y="160" class="small">HTTPS, WordPress + idempotence</text><text x="32" y="244" class="small">Expired and untested platforms fail closed. Certificates precede web-server readiness.</text></svg>

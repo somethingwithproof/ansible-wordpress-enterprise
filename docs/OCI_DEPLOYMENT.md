@@ -1,5 +1,12 @@
 # Oracle Cloud Infrastructure (OCI) Deployment Guide
 
+> Release contract: Ubuntu 24.04/Nginx and EL9/Apache with PHP 8.3, plus verified
+> certificate provisioning and HTTPS. Only vendor-maintained platforms are supported.
+> Backup, monitoring, HA, advanced-security, CDN and object-storage template sets
+> remain incomplete and fail closed when enabled. Examples for those features are
+> design references, not executable release guarantees. See [../README.md](../README.md)
+> and the missing-template inventory before enabling optional features.
+
 ## Overview
 
 This guide provides comprehensive instructions for deploying WordPress on Oracle Cloud Infrastructure (OCI) using the ansible-wordpress-enterprise role. The deployment is optimized for OCI Free Tier resources and supports PAUSATF WordPress hosting requirements.
@@ -59,8 +66,8 @@ This guide provides comprehensive instructions for deploying WordPress on Oracle
 - API signing key pair generated
 
 ### Local Requirements
-- Ansible 2.14 or higher
-- Python 3.8 or higher
+- ansible-core 2.21 (use the hashed requirements.lock)
+- Python 3.12 or higher (maintained releases only)
 - OCI CLI configured (optional but recommended)
 - OCI Python SDK (for advanced features)
 
@@ -166,7 +173,7 @@ Use the `examples/oracle-cloud.yml` playbook or create your own:
     wordpress_version: "6.4.2"
     wordpress_site_url: "https://blog.example.com"
     wordpress_site_title: "OCI-Powered WordPress"
-    
+
     # OCI Configuration
     wordpress_cloud_provider: "oracle"
     wordpress_oci_enabled: true
@@ -174,24 +181,24 @@ Use the `examples/oracle-cloud.yml` playbook or create your own:
     wordpress_oci_user: "{{ vault_oci_user }}"
     wordpress_oci_fingerprint: "{{ vault_oci_fingerprint }}"
     wordpress_oci_region: "us-ashburn-1"
-    
+
     # OCI Compute
     wordpress_oci_compartment_id: "{{ vault_oci_compartment_id }}"
     wordpress_oci_shape: "VM.Standard.E4.Flex"
     wordpress_oci_ocpus: 2
     wordpress_oci_memory_gb: 16
-    
+
     # OCI Block Storage
     wordpress_oci_block_storage_enabled: true
     wordpress_oci_block_volume_size_gb: 100
     wordpress_oci_block_volume_performance: "Balanced"
-    
+
     # OCI Load Balancer
     wordpress_oci_load_balancer_enabled: true
     wordpress_oci_lb_shape: "flexible"
     wordpress_oci_lb_min_bandwidth_mbps: 10
     wordpress_oci_lb_max_bandwidth_mbps: 100
-    
+
     # OCI Object Storage
     wordpress_oci_object_storage_enabled: true
     wordpress_oci_object_storage_bucket: "{{ vault_oci_bucket_name }}"
@@ -436,9 +443,9 @@ ansible-playbook -i inventories/oci.ini examples/oracle-cloud.yml \
 - [OCI Object Storage](https://docs.oracle.com/en-us/iaas/Content/Object/home.htm)
 
 ### Ansible Role
-- [GitHub Repository](https://github.com/thomasvincent/ansible-wordpress-enterprise)
-- [Issue Tracker](https://github.com/thomasvincent/ansible-wordpress-enterprise/issues)
+- [GitHub Repository](https://github.com/somethingwithproof/ansible-wordpress-enterprise)
+- [Issue Tracker](https://github.com/somethingwithproof/ansible-wordpress-enterprise/issues)
 
 ## License
 
-Apache License 2.0
+MIT License

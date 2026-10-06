@@ -104,8 +104,8 @@
     src: mysql-wordpress.cnf.j2
     dest: "{{ wordpress_db_config_dir[wordpress_db_engine] }}/wordpress.cnf"
     owner: root
-    group: root
-    mode: "0644"
+    group: mysql
+    mode: '0640'
     backup: true
   become: true
   when: not wordpress_use_external_db | bool
@@ -118,8 +118,8 @@
          else 'mariadb-optimization.cnf.j2' }}
     dest: "{{ wordpress_db_config_dir[wordpress_db_engine] }}/optimization.cnf"
     owner: root
-    group: root
-    mode: "0644"
+    group: mysql
+    mode: '0640'
     backup: true
   become: true
   when: not wordpress_use_external_db | bool
@@ -141,7 +141,7 @@
     dest: /etc/logrotate.d/mysql-wordpress
     owner: root
     group: root
-    mode: "0644"
+    mode: '0640'
   become: true
   when:
     - not wordpress_use_external_db | bool
