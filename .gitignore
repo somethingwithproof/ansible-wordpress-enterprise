@@ -45,3 +45,6 @@ venv/
 *.egg-info/
 dist/
 build/
+
+# Local assistant state; not project source
+/.omc/
