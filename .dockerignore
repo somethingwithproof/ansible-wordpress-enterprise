@@ -11,3 +11,7 @@ tests/reports
 .env.*
 *.pem
 *.key
+
+# Local assistant state
+.omc
+.worktrees

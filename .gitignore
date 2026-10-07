@@ -3,7 +3,7 @@
 # Ansible
 *.retry
 .cache/
-.ansible/roles/
+/.ansible/
 
 # Molecule
 .molecule/
@@ -45,3 +45,7 @@ venv/
 *.egg-info/
 dist/
 build/
+
+# Local assistant sessions and isolated worktrees
+.omc/
+.worktrees/
