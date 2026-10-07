@@ -251,6 +251,10 @@ wordpress_enable_logging: true
 wordpress_log_dir: "/var/log/wordpress"
 wordpress_error_log: "{{ wordpress_log_dir }}/error.log"
 wordpress_access_log: "{{ wordpress_log_dir }}/access.log"
+wordpress_mysql_slow_query_log_file: >-
+  {{ '/var/log/mariadb/wordpress/slow.log' if ansible_facts.os_family == 'RedHat'
+     else '/var/log/mysql/wordpress/slow.log' }}
+wordpress_mysql_long_query_time: 2
 
 # Log rotation
 wordpress_logrotate_enabled: true

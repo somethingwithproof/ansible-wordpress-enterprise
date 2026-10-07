@@ -154,16 +154,6 @@
     - wordpress_install_wpcli | bool
     - wpcli_info.stdout_lines is defined
 
-- name: Create WordPress log directory
-  ansible.builtin.file:
-    path: "{{ wordpress_log_dir }}"
-    state: directory
-    owner: "{{ wordpress_php_fpm_user }}"
-    group: "{{ wordpress_php_fpm_group }}"
-    mode: '0755'
-  become: true
-  when: wordpress_enable_logging | bool
-
 - name: Create WordPress error log file
   ansible.builtin.file:
     path: "{{ wordpress_error_log }}"

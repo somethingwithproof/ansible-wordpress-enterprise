@@ -56,7 +56,7 @@ provisioner:
         wordpress_enable_monitoring: false
         wordpress_enable_security: false
         wordpress_enable_caching: false
-        wordpress_enable_logging: false
+        wordpress_enable_logging: true
         wordpress_enable_redis: false
         wordpress_enable_memcached: false
         wordpress_enable_object_cache: false

@@ -5,6 +5,21 @@ SPDX-License-Identifier: MIT
 
 # Changelog
 
+## 2.22.1 — 2026-10-06
+
+- Add complete SPDX headers, REUSE annotations and CI license-coverage checks.
+- Restrict service logs/caches and private security files to their owner/group.
+- Verify logging and private directory permissions in the two-platform contract.
+- Create private logs before configuring services, persist slow-query settings
+  across database restarts, and rotate only the configured database log file.
+- Give the private WordPress log directory a single owner and keep a stable
+  verification snapshot so unchanged deployments remain idempotent.
+- Verify Dependabot's immutable PR author ID before merging.
+- Run core CI on GitHub-hosted Ubuntu 24.04 with Docker, independently of the
+  legacy shared self-hosted runner queue.
+- Resolve baseline shell findings and document reviewed public asset/test fixtures.
+- Remove obsolete documentation superseded by README and TESTING.
+
 ## 2.22.0 — 2026-10-06
 
 Verified certificate preparation, real HTTPS contracts and SemVer role archives/DEB/RPM releases.

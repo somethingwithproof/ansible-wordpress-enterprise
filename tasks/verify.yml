@@ -377,7 +377,7 @@
 - name: Generate verification report
   ansible.builtin.template:
     src: verification-report.txt.j2
-    dest: "{{ wordpress_log_dir }}/verification-report-{{ ansible_facts.date_time.epoch }}.txt"
+    dest: "{{ wordpress_log_dir }}/verification-report.txt"
     owner: root
     group: root
     mode: '0640'

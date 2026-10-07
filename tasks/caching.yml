@@ -49,7 +49,7 @@
     dest: "{{ '/etc/memcached.conf' if ansible_facts.os_family == 'Debian' else '/etc/sysconfig/memcached' }}"
     owner: root
     group: root
-    mode: '0644'
+    mode: '0640'
     backup: true
   become: true
   when: wordpress_enable_memcached | bool
@@ -123,7 +123,7 @@
     state: directory
     owner: redis
     group: redis
-    mode: '0755'
+    mode: '0750'
   become: true
   when:
     - wordpress_enable_redis | bool
@@ -187,7 +187,7 @@
     dest: "{{ wordpress_install_dir }}/opcache-status.php"
     owner: "{{ wordpress_system_user }}"
     group: "{{ wordpress_system_group }}"
-    mode: '0644'
+    mode: '0640'
   become: true
   when:
     - wordpress_opcache_enable | bool
@@ -199,7 +199,7 @@
     dest: /usr/local/bin/cache-warmup.sh
     owner: root
     group: root
-    mode: '0755'
+    mode: '0750'
   become: true
   when: wordpress_enable_redis | bool or wordpress_enable_memcached | bool
 

@@ -8,18 +8,18 @@ SPDX-License-Identifier: MIT
 ![WordPress Enterprise](docs/assets/banner.svg)
 
 Project releases use the complete SemVer version in `VERSION`, independently
-of `meta/main.yml`'s minimum Ansible version. A matching `v2.22.0` tag on main
+of `meta/main.yml`'s minimum Ansible version. A matching `v2.22.1` tag on main
 or the manual Release workflow validates the source version, runs the full CI
 suite (including both Molecule scenarios), and publishes a Galaxy-compatible
 role archive, Debian package, RPM, `release.json` and `SHA256SUMS`.
 
 Verify downloads with `sha256sum --check SHA256SUMS`. Install native packages
-with `sudo apt install ./ansible-wordpress-enterprise_2.22.0_all.deb` on Ubuntu
-24.04 or `sudo dnf install ./ansible-wordpress-enterprise_2.22.0_noarch.rpm` on
+with `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` on Ubuntu
+24.04 or `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` on
 Rocky Linux 9. Both install the role under
 `/usr/share/ansible/roles/wordpress_enterprise`; supply a supported Ansible
 controller and install `requirements.yml` separately. The archive can be
-installed with `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.0.tar.gz`.
+installed with `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`.
 Native packages contain role sources and documentation and run no deployment
 scripts during installation. CI installs, checks and removes both formats.
 
@@ -624,14 +624,25 @@ wordpress_mysql_thread_cache_size: 50
 wordpress_mysql_table_open_cache: 4000
 
 # Slow Query Logging
-wordpress_mysql_slow_query_log: true
-wordpress_mysql_slow_query_log_file: "/var/log/mysql/slow-query.log"
+wordpress_enable_logging: true
+# Keep the distribution-specific slow-query log path default.
 wordpress_mysql_long_query_time: 2
 
 # Database Maintenance
 wordpress_db_optimize_schedule: "weekly"
 wordpress_db_backup_before_optimize: true
 ```
+
+For a local database, the role creates the slow-query log directory with mode
+`0750` and its log file with mode `0640`, owned by `mysql`. It persists these
+settings across database restarts and configures rotation for this specific
+file. Keep custom paths within directories permitted by your distribution's
+AppArmor or SELinux policy. External databases retain their own logging policy.
+Custom log paths must name a regular file inside a dedicated directory. The
+role rejects root-level paths, traversal and symbolic links, and will not take
+ownership of an existing directory owned by another user.
+The private base log directory is created even when `wordpress_enable_logging`
+is false because PHP-FPM and Nginx still write their standard service logs.
 
 ## 🔒 Security
 
@@ -1028,7 +1039,7 @@ ansible wordpress_servers -m mysql_variables -a "variable=max_connections"
 
 ```yaml
 # Enable query monitoring
-wordpress_mysql_slow_query_log: true
+wordpress_enable_logging: true
 wordpress_mysql_long_query_time: 1
 
 # Enable performance profiling

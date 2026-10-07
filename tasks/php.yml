@@ -64,6 +64,16 @@
   when: ansible_facts.os_family == "RedHat"
   become: true
 
+- name: Create private WordPress log directory before configuring services
+  # PHP-FPM and Nginx use this base directory even when optional logging is off.
+  ansible.builtin.file:
+    path: "{{ wordpress_log_dir }}"
+    state: directory
+    owner: "{{ wordpress_php_fpm_user }}"
+    group: "{{ wordpress_php_fpm_group }}"
+    mode: '0750'
+  become: true
+
 - name: Configure PHP-FPM pool
   ansible.builtin.template:
     src: php-fpm-pool.conf.j2
@@ -285,7 +295,7 @@
     dest: "{{ wordpress_install_dir }}/phpinfo.php"
     owner: "{{ wordpress_system_user }}"
     group: "{{ wordpress_system_group }}"
-    mode: "0644"
+    mode: "0640"
   become: true
   when: wordpress_php_create_phpinfo | default(false)
 

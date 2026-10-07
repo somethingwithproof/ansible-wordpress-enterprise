@@ -119,7 +119,7 @@ def security_tasks(all_tasks) -> list[tuple[str, dict, tuple]]:
 
 
 def _normalise(target: str) -> str:
-    """Key a destination on its text, with folding and filters flattened.
+    """Key a destination on its text, preserving path-transforming filters.
 
     A bare {{ var }} collapses to the variable; anything richer keeps its whole
     expression so two different conditionals never compare equal.
@@ -128,12 +128,17 @@ def _normalise(target: str) -> str:
 
     def one(match: re.Match) -> str:
         inner = match.group(0)[2:-2].strip()
-        simple = re.fullmatch(r"([A-Za-z_][\w.]*)(\s*\|[^|]*)*", inner)
+        simple = re.fullmatch(r"([A-Za-z_][\w.]*)(\s*\|\s*default\([^|]*\))*", inner)
         if simple:
             return "{{%s}}" % simple.group(1)
         return "{{expr:%s}}" % inner
 
     return re.sub(r"\{\{.*?\}\}", one, collapsed)
+
+
+def test_parent_directory_is_not_the_file_destination() -> None:
+    assert _normalise("{{ log_file | dirname }}") != _normalise("{{ log_file }}")
+    assert _normalise("{{ log_file | default('/tmp/log') }}") == _normalise("{{ log_file }}")
 
 
 def _constraint(cond) -> tuple[str, str, str, str | None] | None:
@@ -391,7 +396,7 @@ def _wp_config_modes(all_tasks) -> set[str]:
                 register in str(loop) for register in safe_dynamic_file_lists
             )
             unresolved_destination = _normalise(body[destination])
-            static_prefix = unresolved_destination.split("{{item", 1)[0].rstrip("/")
+            static_prefix = re.split(r"\{\{(?:expr:)?item\b", unresolved_destination, maxsplit=1)[0].rstrip("/")
             item_is_sanitized_below_config = (
                 "| basename" in body[destination]
                 and static_prefix.startswith(f"{install_root}/")
