@@ -8,10 +8,14 @@ SPDX-License-Identifier: MIT
 ![WordPress Enterprise](docs/assets/banner.svg)
 
 Project releases use the complete SemVer version in `VERSION`, independently
-of `meta/main.yml`'s minimum Ansible version. A matching `v2.22.1` tag on main
-or the manual Release workflow validates the source version, runs the full CI
+of `meta/main.yml`'s minimum Ansible version. Push a matching `v2.22.1` tag on main
+to trigger Release, or run it manually from main after creating the matching tag.
+The workflow validates that the existing tag points to the checked source, runs the full CI
 suite (including both Molecule scenarios), and publishes a Galaxy-compatible
 role archive, Debian package, RPM, `release.json` and `SHA256SUMS`.
+Publishing uses that verified existing tag without overriding the release API's
+default target, so a later workflow update on main does not require broader
+workflow-write credentials. A missing or mismatched tag fails before testing.
 
 Verify downloads with `sha256sum --check SHA256SUMS`. Install native packages
 with `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` on Ubuntu
