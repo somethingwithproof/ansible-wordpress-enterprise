@@ -7,7 +7,7 @@
 # Additional dev tools
 black>=26.10.0
 flake8>=7.4.1
-pre-commit>=4.6.2
+pre-commit>=4.7.0
 tox>=4.64.10
 coverage>=7.16.2
 sphinx>=9.1.0
