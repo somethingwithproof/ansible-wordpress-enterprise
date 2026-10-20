@@ -4,14 +4,14 @@ version: 2
 updates:
   # Enable version updates for Python dependencies
   - package-ecosystem: "pip"
-    directory: "/"
+    directories:
+      - "/"
+      - "/packaging"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "04:00"
     open-pull-requests-limit: 10
-    reviewers:
-      - "thomasvincent"
     labels:
       - "dependencies"
       - "security"
@@ -41,8 +41,6 @@ updates:
       day: "monday"
       time: "04:00"
     open-pull-requests-limit: 10
-    reviewers:
-      - "thomasvincent"
     labels:
       - "dependencies"
       - "github-actions"
@@ -53,3 +51,56 @@ updates:
       github-actions:
         patterns:
           - "*"
+
+  # Docker. tests/dockerfiles pins the Ubuntu and Rocky Linux majors the role
+  # is tested against, so it is excluded.
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      docker-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "docker-compose"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      docker-compose-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "pre-commit"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    groups:
+      pre-commit-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
