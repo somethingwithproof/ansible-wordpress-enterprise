@@ -3,7 +3,7 @@
 # Development controller for supported Ubuntu and Rocky Linux targets.
 ARG BASE_IMAGE=ubuntu:24.04
 # Docker CLI 29.8.2, pinned by digest.
-FROM docker@sha256:b1805116a6a86cc591b5d5f60a910a0715cdcc9d18d866ad68b1457ead25c35c AS docker-cli
+FROM docker@sha256:3e5756e2b6dad6a5f1f5deacf0a19f9eaa2581b76ae092b2d4a118162e1d4d4e AS docker-cli
 FROM ${BASE_IMAGE}
 
 LABEL maintainer="Thomas Vincent <thomasvincent@users.noreply.github.com>"
