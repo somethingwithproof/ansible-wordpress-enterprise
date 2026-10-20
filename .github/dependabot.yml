@@ -51,6 +51,9 @@ updates:
       github-actions:
         patterns:
           - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
   # Docker. tests/dockerfiles pins the Ubuntu and Rocky Linux majors the role
   # is tested against, so it is excluded.
