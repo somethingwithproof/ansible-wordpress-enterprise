@@ -78,7 +78,7 @@ services:
 
   # MySQL database for development
   mysql:
-    image: mariadb:10.11
+    image: mariadb:13.0
     container_name: wordpress-mysql
     hostname: mysql
     environment:
@@ -99,7 +99,7 @@ services:
 
   # Redis cache for development
   redis:
-    image: redis:7-alpine
+    image: redis:8-alpine
     container_name: wordpress-redis
     hostname: redis
     command: redis-server --appendonly yes
