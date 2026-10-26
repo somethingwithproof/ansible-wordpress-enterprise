@@ -4,7 +4,7 @@
 services:
   # Test database services
   mysql-test:
-    image: mysql:9.6
+    image: mysql:26.10
     container_name: wp-test-mysql
     environment:
       MYSQL_ROOT_PASSWORD: test_root_pass_123
