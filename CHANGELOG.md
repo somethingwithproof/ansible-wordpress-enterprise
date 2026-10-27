@@ -5,12 +5,16 @@ SPDX-License-Identifier: MIT
 
 # Changelog
 
-## Unreleased
+## [Unreleased]
 
 - Add HTTP and HTTPS contracts for Ubuntu 26.04/PHP 8.5, Debian 13/PHP 8.4,
   and Rocky Linux 10/PHP 8.3 while retaining the existing two-platform baseline.
 - Select native PHP defaults and reject untested OS/PHP combinations before
   changing packages. Use native PHP packages on EL10 without Remi modules.
+- Keep ansible-core on the maintained 2.21 line and reject platforms outside
+  `meta/platform_support.yml`. Platform removals require the next major role
+  release. Existing deployments must plan their PHP migration; the role does
+  not remove older PHP-FPM installations automatically.
 
 ## 2.22.1 — 2026-10-06
 
@@ -37,36 +41,6 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## [Unreleased]
-
-### Changed
-
-- The role now fails closed before package changes unless the managed node is
-  Ubuntu 24.04 LTS or Enterprise Linux 9 (Red Hat, Rocky, or AlmaLinux). Debian,
-  CentOS, EL8, other Ubuntu releases, and unlisted distributions are no longer
-  accepted.
-- PHP 8.3 is now the only supported branch because it is available and tested
-  on every supported platform. PHP 7.4, 8.0, and 8.1 are rejected because
-  upstream security support ended; 8.2 and 8.4 are rejected because Ubuntu
-  24.04 cannot install them from its standard archive.
-- The default PHP branch changes from 8.2 to 8.3. Existing deployments must
-  plan this runtime migration; the role does not remove an older versioned
-  PHP-FPM installation automatically.
-- `ansible-core` is constrained to the maintained 2.21 release line. These
-  platform and runtime removals are breaking changes and require the next major
-  role release. `meta/platform_support.yml` is the authoritative lifecycle
-  policy.
-
-### Added
-- Comprehensive enterprise-grade WordPress deployment role
-- Multi-cloud provider support (AWS, GCP, Azure, DigitalOcean, Oracle Cloud)
-- Cloudflare integration for CDN and security
-- High availability configurations
-- Advanced security features
-- Performance optimization
-- Monitoring and logging
-- Backup and disaster recovery
 
 ## [1.0.0] - 2025-01-24
 
