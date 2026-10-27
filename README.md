@@ -15,9 +15,9 @@ An Ansible role for configuring WordPress hosts with PHP, a web server, and a lo
 
 ## Supported deployment contract
 
-[meta/platform_support.yml](meta/platform_support.yml) is the support-policy authority. The stable Molecule matrix covers Ubuntu 24.04 with Nginx and Rocky Linux 9 with Apache, both using PHP 8.3. Compatibility examples do not expand that matrix.
+[meta/platform_support.yml](meta/platform_support.yml) is the support-policy authority. The stable Molecule matrix covers Ubuntu 24.04/PHP 8.3 and Ubuntu 26.04/PHP 8.5 with Nginx, Debian 13/PHP 8.4 with Nginx, and Rocky Linux 9 and 10/PHP 8.3 with Apache. Every path is exercised over HTTP and HTTPS. These are the tested OS/PHP pairs; inventory overrides to untested pairs fail before package changes. EL aliases share the policy, but runtime evidence comes from Rocky Linux containers.
 
-The policy currently requires ansible-core 2.21.4 or newer in the 2.21 line (Ansible package 14.4.0 or newer in the 14 line), with maintained controller Python 3.12–3.14. Managed-node interpreter requirements are separate. Consult the policy before selecting versions; older platforms and merely upstream-supported PHP versions are not automatically adopted.
+The policy currently requires ansible-core 2.21.5 or newer in the 2.21 line (Ansible package 14.5.0 or newer in the 14 line), with maintained controller Python 3.12–3.14. Managed-node interpreter requirements are separate. Consult the policy before selecting versions; older platforms and merely upstream-supported PHP versions are not automatically adopted.
 
 ## Feature maturity
 
@@ -41,7 +41,6 @@ Run the collection command from this checkout. Review [defaults/main.yml](defaul
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_php_version: "8.3"
     wordpress_site_url: "https://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
@@ -69,7 +68,7 @@ Project releases use the complete SemVer version in `VERSION`, independently
 of `meta/main.yml`'s minimum Ansible version. Push a matching `v2.22.1` tag on main
 to trigger Release, or run it manually from main after creating the matching tag.
 The workflow validates that the existing tag points to the checked source, runs the full CI
-suite (including both Molecule scenarios), and publishes a Galaxy-compatible
+suite (including all four Molecule scenarios), and publishes a Galaxy-compatible
 role archive, Debian package, RPM, `release.json` and `SHA256SUMS`.
 Publishing uses that verified existing tag without overriding the release API's
 default target, so a later workflow update on main does not require broader

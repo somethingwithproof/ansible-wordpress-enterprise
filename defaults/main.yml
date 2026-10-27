@@ -59,7 +59,13 @@ wordpress_https_port: 443
 wordpress_server_name: "{{ ansible_facts.fqdn }}"
 
 # PHP-FPM Configuration
-wordpress_php_version: "8.3"  # Supported branches are governed by meta/platform_support.yml
+# Use the native, tested PHP branch unless inventory selects one explicitly.
+wordpress_php_version: >-
+  {{ '8.5' if ansible_facts.get('distribution') == 'Ubuntu'
+     and ansible_facts.get('distribution_version', '').startswith('26.04')
+     else '8.4' if ansible_facts.get('distribution') == 'Debian'
+     and ansible_facts.get('distribution_major_version') == '13'
+     else '8.3' }}
 wordpress_php_fpm_listen: "/run/php/php{{ wordpress_php_version }}-fpm.sock"
 wordpress_php_fpm_user: "www-data"
 wordpress_php_fpm_group: "www-data"

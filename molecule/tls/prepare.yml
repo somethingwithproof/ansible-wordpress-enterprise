@@ -20,7 +20,13 @@
         path: /etc/ssl/private
         state: directory
         mode: '0700'
-      when: inventory_hostname == 'rocky-9-apache-tls'
+      when: wordpress_web_server == 'apache'
+
+    - name: Install OpenSSL for the supplied-certificate test fixture
+      ansible.builtin.package:
+        name: openssl
+        state: present
+      when: wordpress_web_server == 'apache'
 
     - name: Generate the supplied-certificate fixture
       ansible.builtin.command:
@@ -42,5 +48,5 @@
           - -out
           - /etc/ssl/certs/tls.example.test.crt
         creates: /etc/ssl/certs/tls.example.test.crt
-      when: inventory_hostname == 'rocky-9-apache-tls'
+      when: wordpress_web_server == 'apache'
       no_log: true
