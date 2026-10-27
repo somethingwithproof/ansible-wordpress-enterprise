@@ -41,7 +41,6 @@ Run the collection command from this checkout. Review [defaults/main.yml](defaul
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_php_version: "8.3"
     wordpress_site_url: "https://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
