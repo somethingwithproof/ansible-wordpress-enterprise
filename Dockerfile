@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 # Development controller for supported Ubuntu and Rocky Linux targets.
 ARG BASE_IMAGE=ubuntu:24.04
-# Docker CLI 29.8.2, pinned by digest.
+# Docker CLI 29.9.2, pinned by digest.
 FROM docker@sha256:9e79b879b177fbd72c34376a3dd3d91747da5db49e1f560f76aea59561471977 AS docker-cli
 FROM ${BASE_IMAGE}
 
