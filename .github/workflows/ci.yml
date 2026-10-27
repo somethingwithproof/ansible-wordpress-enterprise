@@ -47,6 +47,7 @@ jobs:
         run: |
           mkdir -p .ansible/roles
           ln -s "$GITHUB_WORKSPACE" .ansible/roles/ansible-wordpress-enterprise
+          ln -s "$GITHUB_WORKSPACE" .ansible/roles/thomasvincent.wordpress_enterprise
 
       - name: Run ansible-lint
         run: ansible-lint
@@ -62,7 +63,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        scenario: [default, tls]
+        scenario: [default, tls, lts, lts-tls]
     runs-on: ubuntu-24.04
     timeout-minutes: 45  # Full multi-platform converge and idempotence takes over 20 minutes
     needs: lint

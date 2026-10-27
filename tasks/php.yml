@@ -5,14 +5,18 @@
   ansible.builtin.rpm_key:
     key: https://rpms.remirepo.net/RPM-GPG-KEY-remi2021
     state: present
-  when: ansible_facts.os_family == "RedHat"
+  when:
+    - ansible_facts.os_family == "RedHat"
+    - ansible_facts.distribution_major_version | int < 10
   become: true
 
 - name: Install the Remi PHP repository for Enterprise Linux
   ansible.builtin.dnf:
     name: "{{ wordpress_remi_repo_url }}"
     state: present
-  when: ansible_facts.os_family == "RedHat"
+  when:
+    - ansible_facts.os_family == "RedHat"
+    - ansible_facts.distribution_major_version | int < 10
   become: true
 
 - name: Enable the requested Remi PHP stream
@@ -20,7 +24,9 @@
     cmd: "dnf module enable php:remi-{{ wordpress_php_version }} -y"
   register: wordpress_php_stream
   changed_when: "'Nothing to do' not in wordpress_php_stream.stdout"
-  when: ansible_facts.os_family == "RedHat"
+  when:
+    - ansible_facts.os_family == "RedHat"
+    - ansible_facts.distribution_major_version | int < 10
   become: true
 
 - name: Install PHP packages for Debian/Ubuntu
