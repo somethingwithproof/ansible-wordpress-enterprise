@@ -200,6 +200,7 @@ def test_platform_gate_runs_before_distribution_vars_are_loaded() -> None:
         "Require distribution facts for the release gate",
         "Reject operating systems outside the tested current/LTS contract",
         "Reject unsupported PHP release branches",
+        "Reject PHP branches unavailable on the tested operating system",
     ]
 
 
@@ -246,8 +247,8 @@ def test_platform_gate_runs_before_distribution_vars_are_loaded() -> None:
         (
             {
                 "distribution": "Rocky",
-                "distribution_version": "10.1",
-                "distribution_major_version": "10",
+                "distribution_version": "11.1",
+                "distribution_major_version": "11",
             },
             False,
             "Reject operating systems outside the tested current/LTS contract",
@@ -396,6 +397,14 @@ def test_ansible_executes_the_fail_closed_platform_gate(
             "Reject unsupported PHP release branches",
             False,
         ),
+    ] + [
+        ({"distribution": distribution, "distribution_version": release,
+          "distribution_major_version": release.split(".")[0]},
+         php, ["--tags", "php"],
+         "Reject PHP branches unavailable on the tested operating system", False)
+        for distribution, release, php in [
+            ("Ubuntu", "24.04", "8.5"), ("Ubuntu", "26.04", "8.3"),
+            ("Debian", "13", "8.3"), ("Rocky", "10", "8.5")]
     ],
 )
 def test_role_entrypoint_enforces_the_release_gate(
@@ -483,6 +492,8 @@ def test_role_entrypoint_enforces_the_release_gate(
         failure_fragment = (
             "Unsupported operating system"
             if expected_task.startswith("Reject operating systems")
+            else "not a tested package branch"
+            if expected_task == "Reject PHP branches unavailable on the tested operating system"
             else "end-of-life, or unverified PHP version"
         )
         assert failure_fragment in output
@@ -507,14 +518,17 @@ def test_breaking_release_removals_are_documented() -> None:
     marker = "## [Unreleased]"
     assert marker in changelog
     remainder = changelog.split(marker, 1)[1]
-    next_release = re.search(r"\n## \[", remainder)
+    next_release = re.search(r"\n## ", remainder)
     assert next_release, "the changelog has no release heading after Unreleased"
-    unreleased = remainder[: next_release.start()]
+    unreleased = " ".join(remainder[: next_release.start()].split())
     for text in (
         "Ubuntu 24.04 LTS",
         "Enterprise Linux 9",
         "PHP 7.4, 8.0, and 8.1",
-        "default PHP branch changes from 8.2 to 8.3",
+        "native PHP default",
+        "Ubuntu 26.04/PHP 8.5",
+        "Debian 13/PHP 8.4",
+        "Rocky Linux 10/PHP 8.3",
         "breaking changes",
     ):
         assert text in unreleased
@@ -546,10 +560,35 @@ def test_php_gate_consumes_the_release_policy() -> None:
         assert obsolete not in preflight
 
 
-def test_default_php_branch_is_supported(php_versions: list[dict]) -> None:
-    default = _load(ROOT / "defaults" / "main.yml")["wordpress_php_version"]
-    allowed = {item["version"] for item in php_versions if item["supported"]}
-    assert default in allowed
+@pytest.mark.parametrize(
+    ("distribution", "release", "expected"),
+    [("Ubuntu", "24.04", "8.3"), ("Ubuntu", "26.04", "8.5"),
+     ("Debian", "13", "8.4"), ("Rocky", "9", "8.3"), ("Rocky", "10", "8.3")],
+)
+def test_default_php_branch_matches_native_packages(
+    tmp_path: pathlib.Path, distribution: str, release: str, expected: str,
+    php_versions: list[dict],
+) -> None:
+    assert expected in {item["version"] for item in php_versions if item["supported"]}
+    play = tmp_path / "native-php.yml"
+    play.write_text(yaml.safe_dump([{
+        "name": "Resolve the role's actual default PHP branch",
+        "hosts": "localhost", "connection": "local", "gather_facts": False,
+        "vars_files": [str(ROOT / "defaults" / "main.yml")],
+        "tasks": [{"name": "Require the distribution's native PHP default",
+                   "ansible.builtin.assert": {"that": "wordpress_php_version == expected_php"}}],
+    }]))
+    environment = {key: value for key, value in os.environ.items()
+                   if not key.startswith("ANSIBLE_")}
+    environment["ANSIBLE_LOCAL_TEMP"] = str(tmp_path / "ansible-tmp")
+    result = subprocess.run(
+        [sys.executable, "-m", "ansible.cli.playbook", str(play), "-i", "localhost,",
+         "--extra-vars", json.dumps({"ansible_facts": {
+             "distribution": distribution, "distribution_version": release,
+             "distribution_major_version": release.split(".")[0]}, "expected_php": expected})],
+        cwd=ROOT, env=environment, capture_output=True, text=True, timeout=60,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
 
 
 def test_repository_examples_use_only_supported_php_branches(
