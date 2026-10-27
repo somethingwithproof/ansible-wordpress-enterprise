@@ -520,7 +520,7 @@ def test_breaking_release_removals_are_documented() -> None:
     remainder = changelog.split(marker, 1)[1]
     next_release = re.search(r"\n## ", remainder)
     assert next_release, "the changelog has no release heading after Unreleased"
-    unreleased = remainder[: next_release.start()]
+    unreleased = " ".join(remainder[: next_release.start()].split())
     for text in (
         "Ubuntu 24.04 LTS",
         "Enterprise Linux 9",
