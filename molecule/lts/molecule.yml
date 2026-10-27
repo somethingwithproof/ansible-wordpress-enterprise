@@ -1,0 +1,109 @@
+# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-License-Identifier: MIT
+---
+driver:
+  name: docker
+
+# Stable v1 matrix. Compatibility targets are added only after they pass the
+# same converge -> idempotence -> verify contract.
+platforms:
+  - name: ubuntu-26-nginx
+    image: geerlingguy/docker-ubuntu2604-ansible@sha256:7ff4660dab4c9b05b7f41b419937331c864500a585eabca681ff059d2830817a
+    command: /sbin/init
+    pre_build_image: true
+    privileged: true
+    cgroupns_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+
+  - name: debian-13-nginx
+    image: geerlingguy/docker-debian13-ansible@sha256:e4e3930c39819d81ac4977a1ec39439d7681ab2da23541ca35ee4b17793a4e34
+    command: /sbin/init
+    pre_build_image: true
+    privileged: true
+    cgroupns_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+
+  - name: rocky-10-apache
+    image: geerlingguy/docker-rockylinux10-ansible@sha256:2505865c4aa2f4dd5bd8437a74b6dc258d4e766b8836c88de9b71c38582abee3
+    command: /sbin/init
+    pre_build_image: true
+    privileged: true
+    cgroupns_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      interpreter_python: auto_silent
+      callback_whitelist: profile_tasks, timer, yaml
+      roles_path: ${MOLECULE_PROJECT_DIRECTORY}/../
+  inventory:
+    group_vars:
+      all:
+        wordpress_server_name: test.example.com
+        wordpress_site_url: http://test.example.com
+        wordpress_site_title: Test WordPress Site
+        wordpress_admin_user: admin
+        wordpress_admin_email: admin@example.com
+        wordpress_admin_password: TestPass123!  # pragma: allowlist secret
+        wordpress_db_engine: mariadb
+        wordpress_db_name: wordpress_test
+        wordpress_db_user: wp_user
+        wordpress_db_password: DbPass123!  # pragma: allowlist secret
+        wordpress_db_root_password: RootPass123!  # pragma: allowlist secret
+        wordpress_db_host: localhost
+        wordpress_use_external_db: false
+        wordpress_enable_ssl: false
+        wordpress_use_letsencrypt: false
+        wordpress_enable_fail2ban: false
+        wordpress_configure_firewall: false
+        wordpress_enable_backups: false
+        wordpress_enable_monitoring: false
+        wordpress_enable_security: false
+        wordpress_enable_caching: false
+        wordpress_enable_logging: true
+        wordpress_enable_redis: false
+        wordpress_enable_memcached: false
+        wordpress_enable_object_cache: false
+        wordpress_plugins: []
+        wordpress_themes: []
+        wordpress_install_dir: /var/www/wordpress
+    host_vars:
+      ubuntu-26-nginx:
+        ansible_python_interpreter: /usr/bin/python3
+        wordpress_php_version: "8.5"
+        wordpress_web_server: nginx
+      debian-13-nginx:
+        ansible_python_interpreter: /usr/bin/python3
+        wordpress_php_version: "8.4"
+        wordpress_web_server: nginx
+      rocky-10-apache:
+        ansible_python_interpreter: /usr/bin/python3
+        wordpress_php_version: "8.3"
+        wordpress_web_server: apache
+  playbooks:
+    prepare: ../default/prepare.yml
+    converge: ../default/converge.yml
+    verify: ../default/verify.yml
+  lint:
+    name: ansible-lint
+    enabled: false
+
+verifier:
+  name: ansible
+
+scenario:
+  name: lts
+  test_sequence:
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - destroy
