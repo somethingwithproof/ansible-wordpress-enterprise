@@ -8,11 +8,14 @@ SPDX-License-Identifier: MIT
 ## [Unreleased]
 
 - Add HTTP and HTTPS contracts for Ubuntu 26.04/PHP 8.5, Debian 13/PHP 8.4,
-  and Rocky Linux 10/PHP 8.3 while retaining the existing two-platform baseline.
+  and Rocky Linux 10/PHP 8.3 while retaining Ubuntu 24.04 LTS and Enterprise
+  Linux 9 with PHP 8.3.
 - Select native PHP defaults and reject untested OS/PHP combinations before
   changing packages. Use native PHP packages on EL10 without Remi modules.
+- PHP 7.4, 8.0, and 8.1 remain rejected after their upstream security support
+  ended. The native PHP default now follows the tested operating-system pair.
 - Keep ansible-core on the maintained 2.21 line and reject platforms outside
-  `meta/platform_support.yml`. Platform removals require the next major role
+  `meta/platform_support.yml`. These are breaking changes and require the next major role
   release. Existing deployments must plan their PHP migration; the role does
   not remove older PHP-FPM installations automatically.
 

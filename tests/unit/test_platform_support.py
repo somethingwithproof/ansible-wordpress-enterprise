@@ -518,14 +518,17 @@ def test_breaking_release_removals_are_documented() -> None:
     marker = "## [Unreleased]"
     assert marker in changelog
     remainder = changelog.split(marker, 1)[1]
-    next_release = re.search(r"\n## \[", remainder)
+    next_release = re.search(r"\n## ", remainder)
     assert next_release, "the changelog has no release heading after Unreleased"
     unreleased = remainder[: next_release.start()]
     for text in (
         "Ubuntu 24.04 LTS",
         "Enterprise Linux 9",
         "PHP 7.4, 8.0, and 8.1",
-        "default PHP branch changes from 8.2 to 8.3",
+        "native PHP default",
+        "Ubuntu 26.04/PHP 8.5",
+        "Debian 13/PHP 8.4",
+        "Rocky Linux 10/PHP 8.3",
         "breaking changes",
     ):
         assert text in unreleased
