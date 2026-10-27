@@ -55,3 +55,23 @@
       {{ wordpress_php_version | default('undefined') }}. Choose a supported
       branch from meta/platform_support.yml.
     quiet: true
+
+- name: Reject PHP branches unavailable on the tested operating system
+  ansible.builtin.assert:
+    that:
+      - >-
+        wordpress_php_version in
+        ((lookup('ansible.builtin.file', role_path ~ '/meta/platform_support.yml')
+          | from_yaml).distributions
+         | selectattr('supported', 'equalto', true)
+         | selectattr('runtime_distributions', 'contains', ansible_facts.distribution)
+         | selectattr('runtime_release', 'equalto',
+             ansible_facts.distribution_version.split('.')[0:2] | join('.')
+             if ansible_facts.distribution == 'Ubuntu'
+             else ansible_facts.distribution_major_version)
+         | map(attribute='php_branches') | flatten)
+    fail_msg: >-
+      PHP {{ wordpress_php_version }} is not a tested package branch on
+      {{ ansible_facts.distribution }} {{ ansible_facts.distribution_version }}.
+      Use the native default or choose a pair from meta/platform_support.yml.
+    quiet: true
