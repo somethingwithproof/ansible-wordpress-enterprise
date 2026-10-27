@@ -9,16 +9,20 @@ This role uses Molecule with Docker for its stable release contract.
 
 ## Stable matrix
 
-The single `default` scenario provisions both supported paths from pinned
-images:
+The `default` and `tls` scenarios cover the established baseline. The `lts`
+and `lts-tls` scenarios cover the new releases. All images are pinned:
 
 | Host | Stack |
 | --- | --- |
 | `ubuntu-24-nginx` | Ubuntu 24.04, PHP 8.3, Nginx |
 | `rocky-9-apache` | Rocky Linux 9, PHP 8.3, Apache |
+| `ubuntu-26-nginx` | Ubuntu 26.04, PHP 8.5, Nginx |
+| `debian-13-nginx` | Debian 13, PHP 8.4, Nginx |
+| `rocky-10-apache` | Rocky Linux 10, PHP 8.3, Apache |
 
-Ubuntu 22.04 and Debian 13 are compatibility targets. Add either to the stable
-matrix only after it passes the same end-to-end contract without exceptions.
+TLS scenario hostnames add `-tls`. Ubuntu 22.04 remains outside the tested
+WordPress matrix. Defaults select each tested native PHP branch; the policy
+rejects other OS/PHP combinations before loading platform variables.
 
 ## Prerequisites
 
@@ -40,13 +44,16 @@ Run the complete lifecycle:
 
 ```bash
 mise exec python@3.12 -- molecule test --scenario-name default
+mise exec python@3.12 -- molecule test --scenario-name tls
+mise exec python@3.12 -- molecule test --scenario-name lts
+mise exec python@3.12 -- molecule test --scenario-name lts-tls
 ```
 
 The sequence destroys stale containers, performs syntax validation, creates and
-prepares both hosts, converges the role, proves a second convergence reports
+prepares the scenario hosts, converges the role, proves a second convergence reports
 zero changes, runs the verifier, and destroys the containers.
 
-The verifier fails closed unless both hosts pass all of these checks:
+The verifier fails closed unless all hosts pass all of these checks:
 
 - expected web server, PHP-FPM, and database services are active;
 - Apache or Nginx configuration syntax is valid;
@@ -82,7 +89,7 @@ mise exec python@3.12 -- pytest -q tests/unit
 actionlint .github/workflows/ci.yml .github/workflows/security-tests.yml
 ```
 
-Core CI uses GitHub-hosted Ubuntu 24.04 for lint, unit tests, both Molecule
+Core CI uses GitHub-hosted Ubuntu 24.04 for lint, unit tests, all four Molecule
 scenarios and native package checks. Each job gets an isolated runner with
 Docker, so pull requests and releases do not depend on the shared ephemeral
 self-hosted queue or compete for identically named containers. The scheduled

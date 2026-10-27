@@ -16,9 +16,14 @@ galaxy_info:
     - name: EL
       versions:
         - "9"
+        - "10"
     - name: Ubuntu
       versions:
         - noble
+        - resolute
+    - name: Debian
+      versions:
+        - trixie
 
   galaxy_tags:
     - wordpress

@@ -29,12 +29,18 @@
 runtime_platforms:
   Ubuntu:
     - "24.04"
+    - "26.04"
+  Debian:
+    - "13"
   RedHat:
     - "9"
+    - "10"
   Rocky:
     - "9"
+    - "10"
   AlmaLinux:
     - "9"
+    - "10"
 
 ansible_core:
   release_line: "2.21"
@@ -61,12 +67,17 @@ distributions:
     release_channel: lts
     runtime_distributions: [RedHat, Rocky, AlmaLinux]
     runtime_release: "9"
+    php_branches: ["8.3"]
 
   - meta_name: EL
     meta_version: "10"
     image: geerlingguy/docker-rockylinux10-ansible
     full_support_ends: "2030-05-31"
-    supported: false  # not yet adopted; no verified run
+    supported: true
+    release_channel: lts
+    runtime_distributions: [RedHat, Rocky, AlmaLinux]
+    runtime_release: "10"
+    php_branches: ["8.3"]
 
   - meta_name: Ubuntu
     meta_version: focal
@@ -88,12 +99,17 @@ distributions:
     release_channel: lts
     runtime_distributions: [Ubuntu]
     runtime_release: "24.04"
+    php_branches: ["8.3"]
 
   - meta_name: Ubuntu
     meta_version: resolute
     image: geerlingguy/docker-ubuntu2604-ansible
     full_support_ends: "2031-04-30"
-    supported: false  # not yet adopted; no verified run
+    supported: true
+    release_channel: lts
+    runtime_distributions: [Ubuntu]
+    runtime_release: "26.04"
+    php_branches: ["8.5"]
 
   - meta_name: Debian
     meta_version: bullseye
@@ -111,7 +127,11 @@ distributions:
     meta_version: trixie
     image: geerlingguy/docker-debian13-ansible
     full_support_ends: "2028-08-09"
-    supported: false  # compatibility target; not in the stable v1 matrix
+    supported: true
+    release_channel: current
+    runtime_distributions: [Debian]
+    runtime_release: "13"
+    php_branches: ["8.4"]
 
 # PHP has no LTS designation. A branch is eligible only while php.net still
 # supplies security fixes and the role's package sources can provide it. The
@@ -126,7 +146,7 @@ php_versions:
     supported: true
   - version: "8.4"
     security_support_ends: "2028-12-31"
-    supported: false  # upstream-supported, but not installable from Ubuntu 24.04 archives
+    supported: true
   - version: "8.5"
     security_support_ends: "2029-12-31"
-    supported: false  # current upstream, but not yet proved by Molecule
+    supported: true

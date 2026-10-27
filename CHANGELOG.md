@@ -5,6 +5,13 @@ SPDX-License-Identifier: MIT
 
 # Changelog
 
+## Unreleased
+
+- Add HTTP and HTTPS contracts for Ubuntu 26.04/PHP 8.5, Debian 13/PHP 8.4,
+  and Rocky Linux 10/PHP 8.3 while retaining the existing two-platform baseline.
+- Select native PHP defaults and reject untested OS/PHP combinations before
+  changing packages. Use native PHP packages on EL10 without Remi modules.
+
 ## 2.22.1 — 2026-10-06
 
 - Add complete SPDX headers, REUSE annotations and CI license-coverage checks.
