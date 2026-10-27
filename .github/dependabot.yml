@@ -7,6 +7,10 @@ updates:
     directories:
       - "/"
       - "/packaging"
+    # Paths are relative to each directory: skip the nested packaging copy
+    # in the root scan while retaining the dedicated /packaging scan.
+    exclude-paths:
+      - "packaging/**"
     schedule:
       interval: "weekly"
       day: "monday"
