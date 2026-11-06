@@ -4,6 +4,8 @@ version: 2
 updates:
   # Enable version updates for Python dependencies
   - package-ecosystem: "pip"
+    cooldown:
+      default-days: 7
     directories:
       - "/"
       - "/packaging"
@@ -39,6 +41,8 @@ updates:
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
+    cooldown:
+      default-days: 7
     directory: "/"
     schedule:
       interval: "weekly"
@@ -62,6 +66,8 @@ updates:
   # Docker. tests/dockerfiles pins the Ubuntu and Rocky Linux majors the role
   # is tested against, so it is excluded.
   - package-ecosystem: "docker"
+    cooldown:
+      default-days: 7
     directory: "/"
     schedule:
       interval: "weekly"
@@ -79,6 +85,8 @@ updates:
           - "patch"
 
   - package-ecosystem: "docker-compose"
+    cooldown:
+      default-days: 7
     directory: "/"
     schedule:
       interval: "weekly"
@@ -96,6 +104,8 @@ updates:
           - "patch"
 
   - package-ecosystem: "pre-commit"
+    cooldown:
+      default-days: 7
     directory: "/"
     schedule:
       interval: "weekly"
