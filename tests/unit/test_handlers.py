@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-FileCopyrightText: 2025 Thomas Vincent <thomasvincent@gmail.com>
 # SPDX-License-Identifier: MIT
 """Every notify names a handler that exists.
 

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-FileCopyrightText: 2025 Thomas Vincent <thomasvincent@gmail.com>
 # SPDX-License-Identifier: MIT
 """Certificate preflight and ACME recovery use actual Ansible execution."""
 from __future__ import annotations

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2025 Thomas Vincent
+# SPDX-FileCopyrightText: 2025 Thomas Vincent <thomasvincent@gmail.com>
 # SPDX-License-Identifier: MIT
 # Development controller for supported Ubuntu and Rocky Linux targets.
 ARG BASE_IMAGE=ubuntu:24.04
