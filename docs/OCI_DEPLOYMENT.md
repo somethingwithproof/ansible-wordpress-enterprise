@@ -71,7 +71,7 @@ This guide provides comprehensive instructions for deploying WordPress on Oracle
 - API signing key pair generated
 
 ### Local Requirements
-- ansible-core 2.21 (use the hashed requirements.lock)
+- ansible-core 2.21 on Python 3.12, or 2.22 on Python 3.13 and 3.14 (install the hashed requirements.lock)
 - Python 3.12 or higher (maintained releases only)
 - OCI CLI configured (optional but recommended)
 - OCI Python SDK (for advanced features)

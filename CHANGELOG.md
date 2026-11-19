@@ -14,7 +14,9 @@ SPDX-License-Identifier: MIT
   changing packages. Use native PHP packages on EL10 without Remi modules.
 - PHP 7.4, 8.0, and 8.1 remain rejected after their upstream security support
   ended. The native PHP default now follows the tested operating-system pair.
-- Keep ansible-core on the maintained 2.21 line and reject platforms outside
+- Use Ansible 15 and ansible-core 2.22 on Python 3.13 and 3.14 controllers.
+  Python 3.12 controllers continue to use Ansible 14 and ansible-core 2.21.
+- Reject platforms outside
   `meta/platform_support.yml`. These are breaking changes and require the next major role
   release. Existing deployments must plan their PHP migration; the role does
   not remove older PHP-FPM installations automatically.

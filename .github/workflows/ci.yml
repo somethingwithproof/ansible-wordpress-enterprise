@@ -23,7 +23,10 @@ permissions:
 
 jobs:
   lint:
-    name: Lint
+    name: Lint (Python ${{ matrix.python }})
+    strategy:
+      matrix:
+        python: ['3.12', '3.13']
     runs-on: ubuntu-24.04
     timeout-minutes: 15  # Prevent hung jobs
     steps:
@@ -35,7 +38,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
-          python-version: '3.12'
+          python-version: ${{ matrix.python }}
           cache: 'pip'
 
       - name: Install dependencies
@@ -61,11 +64,12 @@ jobs:
         run: pytest tests/unit -q
 
   molecule-test:
-    name: Molecule Test (${{ matrix.scenario }})
+    name: Molecule Test (${{ matrix.scenario }}, Python ${{ matrix.python }})
     strategy:
       fail-fast: false
       matrix:
         scenario: [default, tls, lts, lts-tls]
+        python: ['3.12', '3.13']
     runs-on: ubuntu-24.04
     timeout-minutes: 45  # Full multi-platform converge and idempotence takes over 20 minutes
     needs: lint
@@ -78,7 +82,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
-          python-version: '3.12'
+          python-version: ${{ matrix.python }}
 
       - name: Install Molecule and dependencies
         run: |

@@ -22,6 +22,8 @@ import warnings
 
 import pytest
 import yaml
+from packaging.requirements import Requirement
+from packaging.version import Version
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 POLICY = ROOT / "meta" / "platform_support.yml"
@@ -86,8 +88,7 @@ def test_release_policy_has_the_required_shape() -> None:
     assert isinstance(policy.get("runtime_platforms"), dict)
     assert isinstance(policy.get("distributions"), list)
     assert isinstance(policy.get("php_versions"), list)
-    assert isinstance(policy.get("ansible_core"), dict)
-    assert isinstance(policy.get("ansible_package"), dict)
+    assert policy["ansible_controllers"]
     for name, releases in policy["runtime_platforms"].items():
         assert isinstance(name, str)
         assert isinstance(releases, list)
@@ -636,31 +637,28 @@ def test_meta_declares_exactly_the_supported_releases(supported: list[dict]) -> 
     assert declared == expected
 
 
-def test_meta_declares_the_documented_ansible_floor() -> None:
-    requirements = (ROOT / "requirements.txt").read_text()
-    match = re.search(r"^ansible-core>=(\d+\.\d+)", requirements, re.MULTILINE)
-    assert match, "requirements.txt does not declare an ansible-core lower bound"
-    assert _load(META)["galaxy_info"]["min_ansible_version"] == match.group(1)
+def test_meta_declares_the_oldest_supported_core_line() -> None:
+    cores = [entry["ansible-core"] for entry in _load(POLICY)["ansible_controllers"]]
+    floors = [Version(bound.version) for core in cores
+              for bound in Requirement(f"ansible-core{core}").specifier if bound.operator == ">="]
+    floor = min(floors)
+    assert _load(META)["galaxy_info"]["min_ansible_version"] == f"{floor.major}.{floor.minor}"
 
 
-def test_ansible_core_is_bounded_to_the_current_release_line() -> None:
-    requirements = (ROOT / "requirements.txt").read_text()
-    core = _load(POLICY)["ansible_core"]
-    expected = f"ansible-core>={core['minimum_version']},<{core['next_release']}"
-    assert expected in requirements.splitlines()
-    assert core["minimum_version"].startswith(f"{core['release_line']}.")
-    major, minor = (int(part) for part in core["release_line"].split("."))
-    assert core["next_release"] == f"{major}.{minor + 1}.0"
-
-
-def test_ansible_package_is_bounded_to_the_current_release_line() -> None:
-    requirements = (ROOT / "requirements.txt").read_text()
-    package = _load(POLICY)["ansible_package"]
-    expected = f"ansible>={package['minimum_version']},<{package['next_release']}"
-    assert expected in requirements.splitlines()
-    major = int(package["release_line"])
-    assert package["minimum_version"].startswith(f"{major}.")
-    assert package["next_release"] == f"{major + 1}.0.0"
+@pytest.mark.parametrize("package", ["ansible", "ansible-core"])
+def test_controller_requirements_match_the_release_policy(package: str) -> None:
+    declared = {Requirement(line) for line in (ROOT / "requirements.txt").read_text().splitlines()
+                if line.startswith(f"{package}>=")}
+    expected = set()
+    for entry in _load(POLICY)["ansible_controllers"]:
+        req = Requirement(f"{package}{entry[package]}; {entry['python_marker']}")
+        bounds = {spec.operator: Version(spec.version) for spec in req.specifier}
+        floor = bounds[">="]
+        next_line = (f"{floor.major + 1}.0.0" if package == "ansible"
+                     else f"{floor.major}.{floor.minor + 1}.0")
+        assert bounds == {">=": floor, "<": Version(next_line)}
+        expected.add(req)
+    assert declared == expected
 
 
 def test_molecule_runs_only_supported_images(

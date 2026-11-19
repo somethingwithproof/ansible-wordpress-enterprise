@@ -46,7 +46,7 @@ This project follows the [Ansible Community Code of Conduct](https://docs.ansibl
 
 - Maintained Python 3.12–3.14
 - Docker and Docker Compose
-- ansible-core 2.21
+- ansible-core 2.21 on Python 3.12, or 2.22 on Python 3.13 and 3.14
 - Make (optional, for using Makefile commands)
 
 ### Quick Setup
