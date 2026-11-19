@@ -42,15 +42,13 @@ runtime_platforms:
     - "9"
     - "10"
 
-ansible_core:
-  release_line: "2.21"
-  minimum_version: "2.21.6"
-  next_release: "2.22.0"
-
-ansible_package:
-  release_line: "14"
-  minimum_version: "14.6.0"
-  next_release: "15.0.0"
+ansible_controllers:
+  - python_marker: 'python_version < "3.13"'
+    ansible: ">=14.6.0,<15.0.0"
+    ansible-core: ">=2.21.6,<2.22.0"
+  - python_marker: 'python_version >= "3.13"'
+    ansible: ">=15.0.0,<16.0.0"
+    ansible-core: ">=2.22.0,<2.23.0"
 
 distributions:
   - meta_name: EL

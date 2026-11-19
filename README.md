@@ -17,7 +17,7 @@ An Ansible role for configuring WordPress hosts with PHP, a web server, and a lo
 
 [meta/platform_support.yml](meta/platform_support.yml) is the support-policy authority. The stable Molecule matrix covers Ubuntu 24.04/PHP 8.3 and Ubuntu 26.04/PHP 8.5 with Nginx, Debian 13/PHP 8.4 with Nginx, and Rocky Linux 9 and 10/PHP 8.3 with Apache. Every path is exercised over HTTP and HTTPS. These are the tested OS/PHP pairs; inventory overrides to untested pairs fail before package changes. EL aliases share the policy, but runtime evidence comes from Rocky Linux containers.
 
-The policy currently requires ansible-core 2.21.5 or newer in the 2.21 line (Ansible package 14.5.0 or newer in the 14 line), with maintained controller Python 3.12–3.14. Managed-node interpreter requirements are separate. Consult the policy before selecting versions; older platforms and merely upstream-supported PHP versions are not automatically adopted.
+Python 3.12 controllers use Ansible 14.6 or later in the 14.x line with ansible-core 2.21.6 or later in the 2.21 line. Python 3.13 and 3.14 controllers use Ansible 15.x with ansible-core 2.22.x. The hashed requirements lock selects the pair for the controller interpreter. Managed-node interpreter requirements are separate. Consult the policy before selecting versions; older platforms and merely upstream-supported PHP versions are not automatically adopted.
 
 ## Feature maturity
 
