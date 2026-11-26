@@ -34,7 +34,7 @@ SPDX-License-Identifier: MIT
 
 ## בשלות התכונות
 
-רצף המשימות המרכזי מוגדר ב-[tasks/main.yml](../../../tasks/main.yml). לקבוצות הניטור, הגיבוי, Fail2ban, האבטחה, המטמון וחומת האש יש חוזי תבניות חסרים המתועדים ב-[tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml). הדגלים שלהן נותרים כבויים כברירת מחדל והאימות דוחה הפעלה של קבוצות לא שלמות. אין להציג שמות משימות ומשתני דוגמה כמימושים פעילים של תכונות אלו.
+רצף המשימות המרכזי מוגדר ב-[tasks/main.yml](../../../tasks/main.yml). לקבוצות הניטור, הגיבוי, Fail2ban, האבטחה, המטמון וחומת האש יש חוזי תבניות חסרים המתועדים ב-[tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). הדגלים שלהן נותרים כבויים כברירת מחדל והאימות דוחה הפעלה של קבוצות לא שלמות. אין להציג שמות משימות ומשתני דוגמה כמימושים פעילים של תכונות אלו.
 
 TLS, פרטי התחברות למסד הנתונים, סודות WordPress שנוצרו, הגנות נתיבים וטיפול ייעודי למערכת ההפעלה מחייבים את התצורה המתועדת ובדיקות זמן ריצה. לא נטענות כאן יכולת מעבר אוטומטי לגיבוי (failover), הבטחת זמינות (SLA) כלל-עננית או מוכנות אוניברסלית לייצור.
 
@@ -54,7 +54,8 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ ansible-galaxy collection install -r requirements.yml
 
 ## פיתוח ובדיקות
 
-[Makefile](../../../Makefile), [CONTRIBUTING.md](../../../CONTRIBUTING.md) ו-[TESTING.md](../../../TESTING.md) מגדירים את התקנת התלויות המגובבות, בדיקות ה-lint, בדיקות היחידה וחוזי ה-Docker/Molecule החד-פעמיים. בדיקות יחידה ו-lint אינם מוכיחים פריסה מוצלחת.
+[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md) ו-[TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) מגדירים את התקנת התלויות המגובבות, בדיקות ה-lint, בדיקות היחידה וחוזי ה-Docker/Molecule החד-פעמיים. בדיקות יחידה ו-lint אינם מוכיחים פריסה מוצלחת.
 
 ```bash
 make lint
@@ -83,4 +84,4 @@ make lint
 
 ## אבטחה ורישיון
 
-ראו [SECURITY.md](../../../SECURITY.md) ואת [רישיון MIT](../../../LICENSE). המטא-דאטה של החבילה, מדיניות התמיכה בפלטפורמות ואימות השחרור חייבים להישאר מסונכרנים עם התפקיד המופץ.
+ראו [SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) ואת [רישיון MIT](../../../LICENSE). המטא-דאטה של החבילה, מדיניות התמיכה בפלטפורמות ואימות השחרור חייבים להישאר מסונכרנים עם התפקיד המופץ.

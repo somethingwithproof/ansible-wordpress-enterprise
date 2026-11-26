@@ -34,7 +34,7 @@ SPDX-License-Identifier: MIT
 
 ## نضج الميزات
 
-تسلسل المهام الأساسي متعرّف في [tasks/main.yml](../../../tasks/main.yml). مجموعات المراقبة، والنسخ الاحتياطي، وFail2ban، والأمان، والـ caching، والـ firewall عندها عقود قوالب ناقصة متسجّلة في [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml). الإعدادات (flags) بتاعتها بتفضل مقفولة افتراضيًا، والتحقق بيرفض تفعيل المجموعات غير المكتملة. ما ينفعش تقديم أسماء المهام أو متغيرات الأمثلة على إنها تنفيذ شغال للميزات دي.
+تسلسل المهام الأساسي متعرّف في [tasks/main.yml](../../../tasks/main.yml). مجموعات المراقبة، والنسخ الاحتياطي، وFail2ban، والأمان، والـ caching، والـ firewall عندها عقود قوالب ناقصة متسجّلة في [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). الإعدادات (flags) بتاعتها بتفضل مقفولة افتراضيًا، والتحقق بيرفض تفعيل المجموعات غير المكتملة. ما ينفعش تقديم أسماء المهام أو متغيرات الأمثلة على إنها تنفيذ شغال للميزات دي.
 
 الـ TLS، وبيانات اعتماد قاعدة البيانات، وأسرار WordPress المولّدة، وحمايات المسارات، والتعامل الخاص بكل نظام تشغيل محتاجين الإعدادات الموثّقة وفحوصات وقت التشغيل. مفيش هنا أي ادعاء بوجود failover تلقائي، أو اتفاقية مستوى خدمة (SLA) للتوافر على مستوى السحابة، أو جاهزية إنتاجية شاملة.
 
@@ -54,7 +54,8 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ ansible-galaxy collection install -r requirements.yml
 
 ## التطوير والاختبار
 
-الملفات [Makefile](../../../Makefile) و[CONTRIBUTING.md](../../../CONTRIBUTING.md) و[TESTING.md](../../../TESTING.md) بتحدد إعداد التبعيات بالـ hash، وفحوصات الـ lint، واختبارات الوحدة (unit tests)، وعقود Docker/Molecule المؤقتة. اختبارات الوحدة والـ lint لوحدهم مش بيثبتوا نجاح النشر.
+الملفات [Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile) و[CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md) و[TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) بتحدد إعداد التبعيات بالـ hash، وفحوصات الـ lint، واختبارات الوحدة (unit tests)، وعقود Docker/Molecule المؤقتة. اختبارات الوحدة والـ lint لوحدهم مش بيثبتوا نجاح النشر.
 
 ```bash
 make lint
@@ -83,4 +84,4 @@ make lint
 
 ## الأمان والرخصة
 
-راجع [SECURITY.md](../../../SECURITY.md) و[رخصة MIT](../../../LICENSE). لازم البيانات الوصفية للحزمة، وسياسة دعم المنصات، والتحقق من الإصدار يفضلوا متوافقين مع الدور المنشور.
+راجع [SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) و[رخصة MIT](../../../LICENSE). لازم البيانات الوصفية للحزمة، وسياسة دعم المنصات، والتحقق من الإصدار يفضلوا متوافقين مع الدور المنشور.

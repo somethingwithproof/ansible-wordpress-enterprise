@@ -34,7 +34,7 @@ Python 3.12 控制节点使用 14.x 系列的 Ansible 14.6 或更高版本，搭
 
 ## 功能成熟度
 
-核心任务序列定义在 [tasks/main.yml](../../../tasks/main.yml) 中。监控、备份、Fail2ban、安全、缓存和防火墙分组存在缺失的模板契约，记录在 [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml) 中。它们的开关默认保持关闭，验证逻辑会拒绝启用未完成的分组。任务名称和示例变量不得被视为这些功能的可用实现。
+核心任务序列定义在 [tasks/main.yml](../../../tasks/main.yml) 中。监控、备份、Fail2ban、安全、缓存和防火墙分组存在缺失的模板契约，记录在 [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml) 中。它们的开关默认保持关闭，验证逻辑会拒绝启用未完成的分组。任务名称和示例变量不得被视为这些功能的可用实现。
 
 TLS、数据库凭据、生成的 WordPress 密钥、路径保护和特定于操作系统的处理均需要按文档要求进行配置和运行时检查。此处不声明自动故障转移、跨云可用性 SLA 或通用的生产就绪性。
 
@@ -54,7 +54,8 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ ansible-galaxy collection install -r requirements.yml
 
 ## 开发与测试
 
-[Makefile](../../../Makefile)、[CONTRIBUTING.md](../../../CONTRIBUTING.md) 和 [TESTING.md](../../../TESTING.md) 定义了带哈希校验的依赖设置、代码规范检查、单元测试以及一次性的 Docker/Molecule 契约。单元测试和规范检查并不证明部署成功。
+[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile)、[CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md) 和 [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) 定义了带哈希校验的依赖设置、代码规范检查、单元测试以及一次性的 Docker/Molecule 契约。单元测试和规范检查并不证明部署成功。
 
 ```bash
 make lint
@@ -83,4 +84,4 @@ make lint
 
 ## 安全与许可证
 
-请参阅 [SECURITY.md](../../../SECURITY.md) 和 [MIT 许可证](../../../LICENSE)。软件包元数据、平台支持策略和发布验证必须与随附的角色保持一致。
+请参阅 [SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) 和 [MIT 许可证](../../../LICENSE)。软件包元数据、平台支持策略和发布验证必须与随附的角色保持一致。

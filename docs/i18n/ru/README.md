@@ -34,7 +34,7 @@ SPDX-License-Identifier: MIT
 
 ## Зрелость функциональности
 
-Основная последовательность задач определена в [tasks/main.yml](../../../tasks/main.yml). Группы мониторинга, резервного копирования, Fail2ban, безопасности, кэширования и межсетевого экрана имеют отсутствующие контракты шаблонов, зафиксированные в [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml). Их флаги по умолчанию отключены, а валидация отклоняет включение незавершённых групп. Имена задач и примеры переменных не следует рассматривать как рабочие реализации этих функций.
+Основная последовательность задач определена в [tasks/main.yml](../../../tasks/main.yml). Группы мониторинга, резервного копирования, Fail2ban, безопасности, кэширования и межсетевого экрана имеют отсутствующие контракты шаблонов, зафиксированные в [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Их флаги по умолчанию отключены, а валидация отклоняет включение незавершённых групп. Имена задач и примеры переменных не следует рассматривать как рабочие реализации этих функций.
 
 TLS, учётные данные базы данных, сгенерированные секреты WordPress, проверки путей и обработка особенностей ОС требуют документированной конфигурации и проверок во время выполнения. Автоматическое аварийное переключение, SLA доступности на уровне облака или универсальная готовность к промышленной эксплуатации здесь не гарантируются.
 
@@ -54,7 +54,8 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ ansible-galaxy collection install -r requirements.yml
 
 ## Разработка и тестирование
 
-[Makefile](../../../Makefile), [CONTRIBUTING.md](../../../CONTRIBUTING.md) и [TESTING.md](../../../TESTING.md) описывают настройку зависимостей с проверкой хешей, проверки линтером, модульные тесты и контракты для одноразовых сред Docker/Molecule. Модульные тесты и линтер сами по себе не подтверждают успешное развёртывание.
+[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md) и [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) описывают настройку зависимостей с проверкой хешей, проверки линтером, модульные тесты и контракты для одноразовых сред Docker/Molecule. Модульные тесты и линтер сами по себе не подтверждают успешное развёртывание.
 
 ```bash
 make lint
@@ -83,4 +84,4 @@ make lint
 
 ## Безопасность и лицензия
 
-См. [SECURITY.md](../../../SECURITY.md) и [лицензию MIT](../../../LICENSE). Метаданные пакета, политика поддержки платформ и проверки релизов должны оставаться согласованными с поставляемой ролью.
+См. [SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) и [лицензию MIT](../../../LICENSE). Метаданные пакета, политика поддержки платформ и проверки релизов должны оставаться согласованными с поставляемой ролью.

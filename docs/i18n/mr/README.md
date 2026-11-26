@@ -34,7 +34,7 @@ Python 3.12 कंट्रोलर्स 14.x श्रेणीतील Ansi
 
 ## वैशिष्ट्यांची परिपक्वता
 
-मुख्य टास्क क्रम [tasks/main.yml](../../../tasks/main.yml) मध्ये परिभाषित केला आहे. मॉनिटरिंग, बॅकअप, Fail2ban, सुरक्षा, कॅशिंग आणि फायरवॉल गटांचे गहाळ टेम्प्लेट करार [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml) मध्ये नोंदवलेले आहेत. त्यांचे फ्लॅग्स डीफॉल्टनुसार बंद राहतात आणि पडताळणी अपूर्ण गट सक्षम करण्यास नकार देते. टास्क नावे आणि उदाहरण व्हेरिएबल्स त्या वैशिष्ट्यांच्या कार्यरत अंमलबजावणी म्हणून सादर करू नयेत.
+मुख्य टास्क क्रम [tasks/main.yml](../../../tasks/main.yml) मध्ये परिभाषित केला आहे. मॉनिटरिंग, बॅकअप, Fail2ban, सुरक्षा, कॅशिंग आणि फायरवॉल गटांचे गहाळ टेम्प्लेट करार [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml) मध्ये नोंदवलेले आहेत. त्यांचे फ्लॅग्स डीफॉल्टनुसार बंद राहतात आणि पडताळणी अपूर्ण गट सक्षम करण्यास नकार देते. टास्क नावे आणि उदाहरण व्हेरिएबल्स त्या वैशिष्ट्यांच्या कार्यरत अंमलबजावणी म्हणून सादर करू नयेत.
 
 TLS, डेटाबेस क्रेडेंशियल्स, तयार केलेले WordPress सिक्रेट्स, पाथ गार्ड्स आणि OS-विशिष्ट हाताळणीसाठी दस्तऐवजीकरण केलेले कॉन्फिगरेशन आणि रनटाइम तपासण्या आवश्यक आहेत. येथे कोणताही स्वयंचलित फेलओव्हर, क्लाउड-व्यापी उपलब्धता SLA किंवा सार्वत्रिक प्रोडक्शन-सज्जतेचा दावा केला जात नाही.
 
@@ -54,7 +54,8 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ ansible-galaxy collection install -r requirements.yml
 
 ## विकास आणि चाचणी
 
-[Makefile](../../../Makefile), [CONTRIBUTING.md](../../../CONTRIBUTING.md), आणि [TESTING.md](../../../TESTING.md) मध्ये हॅश केलेला अवलंबन सेटअप, लिंट तपासण्या, युनिट चाचण्या आणि तात्पुरते Docker/Molecule करार परिभाषित केले आहेत. युनिट चाचण्या आणि लिंट यशस्वी डिप्लॉयमेंट सिद्ध करत नाहीत.
+[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md), आणि [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) मध्ये हॅश केलेला अवलंबन सेटअप, लिंट तपासण्या, युनिट चाचण्या आणि तात्पुरते Docker/Molecule करार परिभाषित केले आहेत. युनिट चाचण्या आणि लिंट यशस्वी डिप्लॉयमेंट सिद्ध करत नाहीत.
 
 ```bash
 make lint
@@ -83,4 +84,4 @@ make lint
 
 ## सुरक्षा आणि परवाना
 
-[SECURITY.md](../../../SECURITY.md) आणि [MIT परवाना](../../../LICENSE) पहा. पॅकेज मेटाडेटा, प्लॅटफॉर्म समर्थन धोरण आणि रिलीज पडताळणी वितरित केलेल्या रोलशी सुसंगत राहणे आवश्यक आहे.
+[SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) आणि [MIT परवाना](../../../LICENSE) पहा. पॅकेज मेटाडेटा, प्लॅटफॉर्म समर्थन धोरण आणि रिलीज पडताळणी वितरित केलेल्या रोलशी सुसंगत राहणे आवश्यक आहे.

@@ -34,7 +34,7 @@ Controller mit Python 3.12 verwenden Ansible 14.6 oder neuer aus der 14.x-Reihe 
 
 ## Funktionsreife
 
-Die zentrale Aufgabenfolge ist in [tasks/main.yml](../../../tasks/main.yml) definiert. Für die Gruppen Monitoring, Backup, Fail2ban, Sicherheit, Caching und Firewall fehlen Vorlagenverträge, die in [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml) dokumentiert sind. Ihre Flags sind standardmäßig deaktiviert, und die Validierung lehnt das Aktivieren unvollständiger Gruppen ab. Aufgabennamen und Beispielvariablen dürfen nicht als funktionierende Implementierungen dieser Funktionen dargestellt werden.
+Die zentrale Aufgabenfolge ist in [tasks/main.yml](../../../tasks/main.yml) definiert. Für die Gruppen Monitoring, Backup, Fail2ban, Sicherheit, Caching und Firewall fehlen Vorlagenverträge, die in [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml) dokumentiert sind. Ihre Flags sind standardmäßig deaktiviert, und die Validierung lehnt das Aktivieren unvollständiger Gruppen ab. Aufgabennamen und Beispielvariablen dürfen nicht als funktionierende Implementierungen dieser Funktionen dargestellt werden.
 
 TLS, Datenbank-Zugangsdaten, generierte WordPress-Secrets, Pfadschutzprüfungen und betriebssystemspezifische Abläufe erfordern die dokumentierte Konfiguration sowie Laufzeitprüfungen. Es wird hier weder automatisches Failover noch ein cloudweites Verfügbarkeits-SLA oder eine allgemeine Produktionsreife zugesichert.
 
@@ -54,7 +54,8 @@ Führen Sie den Collection-Befehl aus diesem Checkout aus. Prüfen Sie [defaults
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ Stellen Sie die referenzierten Secrets über Ansible Vault oder einen bestehende
 
 ## Entwicklung und Tests
 
-[Makefile](../../../Makefile), [CONTRIBUTING.md](../../../CONTRIBUTING.md) und [TESTING.md](../../../TESTING.md) definieren die gehashte Abhängigkeitsinstallation, Lint-Prüfungen, Unit-Tests sowie Wegwerf-Verträge für Docker und Molecule. Unit-Tests und Lint belegen keine erfolgreiche Bereitstellung.
+[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md) und [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) definieren die gehashte Abhängigkeitsinstallation, Lint-Prüfungen, Unit-Tests sowie Wegwerf-Verträge für Docker und Molecule. Unit-Tests und Lint belegen keine erfolgreiche Bereitstellung.
 
 ```bash
 make lint
@@ -83,4 +84,4 @@ Projekt-Releases verwenden die vollständige SemVer-Version aus `VERSION`, unabh
 
 ## Sicherheit und Lizenz
 
-Siehe [SECURITY.md](../../../SECURITY.md) und die [MIT-Lizenz](../../../LICENSE). Paketmetadaten, Plattform-Support-Richtlinie und Release-Validierung müssen mit der ausgelieferten Rolle abgestimmt bleiben.
+Siehe [SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) und die [MIT-Lizenz](../../../LICENSE). Paketmetadaten, Plattform-Support-Richtlinie und Release-Validierung müssen mit der ausgelieferten Rolle abgestimmt bleiben.

@@ -34,7 +34,7 @@ SPDX-License-Identifier: MIT
 
 ## بلوغ قابلیت‌ها
 
-توالی وظایف هسته در [tasks/main.yml](../../../tasks/main.yml) تعریف شده است. گروه‌های پایش، پشتیبان‌گیری، Fail2ban، امنیت، کش‌سازی و فایروال دارای قراردادهای قالب ناقص هستند که در [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml) ثبت شده‌اند. پرچم‌های آن‌ها به‌صورت پیش‌فرض خاموش باقی می‌مانند و اعتبارسنجی از فعال کردن گروه‌های ناقص جلوگیری می‌کند. نام وظایف و متغیرهای نمونه نباید به‌عنوان پیاده‌سازی‌های عملیاتی آن قابلیت‌ها تلقی شوند.
+توالی وظایف هسته در [tasks/main.yml](../../../tasks/main.yml) تعریف شده است. گروه‌های پایش، پشتیبان‌گیری، Fail2ban، امنیت، کش‌سازی و فایروال دارای قراردادهای قالب ناقص هستند که در [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml) ثبت شده‌اند. پرچم‌های آن‌ها به‌صورت پیش‌فرض خاموش باقی می‌مانند و اعتبارسنجی از فعال کردن گروه‌های ناقص جلوگیری می‌کند. نام وظایف و متغیرهای نمونه نباید به‌عنوان پیاده‌سازی‌های عملیاتی آن قابلیت‌ها تلقی شوند.
 
 TLS، اعتبارنامه‌های پایگاه داده، اسرار تولیدشده WordPress، محافظ‌های مسیر و مدیریت اختصاصی سیستم‌عامل نیازمند پیکربندی مستندشده و بررسی‌های زمان اجرا هستند. در اینجا هیچ ادعایی درباره انتقال خودکار هنگام خطا (failover)، توافق‌نامه سطح دسترس‌پذیری در مقیاس ابر (SLA) یا آمادگی همگانی برای محیط عملیاتی مطرح نمی‌شود.
 
@@ -54,7 +54,8 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ ansible-galaxy collection install -r requirements.yml
 
 ## توسعه و آزمون
 
-فایل‌های [Makefile](../../../Makefile)، [CONTRIBUTING.md](../../../CONTRIBUTING.md) و [TESTING.md](../../../TESTING.md) راه‌اندازی وابستگی‌های هش‌شده، بررسی‌های lint، آزمون‌های واحد و قراردادهای یک‌بارمصرف Docker/Molecule را تعریف می‌کنند. آزمون‌های واحد و lint استقرار موفق را اثبات نمی‌کنند.
+فایل‌های [Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile)، [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md) و [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) راه‌اندازی وابستگی‌های هش‌شده، بررسی‌های lint، آزمون‌های واحد و قراردادهای یک‌بارمصرف Docker/Molecule را تعریف می‌کنند. آزمون‌های واحد و lint استقرار موفق را اثبات نمی‌کنند.
 
 ```bash
 make lint
@@ -83,4 +84,4 @@ make lint
 
 ## امنیت و مجوز
 
-[SECURITY.md](../../../SECURITY.md) و [مجوز MIT](../../../LICENSE) را ببینید. فراداده بسته، سیاست پشتیبانی پلتفرم و اعتبارسنجی انتشار باید با نقش ارائه‌شده هم‌راستا باقی بمانند.
+[SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) و [مجوز MIT](../../../LICENSE) را ببینید. فراداده بسته، سیاست پشتیبانی پلتفرم و اعتبارسنجی انتشار باید با نقش ارائه‌شده هم‌راستا باقی بمانند.

@@ -34,7 +34,7 @@ Python 3.12 denetleyicileri, 14.x serisinde Ansible 14.6 veya üzeri ile 2.21 se
 
 ## Özellik olgunluğu
 
-Temel görev sırası [tasks/main.yml](../../../tasks/main.yml) dosyasında tanımlanmıştır. İzleme, yedekleme, Fail2ban, güvenlik, önbellekleme ve güvenlik duvarı gruplarının eksik şablon sözleşmeleri [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml) dosyasında kayıtlıdır. Bu grupların bayrakları varsayılan olarak kapalıdır ve doğrulama, tamamlanmamış grupların etkinleştirilmesini reddeder. Görev adları ve örnek değişkenler bu özelliklerin çalışan uygulamaları olarak sunulmamalıdır.
+Temel görev sırası [tasks/main.yml](../../../tasks/main.yml) dosyasında tanımlanmıştır. İzleme, yedekleme, Fail2ban, güvenlik, önbellekleme ve güvenlik duvarı gruplarının eksik şablon sözleşmeleri [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml) dosyasında kayıtlıdır. Bu grupların bayrakları varsayılan olarak kapalıdır ve doğrulama, tamamlanmamış grupların etkinleştirilmesini reddeder. Görev adları ve örnek değişkenler bu özelliklerin çalışan uygulamaları olarak sunulmamalıdır.
 
 TLS, veritabanı kimlik bilgileri, oluşturulan WordPress gizli anahtarları, yol korumaları ve işletim sistemine özgü işlemler belgelenmiş yapılandırma ve çalışma zamanı kontrollerini gerektirir. Burada otomatik yük devretme, bulut genelinde erişilebilirlik SLA'sı veya evrensel üretim hazır olma iddiası sunulmamaktadır.
 
@@ -54,7 +54,8 @@ Koleksiyon komutunu bu çalışma kopyasından çalıştırın. Dağıtımdan ö
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ Başvurulan gizli bilgileri Ansible Vault veya mevcut bir gizli bilgi yöneticis
 
 ## Geliştirme ve test
 
-[Makefile](../../../Makefile), [CONTRIBUTING.md](../../../CONTRIBUTING.md) ve [TESTING.md](../../../TESTING.md) dosyaları karma doğrulamalı bağımlılık kurulumunu, lint kontrollerini, birim testlerini ve tek kullanımlık Docker/Molecule sözleşmelerini tanımlar. Birim testleri ve lint kontrolleri başarılı bir dağıtımı garanti etmez.
+[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md) ve [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) dosyaları karma doğrulamalı bağımlılık kurulumunu, lint kontrollerini, birim testlerini ve tek kullanımlık Docker/Molecule sözleşmelerini tanımlar. Birim testleri ve lint kontrolleri başarılı bir dağıtımı garanti etmez.
 
 ```bash
 make lint
@@ -83,4 +84,4 @@ Proje sürümleri, `meta/main.yml` dosyasındaki minimum Ansible sürümünden b
 
 ## Güvenlik ve lisans
 
-[SECURITY.md](../../../SECURITY.md) ve [MIT lisansı](../../../LICENSE) belgelerine bakın. Paket üst verileri, platform destek politikası ve sürüm doğrulaması, sunulan rolle uyumlu kalmalıdır.
+[SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) ve [MIT lisansı](../../../LICENSE) belgelerine bakın. Paket üst verileri, platform destek politikası ve sürüm doğrulaması, sunulan rolle uyumlu kalmalıdır.

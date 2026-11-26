@@ -34,7 +34,7 @@ Kontrollnoder med Python 3.12 använder Ansible 14.6 eller senare i 14.x-serien 
 
 ## Funktionsmognad
 
-Den centrala uppgiftssekvensen definieras i [tasks/main.yml](../../../tasks/main.yml). Grupperna för övervakning, säkerhetskopiering, Fail2ban, säkerhet, cachning och brandvägg saknar mallkontrakt som är dokumenterade i [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml). Deras flaggor är avstängda som standard och valideringen avvisar aktivering av ofullständiga grupper. Uppgiftsnamn och exempelvariabler får inte framställas som fungerande implementeringar av dessa funktioner.
+Den centrala uppgiftssekvensen definieras i [tasks/main.yml](../../../tasks/main.yml). Grupperna för övervakning, säkerhetskopiering, Fail2ban, säkerhet, cachning och brandvägg saknar mallkontrakt som är dokumenterade i [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Deras flaggor är avstängda som standard och valideringen avvisar aktivering av ofullständiga grupper. Uppgiftsnamn och exempelvariabler får inte framställas som fungerande implementeringar av dessa funktioner.
 
 TLS, databasautentiseringsuppgifter, genererade WordPress-hemligheter, sökvägsskydd och OS-specifik hantering kräver den dokumenterade konfigurationen och körtidskontrollerna. Ingen automatisk redundansväxling, molnövergripande tillgänglighets-SLA eller generell garanti om produktionsmognad görs gällande här.
 
@@ -54,7 +54,8 @@ Kör samlingskommandot från denna utcheckning. Granska [defaults/main.yml](../.
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ Tillhandahåll de refererade hemligheterna via Ansible Vault eller en befintlig 
 
 ## Utveckling och testning
 
-[Makefile](../../../Makefile), [CONTRIBUTING.md](../../../CONTRIBUTING.md) och [TESTING.md](../../../TESTING.md) definierar den hashade beroendekonfigurationen, lint-kontroller, enhetstester och tillfälliga Docker/Molecule-kontrakt. Enhetstester och lint-kontroller bevisar inte en lyckad driftsättning.
+[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md) och [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) definierar den hashade beroendekonfigurationen, lint-kontroller, enhetstester och tillfälliga Docker/Molecule-kontrakt. Enhetstester och lint-kontroller bevisar inte en lyckad driftsättning.
 
 ```bash
 make lint
@@ -83,4 +84,4 @@ Verifiera nedladdningar med `sha256sum --check SHA256SUMS`. Installera systempak
 
 ## Säkerhet och licens
 
-Se [SECURITY.md](../../../SECURITY.md) och [MIT-licensen](../../../LICENSE). Paketmetadata, plattformsstödspolicy och utgåvevalidering måste överensstämma med den levererade rollen.
+Se [SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) och [MIT-licensen](../../../LICENSE). Paketmetadata, plattformsstödspolicy och utgåvevalidering måste överensstämma med den levererade rollen.

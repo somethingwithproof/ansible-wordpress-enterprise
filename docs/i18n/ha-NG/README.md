@@ -34,7 +34,7 @@ Masu sarrafawa (controllers) na Python 3.12 suna amfani da Ansible 14.6 ko sabo 
 
 ## Balagar fasaloli
 
-An bayyana jerin manyan ayyuka a cikin [tasks/main.yml](../../../tasks/main.yml). Rukunonin sa ido, ajiyar baya, Fail2ban, tsaro, adanar wucin gadi (caching), da firewall suna da yarjejeniyoyin samfuri da suka ɓata waɗanda aka rubuta a [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml). Alamomin kunnawa nasu suna kashe a matsayin tsoho kuma tantancewa tana ƙin kunna rukunonin da ba su cika ba. Kada a gabatar da sunayen ayyuka da misalan masu canji a matsayin aiwatarwa masu aiki na waɗannan fasalolin.
+An bayyana jerin manyan ayyuka a cikin [tasks/main.yml](../../../tasks/main.yml). Rukunonin sa ido, ajiyar baya, Fail2ban, tsaro, adanar wucin gadi (caching), da firewall suna da yarjejeniyoyin samfuri da suka ɓata waɗanda aka rubuta a [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Alamomin kunnawa nasu suna kashe a matsayin tsoho kuma tantancewa tana ƙin kunna rukunonin da ba su cika ba. Kada a gabatar da sunayen ayyuka da misalan masu canji a matsayin aiwatarwa masu aiki na waɗannan fasalolin.
 
 TLS, takardun shaidar rumbun adana bayanai, sirrikan WordPress da aka samar, masu tsaron hanya, da sarrafawa ta musamman ga OS suna buƙatar saitin da aka rubuta da kuma binciken lokacin aiki. Ba a da'awar sauyawa ta atomatik yayin gazawa (failover), yarjejeniyar samuwar sabis ta girgije (SLA), ko shiryawa gaba ɗaya don aikin zahiri a nan.
 
@@ -54,7 +54,8 @@ Gudanar da umarnin tarin daga wannan kwafin ma'ajiyar. Duba [defaults/main.yml](
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ Samar da sirrikan da aka ambata ta hanyar Ansible Vault ko manajan sirri da ke a
 
 ## Haɓakawa da gwaji
 
-[Makefile](../../../Makefile), [CONTRIBUTING.md](../../../CONTRIBUTING.md), da [TESTING.md](../../../TESTING.md) suna bayyana saitin abubuwan dogaro mai hash, binciken lint, gwaje-gwajen sashe (unit tests), da yarjejeniyoyin Docker/Molecule masu zubarwa. Gwaje-gwajen sashe da lint ba sa tabbatar da nasarar turawa.
+[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md), da [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) suna bayyana saitin abubuwan dogaro mai hash, binciken lint, gwaje-gwajen sashe (unit tests), da yarjejeniyoyin Docker/Molecule masu zubarwa. Gwaje-gwajen sashe da lint ba sa tabbatar da nasarar turawa.
 
 ```bash
 make lint
@@ -99,4 +100,4 @@ yayin girkawa. CI yana girkawa, bincikawa da cire duka nau'ikan biyu.
 
 ## Tsaro da lasisi
 
-Duba [SECURITY.md](../../../SECURITY.md) da [lasisin MIT](../../../LICENSE). Bayanan metadata na fakiti, manufar goyon bayan dandamali, da tantancewar saki dole su ci gaba da kasancewa a daidai da aikin da aka tura.
+Duba [SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) da [lasisin MIT](../../../LICENSE). Bayanan metadata na fakiti, manufar goyon bayan dandamali, da tantancewar saki dole su ci gaba da kasancewa a daidai da aikin da aka tura.

@@ -34,7 +34,7 @@ Python 3.12 కంట్రోలర్లు 14.x శ్రేణిలో Ansi
 
 ## ఫీచర్ పరిపక్వత
 
-ప్రధాన టాస్క్ క్రమం [tasks/main.yml](../../../tasks/main.yml)లో నిర్వచించబడింది. మానిటరింగ్, బ్యాకప్, Fail2ban, సెక్యూరిటీ, క్యాషింగ్ మరియు ఫైర్‌వాల్ గ్రూపులకు లోపించిన టెంప్లేట్ ఒప్పందాలు [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml)లో నమోదు చేయబడ్డాయి. వాటి ఫ్లాగ్‌లు డిఫాల్ట్‌గా ఆఫ్‌లో ఉంటాయి మరియు అసంపూర్ణ గ్రూపులను ఎనేబుల్ చేయడాన్ని ధృవీకరణ తిరస్కరిస్తుంది. టాస్క్ పేర్లు మరియు ఉదాహరణ వేరియబుల్స్ ఆ ఫీచర్ల పనిచేసే అమలుగా పరిగణించకూడదు.
+ప్రధాన టాస్క్ క్రమం [tasks/main.yml](../../../tasks/main.yml)లో నిర్వచించబడింది. మానిటరింగ్, బ్యాకప్, Fail2ban, సెక్యూరిటీ, క్యాషింగ్ మరియు ఫైర్‌వాల్ గ్రూపులకు లోపించిన టెంప్లేట్ ఒప్పందాలు [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml)లో నమోదు చేయబడ్డాయి. వాటి ఫ్లాగ్‌లు డిఫాల్ట్‌గా ఆఫ్‌లో ఉంటాయి మరియు అసంపూర్ణ గ్రూపులను ఎనేబుల్ చేయడాన్ని ధృవీకరణ తిరస్కరిస్తుంది. టాస్క్ పేర్లు మరియు ఉదాహరణ వేరియబుల్స్ ఆ ఫీచర్ల పనిచేసే అమలుగా పరిగణించకూడదు.
 
 TLS, డేటాబేస్ క్రెడెన్షియల్స్, జనరేట్ చేయబడిన WordPress సీక్రెట్స్, పాత్ గార్డ్‌లు మరియు OS-నిర్దిష్ట నిర్వహణకు డాక్యుమెంట్ చేయబడిన కాన్ఫిగరేషన్ మరియు రన్‌టైమ్ తనిఖీలు అవసరం. ఇక్కడ ఆటోమేటిక్ ఫెయిల్‌ఓవర్, క్లౌడ్-వ్యాప్త లభ్యత SLA లేదా సార్వత్రిక ప్రొడక్షన్-సంసిద్ధత హామీ ఏదీ ఇవ్వబడదు.
 
@@ -54,7 +54,8 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ ansible-galaxy collection install -r requirements.yml
 
 ## అభివృద్ధి మరియు పరీక్ష
 
-[Makefile](../../../Makefile), [CONTRIBUTING.md](../../../CONTRIBUTING.md), మరియు [TESTING.md](../../../TESTING.md) హ్యాష్ చేయబడిన డిపెండెన్సీ సెటప్, లింట్ తనిఖీలు, యూనిట్ పరీక్షలు మరియు డిస్పోజబుల్ Docker/Molecule ఒప్పందాలను నిర్వచిస్తాయి. యూనిట్ పరీక్షలు మరియు లింట్ విజయవంతమైన డిప్లాయ్‌మెంట్‌ను నిర్ధారించవు.
+[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md), మరియు [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) హ్యాష్ చేయబడిన డిపెండెన్సీ సెటప్, లింట్ తనిఖీలు, యూనిట్ పరీక్షలు మరియు డిస్పోజబుల్ Docker/Molecule ఒప్పందాలను నిర్వచిస్తాయి. యూనిట్ పరీక్షలు మరియు లింట్ విజయవంతమైన డిప్లాయ్‌మెంట్‌ను నిర్ధారించవు.
 
 ```bash
 make lint
@@ -98,4 +99,4 @@ make lint
 
 ## భద్రత మరియు లైసెన్స్
 
-[SECURITY.md](../../../SECURITY.md) మరియు [MIT లైసెన్స్](../../../LICENSE) చూడండి. ప్యాకేజీ మెటాడేటా, ప్లాట్‌ఫారమ్ మద్దతు పాలసీ మరియు రిలీజ్ ధృవీకరణ షిప్ చేయబడిన రోల్‌తో సమన్వయంగా ఉండాలి.
+[SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) మరియు [MIT లైసెన్స్](../../../LICENSE) చూడండి. ప్యాకేజీ మెటాడేటా, ప్లాట్‌ఫారమ్ మద్దతు పాలసీ మరియు రిలీజ్ ధృవీకరణ షిప్ చేయబడిన రోల్‌తో సమన్వయంగా ఉండాలి.

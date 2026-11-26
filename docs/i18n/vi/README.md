@@ -34,7 +34,7 @@ Các máy điều khiển dùng Python 3.12 sử dụng Ansible 14.6 trở lên 
 
 ## Mức độ hoàn thiện tính năng
 
-Chuỗi tác vụ cốt lõi được định nghĩa trong [tasks/main.yml](../../../tasks/main.yml). Các nhóm giám sát, sao lưu, Fail2ban, bảo mật, bộ nhớ đệm và tường lửa có các hợp đồng mẫu cấu hình bị thiếu được ghi nhận trong [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml). Các cờ kích hoạt của chúng mặc định bị tắt và bước kiểm tra hợp lệ sẽ từ chối khi bật các nhóm chưa hoàn thiện. Tên tác vụ và các biến ví dụ không được xem là các bản triển khai hoạt động hoàn chỉnh của những tính năng đó.
+Chuỗi tác vụ cốt lõi được định nghĩa trong [tasks/main.yml](../../../tasks/main.yml). Các nhóm giám sát, sao lưu, Fail2ban, bảo mật, bộ nhớ đệm và tường lửa có các hợp đồng mẫu cấu hình bị thiếu được ghi nhận trong [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Các cờ kích hoạt của chúng mặc định bị tắt và bước kiểm tra hợp lệ sẽ từ chối khi bật các nhóm chưa hoàn thiện. Tên tác vụ và các biến ví dụ không được xem là các bản triển khai hoạt động hoàn chỉnh của những tính năng đó.
 
 TLS, thông tin xác thực cơ sở dữ liệu, các khóa bí mật WordPress được tạo tự động, cơ chế bảo vệ đường dẫn và xử lý đặc thù theo hệ điều hành đòi hỏi cấu hình đúng tài liệu và kiểm tra trong quá trình chạy. Không có tuyên bố nào về chuyển đổi dự phòng tự động, cam kết mức độ sẵn sàng (SLA) trên toàn nền tảng đám mây hay tính sẵn sàng phổ quát cho môi trường sản xuất được đưa ra ở đây.
 
@@ -54,7 +54,8 @@ Chạy lệnh cài đặt bộ sưu tập từ bản sao mã nguồn này. Hãy 
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ Cung cấp các bí mật được tham chiếu thông qua Ansible Vault hoặc 
 
 ## Phát triển và kiểm thử
 
-[Makefile](../../../Makefile), [CONTRIBUTING.md](../../../CONTRIBUTING.md) và [TESTING.md](../../../TESTING.md) định nghĩa thiết lập phụ thuộc có mã băm, kiểm tra lint, kiểm thử đơn vị và các kịch bản Docker/Molecule dùng một lần. Kiểm thử đơn vị và lint không đảm bảo một bản triển khai sẽ thành công.
+[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md) và [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) định nghĩa thiết lập phụ thuộc có mã băm, kiểm tra lint, kiểm thử đơn vị và các kịch bản Docker/Molecule dùng một lần. Kiểm thử đơn vị và lint không đảm bảo một bản triển khai sẽ thành công.
 
 ```bash
 make lint
@@ -83,4 +84,4 @@ Xác minh các tệp tải xuống bằng `sha256sum --check SHA256SUMS`. Cài �
 
 ## Bảo mật và giấy phép
 
-Xem [SECURITY.md](../../../SECURITY.md) và [giấy phép MIT](../../../LICENSE). Siêu dữ liệu gói, chính sách hỗ trợ nền tảng và bước xác minh phát hành phải luôn đồng nhất với vai trò được phân phối.
+Xem [SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) và [giấy phép MIT](../../../LICENSE). Siêu dữ liệu gói, chính sách hỗ trợ nền tảng và bước xác minh phát hành phải luôn đồng nhất với vai trò được phân phối.

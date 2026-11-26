@@ -34,7 +34,7 @@ Los controladores con Python 3.12 utilizan Ansible 14.6 o posterior en la rama 1
 
 ## Madurez de funcionalidades
 
-La secuencia principal de tareas está definida en [tasks/main.yml](../../../tasks/main.yml). Los grupos de monitorización, copias de seguridad, Fail2ban, seguridad, almacenamiento en caché y firewall tienen contratos de plantilla faltantes registrados en [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml). Sus indicadores permanecen desactivados de forma predeterminada y la validación rechaza habilitar grupos incompletos. Los nombres de tareas y las variables de ejemplo no deben presentarse como implementaciones funcionales de esas capacidades.
+La secuencia principal de tareas está definida en [tasks/main.yml](../../../tasks/main.yml). Los grupos de monitorización, copias de seguridad, Fail2ban, seguridad, almacenamiento en caché y firewall tienen contratos de plantilla faltantes registrados en [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Sus indicadores permanecen desactivados de forma predeterminada y la validación rechaza habilitar grupos incompletos. Los nombres de tareas y las variables de ejemplo no deben presentarse como implementaciones funcionales de esas capacidades.
 
 TLS, las credenciales de base de datos, los secretos generados de WordPress, las protecciones de rutas y el manejo específico por sistema operativo requieren la configuración y las comprobaciones en tiempo de ejecución documentadas. Aquí no se ofrece conmutación por error automática, ningún SLA de disponibilidad en la nube ni una afirmación universal de preparación para producción.
 
@@ -54,7 +54,8 @@ Ejecute el comando de colección desde esta copia local. Revise [defaults/main.y
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ Proporcione los secretos referenciados mediante Ansible Vault o un gestor de sec
 
 ## Desarrollo y pruebas
 
-[Makefile](../../../Makefile), [CONTRIBUTING.md](../../../CONTRIBUTING.md) y [TESTING.md](../../../TESTING.md) definen la configuración de dependencias con hashes, las comprobaciones de lint, las pruebas unitarias y los contratos desechables de Docker/Molecule. Las pruebas unitarias y el análisis de lint no garantizan un despliegue exitoso.
+[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md) y [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) definen la configuración de dependencias con hashes, las comprobaciones de lint, las pruebas unitarias y los contratos desechables de Docker/Molecule. Las pruebas unitarias y el análisis de lint no garantizan un despliegue exitoso.
 
 ```bash
 make lint
@@ -99,4 +100,4 @@ durante la instalación. CI instala, comprueba y elimina ambos formatos.
 
 ## Seguridad y licencia
 
-Consulte [SECURITY.md](../../../SECURITY.md) y la [licencia MIT](../../../LICENSE). Los metadatos del paquete, la política de soporte de plataformas y la validación de lanzamientos deben permanecer alineados con el rol distribuido.
+Consulte [SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) y la [licencia MIT](../../../LICENSE). Los metadatos del paquete, la política de soporte de plataformas y la validación de lanzamientos deben permanecer alineados con el rol distribuido.

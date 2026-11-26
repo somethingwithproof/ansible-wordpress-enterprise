@@ -34,7 +34,7 @@ Koontaroolayaasha Python 3.12 waxay adeegsadaan Ansible 14.6 ama ka dambeeya ee 
 
 ## Bisaylka sifooyinka
 
-Isku-xigxiga hawlaha aasaasiga ah waxaa lagu qeexay [tasks/main.yml](../../../tasks/main.yml). Kooxaha kormeerka, nuqul-kaydinta, Fail2ban, amniga, kaydinta degdegga ah (caching), iyo derbiga-dabka waxay leeyihiin heshiisyo qaab-dhismeed oo maqan kuwaas oo ku diiwaangashan [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml). Calamadoodu waxay ahaanayaan kuwo dansan si caadi ah, xaqiijintuna way diiddaa in la shido kooxaha aan dhammaystirnayn. Magacyada hawlaha iyo doorsoomayaasha tusaalaha looma soo bandhigi karo inay yihiin hirgelin shaqaynaysa ee sifooyinkaas.
+Isku-xigxiga hawlaha aasaasiga ah waxaa lagu qeexay [tasks/main.yml](../../../tasks/main.yml). Kooxaha kormeerka, nuqul-kaydinta, Fail2ban, amniga, kaydinta degdegga ah (caching), iyo derbiga-dabka waxay leeyihiin heshiisyo qaab-dhismeed oo maqan kuwaas oo ku diiwaangashan [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Calamadoodu waxay ahaanayaan kuwo dansan si caadi ah, xaqiijintuna way diiddaa in la shido kooxaha aan dhammaystirnayn. Magacyada hawlaha iyo doorsoomayaasha tusaalaha looma soo bandhigi karo inay yihiin hirgelin shaqaynaysa ee sifooyinkaas.
 
 TLS, aqoonsiyada kaydka xogta, siraha WordPress ee la soo saaray, ilaalinta marinnada, iyo maaraynta u gaarka ah nidaamka hawlgalka waxay u baahan yihiin habaynta la diiwaangeliyay iyo hubinta wakhtiga-shaqada. Wax u-wareegid toos ah marka fashil dhaco (failover), heshiis helitaan heer-daruur ah (SLA), ama sheegasho diyaarsanaan wax-soo-saar oo caalami ah laguma samaynayo halkan.
 
@@ -54,7 +54,8 @@ Ka socodsii amarka ururinta nuqulkan kaydka. Dib u eeg [defaults/main.yml](../..
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ Ku bixi siraha la tixraacay iyadoo loo marayo Ansible Vault ama maamule sir ah o
 
 ## Horumarinta iyo tijaabinta
 
-[Makefile](../../../Makefile), [CONTRIBUTING.md](../../../CONTRIBUTING.md), iyo [TESTING.md](../../../TESTING.md) waxay qeexaan dejinta ku-tiirsanaanta ee hash-ka leh, hubinta lint, tijaabooyinka cutubyada (unit tests), iyo heshiisyada Docker/Molecule ee la tuuri karo. Tijaabooyinka cutubyada iyo lint ma caddeynayaan in gayntu guulaysatay.
+[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md), iyo [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) waxay qeexaan dejinta ku-tiirsanaanta ee hash-ka leh, hubinta lint, tijaabooyinka cutubyada (unit tests), iyo heshiisyada Docker/Molecule ee la tuuri karo. Tijaabooyinka cutubyada iyo lint ma caddeynayaan in gayntu guulaysatay.
 
 ```bash
 make lint
@@ -83,4 +84,4 @@ Ku xaqiiji soo-dejinnada `sha256sum --check SHA256SUMS`. Ku rakib xirmooyinka as
 
 ## Amniga iyo shatiga
 
-Eeg [SECURITY.md](../../../SECURITY.md) iyo [shatiga MIT](../../../LICENSE). Xogta-hoose ee xirmada, siyaasadda taageerada madasha, iyo xaqiijinta sii-dayntu waa inay la jaanqaadaan doorka la soo saaray.
+Eeg [SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) iyo [shatiga MIT](../../../LICENSE). Xogta-hoose ee xirmada, siyaasadda taageerada madasha, iyo xaqiijinta sii-dayntu waa inay la jaanqaadaan doorka la soo saaray.

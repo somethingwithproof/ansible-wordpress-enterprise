@@ -34,7 +34,7 @@ Pengawal Python 3.12 menggunakan Ansible 14.6 atau lebih baharu dalam siri 14.x 
 
 ## Kematangan ciri
 
-Jujukan tugas teras ditakrifkan dalam [tasks/main.yml](../../../tasks/main.yml). Kumpulan pemantauan, sandaran, Fail2ban, keselamatan, cache, dan tembok api mempunyai kontrak templat yang tiada yang direkodkan dalam [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml). Benderanya kekal dimatikan secara lalai dan pengesahan menolak pengaktifan kumpulan yang tidak lengkap. Nama tugas dan pemboleh ubah contoh tidak boleh dipersembahkan sebagai pelaksanaan yang berfungsi bagi ciri-ciri tersebut.
+Jujukan tugas teras ditakrifkan dalam [tasks/main.yml](../../../tasks/main.yml). Kumpulan pemantauan, sandaran, Fail2ban, keselamatan, cache, dan tembok api mempunyai kontrak templat yang tiada yang direkodkan dalam [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Benderanya kekal dimatikan secara lalai dan pengesahan menolak pengaktifan kumpulan yang tidak lengkap. Nama tugas dan pemboleh ubah contoh tidak boleh dipersembahkan sebagai pelaksanaan yang berfungsi bagi ciri-ciri tersebut.
 
 TLS, bukti kelayakan pangkalan data, rahsia WordPress yang dijana, semakan pelindung laluan, dan pengendalian khusus OS memerlukan konfigurasi serta semakan masa jalan yang didokumenkan. Tiada tuntutan gagal alih automatik, SLA ketersediaan merentas awan, atau kesediaan pengeluaran sejagat dibuat di sini.
 
@@ -54,7 +54,8 @@ Jalankan arahan koleksi daripada salinan semak keluar ini. Semak [defaults/main.
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ Sediakan rahsia yang dirujuk melalui Ansible Vault atau pengurus rahsia sedia ad
 
 ## Pembangunan dan pengujian
 
-[Makefile](../../../Makefile), [CONTRIBUTING.md](../../../CONTRIBUTING.md), dan [TESTING.md](../../../TESTING.md) mentakrifkan persediaan kebergantungan tercincang, semakan lint, ujian unit, dan kontrak Docker/Molecule pakai buang. Ujian unit dan semakan lint tidak membuktikan pengerahan yang berjaya.
+[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md), dan [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) mentakrifkan persediaan kebergantungan tercincang, semakan lint, ujian unit, dan kontrak Docker/Molecule pakai buang. Ujian unit dan semakan lint tidak membuktikan pengerahan yang berjaya.
 
 ```bash
 make lint
@@ -83,4 +84,4 @@ Tentusahkan muat turun dengan `sha256sum --check SHA256SUMS`. Pasang pakej asli 
 
 ## Keselamatan dan lesen
 
-Lihat [SECURITY.md](../../../SECURITY.md) dan [lesen MIT](../../../LICENSE). Metadata pakej, dasar sokongan platform, dan pengesahan keluaran mesti kekal selaras dengan peranan yang diedarkan.
+Lihat [SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) dan [lesen MIT](../../../LICENSE). Metadata pakej, dasar sokongan platform, dan pengesahan keluaran mesti kekal selaras dengan peranan yang diedarkan.

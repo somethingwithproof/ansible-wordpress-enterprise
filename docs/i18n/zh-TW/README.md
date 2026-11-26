@@ -34,7 +34,7 @@ Python 3.12 控制器使用 14.x 系列的 Ansible 14.6 或更新版本，搭配
 
 ## 功能成熟度
 
-核心工作順序定義於 [tasks/main.yml](../../../tasks/main.yml)。監控、備份、Fail2ban、安全性、快取與防火牆群組尚有缺失的範本契約，均記錄於 [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml)。這些群組的旗標預設為關閉，且驗證流程會拒絕啟用尚未完成的群組。不得將工作名稱與範例變數視為上述功能的可用實作。
+核心工作順序定義於 [tasks/main.yml](../../../tasks/main.yml)。監控、備份、Fail2ban、安全性、快取與防火牆群組尚有缺失的範本契約，均記錄於 [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml)。這些群組的旗標預設為關閉，且驗證流程會拒絕啟用尚未完成的群組。不得將工作名稱與範例變數視為上述功能的可用實作。
 
 TLS、資料庫認證資訊、產生的 WordPress 機密金鑰、路徑保護機制以及特定作業系統的處理方式，皆須符合文件記載的設定與執行時期檢查。本專案不提供自動容錯移轉、跨雲端可用性 SLA，亦不宣稱適用於所有正式環境。
 
@@ -54,7 +54,8 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ ansible-galaxy collection install -r requirements.yml
 
 ## 開發與測試
 
-[Makefile](../../../Makefile)、[CONTRIBUTING.md](../../../CONTRIBUTING.md) 與 [TESTING.md](../../../TESTING.md) 定義了附帶雜湊值的相依套件設定、lint 檢查、單元測試，以及可拋棄式 Docker／Molecule 契約。通過單元測試與 lint 並不代表部署必定成功。
+[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile)、[CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md) 與 [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) 定義了附帶雜湊值的相依套件設定、lint 檢查、單元測試，以及可拋棄式 Docker／Molecule 契約。通過單元測試與 lint 並不代表部署必定成功。
 
 ```bash
 make lint
@@ -83,4 +84,4 @@ make lint
 
 ## 安全性與授權
 
-請參閱 [SECURITY.md](../../../SECURITY.md) 與 [MIT 授權條款](../../../LICENSE)。套件中繼資料、平台支援政策與發行驗證必須與隨附的角色保持一致。
+請參閱 [SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) 與 [MIT 授權條款](../../../LICENSE)。套件中繼資料、平台支援政策與發行驗證必須與隨附的角色保持一致。

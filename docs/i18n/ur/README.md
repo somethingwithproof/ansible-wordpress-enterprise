@@ -34,7 +34,7 @@ Python 3.12 کنٹرولرز 14.x لائن میں Ansible 14.6 یا اس سے ج
 
 ## فیچر کی پختگی
 
-بنیادی ٹاسک کی ترتیب [tasks/main.yml](../../../tasks/main.yml) میں بیان کی گئی ہے۔ مانیٹرنگ، بیک اپ، Fail2ban، سیکیورٹی، کیشنگ، اور فائر وال گروپس کے نامکمل ٹیمپلیٹ معاہدے [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml) میں درج ہیں۔ ان کے فلیگز بطورِ ڈیفالٹ بند رہتے ہیں اور توثیق نامکمل گروپس کو فعال کرنے سے روک دیتی ہے۔ ٹاسک کے ناموں اور مثالی متغیرات (example variables) کو ان فیچرز کے فعال نفاذ کے طور پر پیش نہیں کیا جانا چاہیے۔
+بنیادی ٹاسک کی ترتیب [tasks/main.yml](../../../tasks/main.yml) میں بیان کی گئی ہے۔ مانیٹرنگ، بیک اپ، Fail2ban، سیکیورٹی، کیشنگ، اور فائر وال گروپس کے نامکمل ٹیمپلیٹ معاہدے [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml) میں درج ہیں۔ ان کے فلیگز بطورِ ڈیفالٹ بند رہتے ہیں اور توثیق نامکمل گروپس کو فعال کرنے سے روک دیتی ہے۔ ٹاسک کے ناموں اور مثالی متغیرات (example variables) کو ان فیچرز کے فعال نفاذ کے طور پر پیش نہیں کیا جانا چاہیے۔
 
 TLS، ڈیٹا بیس کریڈنشلز، تیار کردہ WordPress سیکرٹس، پاتھ گارڈز، اور OS سے مخصوص ہینڈلنگ کے لیے دستاویزی کنفیگریشن اور رن ٹائم چیکس ضروری ہیں۔ یہاں کسی خودکار فیل اوور، کلاؤڈ سطح پر دستیابی کے SLA، یا عالمگیر پروڈکشن تیاری کا دعویٰ نہیں کیا گیا ہے۔
 
@@ -54,7 +54,8 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ ansible-galaxy collection install -r requirements.yml
 
 ## ڈیولپمنٹ اور ٹیسٹنگ
 
-[Makefile](../../../Makefile)، [CONTRIBUTING.md](../../../CONTRIBUTING.md)، اور [TESTING.md](../../../TESTING.md) ہیش شدہ ڈیپینڈنسی سیٹ اپ، لنٹ چیکس، یونٹ ٹیسٹس، اور عارضی Docker/Molecule معاہدوں کی وضاحت کرتے ہیں۔ یونٹ ٹیسٹس اور لنٹ کامیاب تعیناتی کی تصدیق نہیں کرتے۔
+[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile)، [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md)، اور [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) ہیش شدہ ڈیپینڈنسی سیٹ اپ، لنٹ چیکس، یونٹ ٹیسٹس، اور عارضی Docker/Molecule معاہدوں کی وضاحت کرتے ہیں۔ یونٹ ٹیسٹس اور لنٹ کامیاب تعیناتی کی تصدیق نہیں کرتے۔
 
 ```bash
 make lint
@@ -83,4 +84,4 @@ make lint
 
 ## سیکیورٹی اور لائسنس
 
-[SECURITY.md](../../../SECURITY.md) اور [MIT لائسنس](../../../LICENSE) ملاحظہ کریں۔ پیکیج میٹا ڈیٹا، پلیٹ فارم سپورٹ پالیسی، اور ریلیز توثیق کا فراہم کردہ رول کے ساتھ ہم آہنگ رہنا ضروری ہے۔
+[SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) اور [MIT لائسنس](../../../LICENSE) ملاحظہ کریں۔ پیکیج میٹا ڈیٹا، پلیٹ فارم سپورٹ پالیسی، اور ریلیز توثیق کا فراہم کردہ رول کے ساتھ ہم آہنگ رہنا ضروری ہے۔

@@ -34,7 +34,7 @@ Izilawuli ze-Python 3.12 zisebenzisa i-Ansible 14.6 okanye entsha kumgca we-14.x
 
 ## Ukuvuthwa kweempawu
 
-Ulandelelwano lwemisebenzi engundoqo luchazwe kwi-[tasks/main.yml](../../../tasks/main.yml). Amaqela okubeka iliso, ukugcina iikopi zokhuseleko, i-Fail2ban, ukhuseleko, ugcino lwethutyana, kunye ne-firewall anezivumelwano zeetemplate ezingekhoyo ezirekhodwe kwi-[tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml). Iiflegi zazo zihlala zicinyiwe ngokungagqibekanga kwaye uqinisekiso luyala ukuvulwa kwamaqela angagqibekanga. Amagama emisebenzi kunye neziguquguquki zemizekelo akufuneki ziboniswe njengeenkqubo ezisebenzayo zezo mpawu.
+Ulandelelwano lwemisebenzi engundoqo luchazwe kwi-[tasks/main.yml](../../../tasks/main.yml). Amaqela okubeka iliso, ukugcina iikopi zokhuseleko, i-Fail2ban, ukhuseleko, ugcino lwethutyana, kunye ne-firewall anezivumelwano zeetemplate ezingekhoyo ezirekhodwe kwi-[tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Iiflegi zazo zihlala zicinyiwe ngokungagqibekanga kwaye uqinisekiso luyala ukuvulwa kwamaqela angagqibekanga. Amagama emisebenzi kunye neziguquguquki zemizekelo akufuneki ziboniswe njengeenkqubo ezisebenzayo zezo mpawu.
 
 I-TLS, iinkcukacha zokungena kwisiseko sedatha, iimfihlo ze-WordPress ezivelisiweyo, izikhuseli zeendlela, kunye nokuphathwa okukhethekileyo kwe-OS kufuna uqwalaselo olubhaliweyo kunye novavanyo lwexesha lokusebenza. Akukho kubuyela ngokuzenzekelayo xa kukho ukusilela, i-SLA yokufumaneka kwilifu lonke, okanye ibango lokulungela ukuvelisa jikelele elenziwayo apha.
 
@@ -54,7 +54,8 @@ Qhuba umyalelo wengqokelela ukusuka kule kope yekhowudi. Phonononga i-[defaults/
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ Nikezela ngeemfihlo ekubhekiselwe kuzo nge-Ansible Vault okanye ngomlawuli weemf
 
 ## Uphuhliso novavanyo
 
-I-[Makefile](../../../Makefile), i-[CONTRIBUTING.md](../../../CONTRIBUTING.md), kunye ne-[TESTING.md](../../../TESTING.md) zichaza useto lwezinto ezixhomekeke kuzo ezine-hash, uhlolo lwe-lint, uvavanyo lweeyunithi, kunye nezivumelwano ze-Docker/Molecule ezilahlwayo. Uvavanyo lweeyunithi kunye ne-lint azisiqinisekisi isiphumo esinempumelelo sokufakela.
+I-[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), i-[CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md), kunye ne-[TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) zichaza useto lwezinto ezixhomekeke kuzo ezine-hash, uhlolo lwe-lint, uvavanyo lweeyunithi, kunye nezivumelwano ze-Docker/Molecule ezilahlwayo. Uvavanyo lweeyunithi kunye ne-lint azisiqinisekisi isiphumo esinempumelelo sokufakela.
 
 ```bash
 make lint
@@ -98,4 +99,4 @@ zokufakela ngexesha lofakelo. I-CI iyazifaka, iyazihlola kwaye iyazisusa zombini
 
 ## Ukhuseleko nelayisenisi
 
-Jonga i-[SECURITY.md](../../../SECURITY.md) kunye [nelayisenisi ye-MIT](../../../LICENSE). Imetadata yephakheji, umgaqo-nkqubo wenkxaso yeqonga, kunye noqinisekiso lokukhupha kufuneka zihlale zihambelana nendima ethunyelwayo.
+Jonga i-[SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) kunye [nelayisenisi ye-MIT](../../../LICENSE). Imetadata yephakheji, umgaqo-nkqubo wenkxaso yeqonga, kunye noqinisekiso lokukhupha kufuneka zihlale zihambelana nendima ethunyelwayo.

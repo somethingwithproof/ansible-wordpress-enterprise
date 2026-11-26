@@ -34,7 +34,7 @@ Controller Python 3.12 na-eji Ansible 14.6 ma ọ bụ nke ọhụrụ karịa n
 
 ## Ntozuoke nke atụmatụ ọrụ
 
-A kọwara usoro ọrụ bụ isi na [tasks/main.yml](../../../tasks/main.yml). Otu nlekọta, nchekwa ndabere, Fail2ban, nchekwa, caching, na firewall nwere nkwekọrịta ndebiri na-efu e dekọrọ na [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml). Flag ha ka gbanyụrụ na ndabara ma nnyocha na-ajụ ịgbanye otu ndị ezughị oke. E kwesịghị igosi aha ọrụ na variable ihe atụ dị ka mmejupụta na-arụ ọrụ nke atụmatụ ndị ahụ.
+A kọwara usoro ọrụ bụ isi na [tasks/main.yml](../../../tasks/main.yml). Otu nlekọta, nchekwa ndabere, Fail2ban, nchekwa, caching, na firewall nwere nkwekọrịta ndebiri na-efu e dekọrọ na [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Flag ha ka gbanyụrụ na ndabara ma nnyocha na-ajụ ịgbanye otu ndị ezughị oke. E kwesịghị igosi aha ọrụ na variable ihe atụ dị ka mmejupụta na-arụ ọrụ nke atụmatụ ndị ahụ.
 
 TLS, nzere nchekwa data, ihe nzuzo WordPress a rụpụtara, nchedo ụzọ faịlụ, na njikwa pụrụ iche maka OS chọrọ nhazi e dere ede na nnyocha oge ọrụ. Enweghị nkwupụta e mere ebe a maka mgbanwe ọdịda n'akpaghị aka, SLA nnweta n'igwe ojii niile, ma ọ bụ njikere mmepụta maka ebe niile.
 
@@ -54,7 +54,8 @@ Gbaa iwu mkpokọta ahụ site na nkopi koodu a. Lelee [defaults/main.yml](../..
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ Nye ihe nzuzo ndị e zoro aka na ha site na Ansible Vault ma ọ bụ njikwa ih
 
 ## Mmepe na nnwale
 
-[Makefile](../../../Makefile), [CONTRIBUTING.md](../../../CONTRIBUTING.md), na [TESTING.md](../../../TESTING.md) na-akọwa nhazi ndabere nwere hash, nnyocha lint, nnwale ngalaba, na nkwekọrịta Docker/Molecule a na-ekpofu ekpofu. Nnwale ngalaba na lint egosighị na ntinye n'ọrụ ga-aga nke ọma.
+[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md), na [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) na-akọwa nhazi ndabere nwere hash, nnyocha lint, nnwale ngalaba, na nkwekọrịta Docker/Molecule a na-ekpofu ekpofu. Nnwale ngalaba na lint egosighị na ntinye n'ọrụ ga-aga nke ọma.
 
 ```bash
 make lint
@@ -99,4 +100,4 @@ Ngwugwu nke sistemụ nwere isi mmalite ọrụ na akwụkwọ nkọwa ma anagh�
 
 ## Nchekwa na ikikere
 
-Hụ [SECURITY.md](../../../SECURITY.md) na [ikikere MIT](../../../LICENSE). Metadata ngwugwu, atụmatụ nkwado ikpo okwu, na nnyocha ntọhapụ ga-anọgide na-adakọrịta na ọrụ e wepụtara.
+Hụ [SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) na [ikikere MIT](../../../LICENSE). Metadata ngwugwu, atụmatụ nkwado ikpo okwu, na nnyocha ntọhapụ ga-anọgide na-adakọrịta na ọrụ e wepụtara.

@@ -34,7 +34,7 @@ Gumagamit ang mga controller ng Python 3.12 ng Ansible 14.6 o mas bago sa linyan
 
 ## Kahandaan ng mga feature
 
-Tinutukoy ang pangunahing pagkakasunod-sunod ng gawain sa [tasks/main.yml](../../../tasks/main.yml). Ang mga pangkat ng monitoring, backup, Fail2ban, security, caching, at firewall ay may mga kulang na kontrata ng template na nakatala sa [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml). Nananatiling naka-off bilang default ang kanilang mga flag at tinatanggihan ng pagpapatunay ang pag-enable sa mga hindi kumpletong pangkat. Hindi dapat ipakita ang mga pangalan ng gawain at mga halimbawang variable bilang gumaganang implementasyon ng mga feature na iyon.
+Tinutukoy ang pangunahing pagkakasunod-sunod ng gawain sa [tasks/main.yml](../../../tasks/main.yml). Ang mga pangkat ng monitoring, backup, Fail2ban, security, caching, at firewall ay may mga kulang na kontrata ng template na nakatala sa [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Nananatiling naka-off bilang default ang kanilang mga flag at tinatanggihan ng pagpapatunay ang pag-enable sa mga hindi kumpletong pangkat. Hindi dapat ipakita ang mga pangalan ng gawain at mga halimbawang variable bilang gumaganang implementasyon ng mga feature na iyon.
 
 Ang TLS, mga kredensyal ng database, mga nalikhang sikreto ng WordPress, mga path guard, at ang pangangasiwang partikular sa OS ay nangangailangan ng dokumentadong konfigurasyon at mga runtime check. Walang inaangking awtomatikong failover, SLA ng availability sa buong cloud, o pangkalahatang kahandaan sa produksiyon dito.
 
@@ -54,7 +54,8 @@ Patakbuhin ang command ng koleksiyon mula sa checkout na ito. Suriin ang [defaul
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ Ibigay ang mga tinutukoy na sikreto sa pamamagitan ng Ansible Vault o isang umii
 
 ## Pag-develop at pagsusuri
 
-Tinutukoy ng [Makefile](../../../Makefile), [CONTRIBUTING.md](../../../CONTRIBUTING.md), at [TESTING.md](../../../TESTING.md) ang hashed dependency setup, mga lint check, mga unit test, at mga disposable na kontrata ng Docker/Molecule. Hindi nagpapatunay ng matagumpay na deployment ang mga unit test at lint.
+Tinutukoy ng [Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md), at [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) ang hashed dependency setup, mga lint check, mga unit test, at mga disposable na kontrata ng Docker/Molecule. Hindi nagpapatunay ng matagumpay na deployment ang mga unit test at lint.
 
 ```bash
 make lint
@@ -99,4 +100,4 @@ script sa panahon ng pag-install. Ini-install, sinusuri, at tinatanggal ng CI an
 
 ## Seguridad at lisensya
 
-Tingnan ang [SECURITY.md](../../../SECURITY.md) at ang [lisensyang MIT](../../../LICENSE). Dapat manatiling nakaayon sa ibinahaging role ang metadata ng package, patakaran sa suporta ng platform, at pagpapatunay ng release.
+Tingnan ang [SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) at ang [lisensyang MIT](../../../LICENSE). Dapat manatiling nakaayon sa ibinahaging role ang metadata ng package, patakaran sa suporta ng platform, at pagpapatunay ng release.

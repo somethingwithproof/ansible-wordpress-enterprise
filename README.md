@@ -34,7 +34,7 @@ Python 3.12 controllers use Ansible 14.6 or later in the 14.x line with ansible-
 
 ## Feature maturity
 
-The core task sequence is defined in [tasks/main.yml](tasks/main.yml). Monitoring, backup, Fail2ban, security, caching, and firewall groups have missing template contracts recorded in [tests/unit/missing_templates.yml](tests/unit/missing_templates.yml). Their flags remain default-off and validation rejects enabling incomplete groups. Task names and example variables must not be presented as working implementations of those features.
+The core task sequence is defined in [tasks/main.yml](tasks/main.yml). Monitoring, backup, Fail2ban, security, caching, and firewall groups have missing template contracts recorded in [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Their flags remain default-off and validation rejects enabling incomplete groups. Task names and example variables must not be presented as working implementations of those features.
 
 TLS, database credentials, generated WordPress secrets, path guards, and OS-specific handling require the documented configuration and runtime checks. No automatic failover, cloud-wide availability SLA, or universal production-readiness claim is made here.
 
@@ -54,7 +54,8 @@ Run the collection command from this checkout. Review [defaults/main.yml](defaul
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ Provide the referenced secrets through Ansible Vault or an existing secret manag
 
 ## Development and testing
 
-The [Makefile](Makefile), [CONTRIBUTING.md](CONTRIBUTING.md), and [TESTING.md](TESTING.md) define the hashed dependency setup, lint checks, unit tests, and disposable Docker/Molecule contracts. Unit tests and lint do not establish a successful deployment.
+The [Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md), and [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) define the hashed dependency setup, lint checks, unit tests, and disposable Docker/Molecule contracts. Unit tests and lint do not establish a successful deployment.
 
 ```bash
 make lint
@@ -99,4 +100,4 @@ scripts during installation. CI installs, checks and removes both formats.
 
 ## Security and license
 
-See [SECURITY.md](SECURITY.md) and the [MIT license](LICENSE). Package metadata, platform support policy, and release validation must remain aligned with the shipped role.
+See [SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) and the [MIT license](LICENSE). Package metadata, platform support policy, and release validation must remain aligned with the shipped role.

@@ -34,7 +34,7 @@ role ของ Ansible สำหรับกำหนดค่าโฮสต์
 
 ## ความพร้อมใช้งานของฟีเจอร์
 
-ลำดับงานหลักถูกกำหนดไว้ใน [tasks/main.yml](../../../tasks/main.yml) กลุ่มฟีเจอร์ด้านการมอนิเตอร์ การสำรองข้อมูล Fail2ban ความปลอดภัย แคชชิ่ง และไฟร์วอลล์ ยังมีข้อกำหนดเทมเพลตที่ขาดหายไปซึ่งบันทึกไว้ใน [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml) แฟล็กของกลุ่มเหล่านี้ถูกปิดไว้เป็นค่าเริ่มต้น และการตรวจสอบความถูกต้องจะปฏิเสธการเปิดใช้งานกลุ่มที่ยังไม่สมบูรณ์ ไม่ควรนำชื่องานและตัวแปรตัวอย่างมาอ้างอิงว่าเป็นฟีเจอร์ที่พร้อมใช้งานจริง
+ลำดับงานหลักถูกกำหนดไว้ใน [tasks/main.yml](../../../tasks/main.yml) กลุ่มฟีเจอร์ด้านการมอนิเตอร์ การสำรองข้อมูล Fail2ban ความปลอดภัย แคชชิ่ง และไฟร์วอลล์ ยังมีข้อกำหนดเทมเพลตที่ขาดหายไปซึ่งบันทึกไว้ใน [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml) แฟล็กของกลุ่มเหล่านี้ถูกปิดไว้เป็นค่าเริ่มต้น และการตรวจสอบความถูกต้องจะปฏิเสธการเปิดใช้งานกลุ่มที่ยังไม่สมบูรณ์ ไม่ควรนำชื่องานและตัวแปรตัวอย่างมาอ้างอิงว่าเป็นฟีเจอร์ที่พร้อมใช้งานจริง
 
 TLS ข้อมูลรับรองฐานข้อมูล ค่าความลับของ WordPress ที่ถูกสร้างขึ้น กลไกป้องกันพาธ และการจัดการเฉพาะระบบปฏิบัติการจำเป็นต้องมีการกำหนดค่าและการตรวจสอบระหว่างทำงานตามที่ระบุในเอกสาร ไม่มีการรับประกันการสลับระบบอัตโนมัติ (automatic failover), SLA ความพร้อมใช้งานระดับคลาวด์ หรือความพร้อมสำหรับสภาพแวดล้อมการผลิตทุกกรณีในที่นี้
 
@@ -54,7 +54,8 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ ansible-galaxy collection install -r requirements.yml
 
 ## การพัฒนาและการทดสอบ
 
-[Makefile](../../../Makefile), [CONTRIBUTING.md](../../../CONTRIBUTING.md) และ [TESTING.md](../../../TESTING.md) กำหนดการติดตั้งดีเพนเดนซีแบบมีแฮช การตรวจสอบ lint ยูนิตเทสต์ และข้อกำหนดการทดสอบแบบใช้แล้วทิ้งด้วย Docker/Molecule ทั้งนี้ ยูนิตเทสต์และ lint ไม่ได้เป็นเครื่องรับประกันว่าการดีพลอยจะสำเร็จ
+[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md) และ [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) กำหนดการติดตั้งดีเพนเดนซีแบบมีแฮช การตรวจสอบ lint ยูนิตเทสต์ และข้อกำหนดการทดสอบแบบใช้แล้วทิ้งด้วย Docker/Molecule ทั้งนี้ ยูนิตเทสต์และ lint ไม่ได้เป็นเครื่องรับประกันว่าการดีพลอยจะสำเร็จ
 
 ```bash
 make lint
@@ -83,4 +84,4 @@ make lint
 
 ## ความปลอดภัยและสัญญาอนุญาต
 
-ดูรายละเอียดเพิ่มเติมได้ที่ [SECURITY.md](../../../SECURITY.md) และ[สัญญาอนุญาต MIT](../../../LICENSE) ข้อมูลเมตาของแพ็กเกจ นโยบายการรองรับแพลตฟอร์ม และการตรวจสอบรีลีสต้องสอดคล้องกับ role ที่เผยแพร่อยู่เสมอ
+ดูรายละเอียดเพิ่มเติมได้ที่ [SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) และ[สัญญาอนุญาต MIT](../../../LICENSE) ข้อมูลเมตาของแพ็กเกจ นโยบายการรองรับแพลตฟอร์ม และการตรวจสอบรีลีสต้องสอดคล้องกับ role ที่เผยแพร่อยู่เสมอ

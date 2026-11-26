@@ -34,7 +34,7 @@ Abagenzuzi ba Python 3.12 bakoresha Ansible 14.6 cyangwa nshya mu cyiciro cya 14
 
 ## Urwego rw'ubukure bw'ibiranga
 
-Urukurikirane rw'imirimo y'ibanze rusobanurwa muri [tasks/main.yml](../../../tasks/main.yml). Amatsinda yo kugenzura imikorere, kubika ikopi, Fail2ban, umutekano, kubika by'agateganyo, na firewall afite amasezerano y'inyandikorugero abura yanditswe muri [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml). Ibimenyetso byayo biguma bifunze mu buryo mbanziriza kandi igenzura ryanga gufungura amatsinda atuzuye. Amazina y'imirimo n'ibihindagurika by'urugero ntibigomba kugaragazwa nk'ishyirwa mu bikorwa rikora ry'ibyo biranga.
+Urukurikirane rw'imirimo y'ibanze rusobanurwa muri [tasks/main.yml](../../../tasks/main.yml). Amatsinda yo kugenzura imikorere, kubika ikopi, Fail2ban, umutekano, kubika by'agateganyo, na firewall afite amasezerano y'inyandikorugero abura yanditswe muri [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Ibimenyetso byayo biguma bifunze mu buryo mbanziriza kandi igenzura ryanga gufungura amatsinda atuzuye. Amazina y'imirimo n'ibihindagurika by'urugero ntibigomba kugaragazwa nk'ishyirwa mu bikorwa rikora ry'ibyo biranga.
 
 TLS, amakuru yo kwinjira mu bubiko bw'amakuru, amabanga ya WordPress yakozwe, uburinzi bw'inzira, n'imikorere yihariye ya OS bisaba igenamiterere ryanditswe n'igenzura mu gihe cy'imikorere. Nta kwimuka kwikora igihe habayeho ikibazo, nta masezerano y'ukuboneka kuri cloud yose (SLA), cyangwa icyemezo rusange cyo kuba biteguye gukoreshwa mu mikorere nyayo bitangwa hano.
 
@@ -54,7 +54,8 @@ Koresha itegeko ry'itsinda uhereye kuri iyi kopi y'ububiko. Suzuma [defaults/mai
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ Tanga amabanga yavuzwe binyuze muri Ansible Vault cyangwa igikoresho gisanzwe gi
 
 ## Iterambere n'igerageza
 
-[Makefile](../../../Makefile), [CONTRIBUTING.md](../../../CONTRIBUTING.md), na [TESTING.md](../../../TESTING.md) bisobanura itegurwa ry'ibikenerwa bifite hash, igenzura rya lint, amagerageza y'ibice, n'amasezerano ya Docker/Molecule akoreshwa rimwe. Amagerageza y'ibice na lint ntibyemeza ko ishyirwa mu bikorwa rigenda neza.
+[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md), na [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) bisobanura itegurwa ry'ibikenerwa bifite hash, igenzura rya lint, amagerageza y'ibice, n'amasezerano ya Docker/Molecule akoreshwa rimwe. Amagerageza y'ibice na lint ntibyemeza ko ishyirwa mu bikorwa rigenda neza.
 
 ```bash
 make lint
@@ -99,4 +100,4 @@ mu gihe cyo gushyiraho. CI ishyiraho, ikagenzura kandi igakuraho uburyo bwombi.
 
 ## Umutekano n'uruhushya
 
-Reba [SECURITY.md](../../../SECURITY.md) n'[uruhushya rwa MIT](../../../LICENSE). Amakuru aranga paki, politiki y'ubufasha bw'urubuga, n'igenzura ry'isohorwa bigomba guhora bihuye n'inshingano yatanzwe.
+Reba [SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) n'[uruhushya rwa MIT](../../../LICENSE). Amakuru aranga paki, politiki y'ubufasha bw'urubuga, n'igenzura ry'isohorwa bigomba guhora bihuye n'inshingano yatanzwe.

@@ -34,7 +34,7 @@ SPDX-License-Identifier: MIT
 
 ## نضج الميزات
 
-يُعرَّف تسلسل المهام الأساسي في [tasks/main.yml](../../../tasks/main.yml). وتحتوي مجموعات المراقبة والنسخ الاحتياطي وFail2ban والأمان والتخزين المؤقت وجدار الحماية على عقود قوالب مفقودة مسجّلة في [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml). تبقى رايات تفعيلها معطّلة افتراضياً، ويرفض التحقق تفعيل المجموعات غير المكتملة. يجب عدم تقديم أسماء المهام أو متغيرات الأمثلة على أنها تنفيذات عاملة لتلك الميزات.
+يُعرَّف تسلسل المهام الأساسي في [tasks/main.yml](../../../tasks/main.yml). وتحتوي مجموعات المراقبة والنسخ الاحتياطي وFail2ban والأمان والتخزين المؤقت وجدار الحماية على عقود قوالب مفقودة مسجّلة في [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). تبقى رايات تفعيلها معطّلة افتراضياً، ويرفض التحقق تفعيل المجموعات غير المكتملة. يجب عدم تقديم أسماء المهام أو متغيرات الأمثلة على أنها تنفيذات عاملة لتلك الميزات.
 
 تتطلب تهيئة TLS وبيانات اعتماد قاعدة البيانات وأسرار WordPress المُنشأة وآليات حماية المسارات والمعالجة الخاصة بكل نظام تشغيل التهيئةَ الموثّقة وفحوصات وقت التشغيل. لا يُدّعى هنا وجود تجاوز فشل تلقائي، أو اتفاقية مستوى خدمة (SLA) للتوافر على مستوى السحابة، أو جاهزية شاملة للإنتاج.
 
@@ -54,7 +54,8 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ ansible-galaxy collection install -r requirements.yml
 
 ## التطوير والاختبار
 
-يحدّد كل من [Makefile](../../../Makefile) و[CONTRIBUTING.md](../../../CONTRIBUTING.md) و[TESTING.md](../../../TESTING.md) إعداد التبعيات المزوّدة بالتجزئة، وفحوصات التدقيق للشفرة (lint)، واختبارات الوحدات، وعقود Docker/Molecule المؤقتة. ولا تثبت اختبارات الوحدات وفحوصات التدقيق نجاح عملية النشر.
+يحدّد كل من [Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile) و[CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md) و[TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) إعداد التبعيات المزوّدة بالتجزئة، وفحوصات التدقيق للشفرة (lint)، واختبارات الوحدات، وعقود Docker/Molecule المؤقتة. ولا تثبت اختبارات الوحدات وفحوصات التدقيق نجاح عملية النشر.
 
 ```bash
 make lint
@@ -83,4 +84,4 @@ make lint
 
 ## الأمان والترخيص
 
-راجع [SECURITY.md](../../../SECURITY.md) و[رخصة MIT](../../../LICENSE). يجب أن تظل البيانات الوصفية للحزمة وسياسة دعم المنصات والتحقق من الإطلاقات متوافقة مع الدور المُشحون.
+راجع [SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) و[رخصة MIT](../../../LICENSE). يجب أن تظل البيانات الوصفية للحزمة وسياسة دعم المنصات والتحقق من الإطلاقات متوافقة مع الدور المُشحون.

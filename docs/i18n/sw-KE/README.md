@@ -34,7 +34,7 @@ Vidhibiti vya Python 3.12 hutumia Ansible 14.6 au toleo jipya zaidi katika mfulu
 
 ## Ukomavu wa vipengele
 
-Mlolongo mkuu wa kazi umefafanuliwa katika [tasks/main.yml](../../../tasks/main.yml). Vikundi vya ufuatiliaji, nakala rudufu, Fail2ban, usalama, akiba ya muda (caching), na firewall vina mikataba ya violezo inayokosekana iliyorekodiwa katika [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml). Bendera zake hubaki zimezimwa kwa chaguo-msingi na uthibitishaji hukataa kuwasha vikundi visivyokamilika. Majina ya kazi na vigeu vya mifano havipaswi kuwasilishwa kama utekelezaji unaofanya kazi wa vipengele hivyo.
+Mlolongo mkuu wa kazi umefafanuliwa katika [tasks/main.yml](../../../tasks/main.yml). Vikundi vya ufuatiliaji, nakala rudufu, Fail2ban, usalama, akiba ya muda (caching), na firewall vina mikataba ya violezo inayokosekana iliyorekodiwa katika [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Bendera zake hubaki zimezimwa kwa chaguo-msingi na uthibitishaji hukataa kuwasha vikundi visivyokamilika. Majina ya kazi na vigeu vya mifano havipaswi kuwasilishwa kama utekelezaji unaofanya kazi wa vipengele hivyo.
 
 TLS, vitambulisho vya hifadhidata, siri za WordPress zinazozalishwa, ulinzi wa njia za faili, na ushughulikiaji mahususi wa mfumo endeshi huhitaji usanidi ulioandikwa na ukaguzi wakati wa uendeshaji. Hakuna uhamishaji wa kiotomatiki wakati wa hitilafu, SLA ya upatikanaji wa wingu zima, wala dai la utayari wa uzalishaji kwa mazingira yote linalotolewa hapa.
 
@@ -54,7 +54,8 @@ Endesha amri ya mkusanyiko kutoka nakala hii ya hazina. Kagua [defaults/main.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ Weka siri zilizorejelewa kupitia Ansible Vault au kidhibiti cha siri kilichopo. 
 
 ## Uendelezaji na majaribio
 
-[Makefile](../../../Makefile), [CONTRIBUTING.md](../../../CONTRIBUTING.md), na [TESTING.md](../../../TESTING.md) hufafanua usanidi wa vitegemezi vyenye hashi, ukaguzi wa lint, majaribio ya vitengo, na mikataba ya muda ya Docker/Molecule. Majaribio ya vitengo na lint havithibitishi utekelezaji wenye mafanikio.
+[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md), na [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) hufafanua usanidi wa vitegemezi vyenye hashi, ukaguzi wa lint, majaribio ya vitengo, na mikataba ya muda ya Docker/Molecule. Majaribio ya vitengo na lint havithibitishi utekelezaji wenye mafanikio.
 
 ```bash
 make lint
@@ -83,4 +84,4 @@ Thibitisha faili zilizopakuliwa kwa `sha256sum --check SHA256SUMS`. Sakinisha vi
 
 ## Usalama na leseni
 
-Tazama [SECURITY.md](../../../SECURITY.md) na [leseni ya MIT](../../../LICENSE). Metadata ya kifurushi, sera ya usaidizi wa jukwaa, na uthibitishaji wa toleo lazima vibaki vinawiana na role iliyochapishwa.
+Tazama [SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) na [leseni ya MIT](../../../LICENSE). Metadata ya kifurushi, sera ya usaidizi wa jukwaa, na uthibitishaji wa toleo lazima vibaki vinawiana na role iliyochapishwa.

@@ -34,7 +34,7 @@ Python 3.12 கட்டுப்படுத்திகள் 14.x வரி�
 
 ## அம்ச முதிர்ச்சி
 
-முக்கியப் பணி வரிசை [tasks/main.yml](../../../tasks/main.yml)-இல் வரையறுக்கப்பட்டுள்ளது. கண்காணிப்பு, காப்புப்பிரதி, Fail2ban, பாதுகாப்பு, தேக்ககம், மற்றும் ஃபயர்வால் குழுக்களுக்கான விடுபட்ட வார்ப்புரு ஒப்பந்தங்கள் [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml)-இல் பதிவு செய்யப்பட்டுள்ளன. அவற்றின் கொடிகள் இயல்புநிலையாக முடக்கப்பட்டிருக்கும், மேலும் முழுமையற்ற குழுக்களை இயக்குவதைச் சரிபார்ப்பு நிராகரிக்கிறது. பணிப் பெயர்களும் எடுத்துக்காட்டு மாறிகளும் அந்த அம்சங்களின் செயல்படும் அமலாக்கங்களாகக் கருதப்படக் கூடாது.
+முக்கியப் பணி வரிசை [tasks/main.yml](../../../tasks/main.yml)-இல் வரையறுக்கப்பட்டுள்ளது. கண்காணிப்பு, காப்புப்பிரதி, Fail2ban, பாதுகாப்பு, தேக்ககம், மற்றும் ஃபயர்வால் குழுக்களுக்கான விடுபட்ட வார்ப்புரு ஒப்பந்தங்கள் [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml)-இல் பதிவு செய்யப்பட்டுள்ளன. அவற்றின் கொடிகள் இயல்புநிலையாக முடக்கப்பட்டிருக்கும், மேலும் முழுமையற்ற குழுக்களை இயக்குவதைச் சரிபார்ப்பு நிராகரிக்கிறது. பணிப் பெயர்களும் எடுத்துக்காட்டு மாறிகளும் அந்த அம்சங்களின் செயல்படும் அமலாக்கங்களாகக் கருதப்படக் கூடாது.
 
 TLS, தரவுத்தள நற்சான்றிதழ்கள், உருவாக்கப்பட்ட WordPress இரகசியங்கள், பாதைப் பாதுகாப்புகள், மற்றும் OS-குறிப்பிட்ட கையாளுதல் ஆகியவற்றிற்கு ஆவணப்படுத்தப்பட்ட கட்டமைப்பு மற்றும் இயக்கநேரச் சரிபார்ப்புகள் தேவை. தானியங்கி தோல்வி மாற்றம் (failover), மேகக்கணி-அளவிலான கிடைக்கும் தன்மை SLA, அல்லது உலகளாவிய தயாரிப்பு-தயார்நிலை ஆகிய எதுவும் இங்கு கோரப்படவில்லை.
 
@@ -54,7 +54,8 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ ansible-galaxy collection install -r requirements.yml
 
 ## மேம்பாடு மற்றும் சோதனை
 
-[Makefile](../../../Makefile), [CONTRIBUTING.md](../../../CONTRIBUTING.md), மற்றும் [TESTING.md](../../../TESTING.md) ஆகியவை ஹேஷ் செய்யப்பட்ட சார்பு அமைப்பு, லின்ட் சரிபார்ப்புகள், அலகுச் சோதனைகள், மற்றும் தற்காலிக Docker/Molecule ஒப்பந்தங்களை வரையறுக்கின்றன. அலகுச் சோதனைகளும் லின்ட் சரிபார்ப்புகளும் வெற்றிகரமான வரிசைப்படுத்தலை உறுதிப்படுத்தாது.
+[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md), மற்றும் [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) ஆகியவை ஹேஷ் செய்யப்பட்ட சார்பு அமைப்பு, லின்ட் சரிபார்ப்புகள், அலகுச் சோதனைகள், மற்றும் தற்காலிக Docker/Molecule ஒப்பந்தங்களை வரையறுக்கின்றன. அலகுச் சோதனைகளும் லின்ட் சரிபார்ப்புகளும் வெற்றிகரமான வரிசைப்படுத்தலை உறுதிப்படுத்தாது.
 
 ```bash
 make lint
@@ -83,4 +84,4 @@ make lint
 
 ## பாதுகாப்பு மற்றும் உரிமம்
 
-[SECURITY.md](../../../SECURITY.md) மற்றும் [MIT உரிமத்தைப்](../../../LICENSE) பார்க்கவும். தொகுப்பு மெட்டாடேட்டா, தள ஆதரவுக் கொள்கை மற்றும் வெளியீட்டுச் சரிபார்ப்பு ஆகியவை வழங்கப்படும் பாத்திரத்துடன் சீரமைக்கப்பட்டிருக்க வேண்டும்.
+[SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) மற்றும் [MIT உரிமத்தைப்](../../../LICENSE) பார்க்கவும். தொகுப்பு மெட்டாடேட்டா, தள ஆதரவுக் கொள்கை மற்றும் வெளியீட்டுச் சரிபார்ப்பு ஆகியவை வழங்கப்படும் பாத்திரத்துடன் சீரமைக்கப்பட்டிருக்க வேண்டும்.

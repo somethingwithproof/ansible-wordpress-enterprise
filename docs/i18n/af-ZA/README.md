@@ -34,7 +34,7 @@ Python 3.12-beheerders gebruik Ansible 14.6 of nuwer in die 14.x-reeks met ansib
 
 ## Funksievolwassenheid
 
-Die kerntaakvolgorde word in [tasks/main.yml](../../../tasks/main.yml) gedefinieer. Monitering-, rugsteun-, Fail2ban-, sekuriteit-, kasgeheue- en brandmuurgroepe het ontbrekende sjabloonkontrakte wat in [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml) aangeteken is. Hul vlae bly by verstek afgeskakel en validering verwerp die aktivering van onvolledige groepe. Taakname en voorbeeldveranderlikes mag nie as werkende implementerings van daardie funksies voorgestel word nie.
+Die kerntaakvolgorde word in [tasks/main.yml](../../../tasks/main.yml) gedefinieer. Monitering-, rugsteun-, Fail2ban-, sekuriteit-, kasgeheue- en brandmuurgroepe het ontbrekende sjabloonkontrakte wat in [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml) aangeteken is. Hul vlae bly by verstek afgeskakel en validering verwerp die aktivering van onvolledige groepe. Taakname en voorbeeldveranderlikes mag nie as werkende implementerings van daardie funksies voorgestel word nie.
 
 TLS, databasis-aanmeldbewyse, gegenereerde WordPress-geheime, padwagte en bedryfstelselspesifieke hantering vereis die gedokumenteerde konfigurasie en looptydkontroles. Geen outomatiese foutoorskakeling, wolk-wye beskikbaarheids-SLA of universele produksiegereedheid word hier beweer nie.
 
@@ -54,7 +54,8 @@ Voer die versamelingsopdrag vanuit hierdie werkskopie uit. Hersien [defaults/mai
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ Verskaf die verwysde geheime deur middel van Ansible Vault of 'n bestaande gehei
 
 ## Ontwikkeling en toetsing
 
-Die [Makefile](../../../Makefile), [CONTRIBUTING.md](../../../CONTRIBUTING.md) en [TESTING.md](../../../TESTING.md) definieer die gehashte afhanklikheidsopstelling, lint-kontroles, eenheidstoetse en weggooibare Docker/Molecule-kontrakte. Eenheidstoetse en lint bewys nie 'n suksesvolle ontplooiing nie.
+Die [Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md) en [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) definieer die gehashte afhanklikheidsopstelling, lint-kontroles, eenheidstoetse en weggooibare Docker/Molecule-kontrakte. Eenheidstoetse en lint bewys nie 'n suksesvolle ontplooiing nie.
 
 ```bash
 make lint
@@ -99,4 +100,4 @@ installasie uit nie. CI installeer, kontroleer en verwyder albei formate.
 
 ## Sekuriteit en lisensie
 
-Sien [SECURITY.md](../../../SECURITY.md) en die [MIT-lisensie](../../../LICENSE). Pakketmetadata, platformondersteuningsbeleid en vrystellingsvalidering moet in ooreenstemming bly met die verskafte rol.
+Sien [SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) en die [MIT-lisensie](../../../LICENSE). Pakketmetadata, platformondersteuningsbeleid en vrystellingsvalidering moet in ooreenstemming bly met die verskafte rol.

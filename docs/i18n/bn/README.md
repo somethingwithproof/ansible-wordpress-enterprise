@@ -34,7 +34,7 @@ Python 3.12 কন্ট্রোলারগুলোতে 14.x ধারা�
 
 ## ফিচারের পরিপক্বতা
 
-মূল টাস্কের ক্রম [tasks/main.yml](../../../tasks/main.yml)-এ সংজ্ঞায়িত করা আছে। মনিটরিং, ব্যাকআপ, Fail2ban, নিরাপত্তা, ক্যাশিং এবং ফায়ারওয়াল গ্রুপগুলোর অনুপস্থিত টেমপ্লেট চুক্তিগুলো [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml)-এ নথিভুক্ত আছে। এগুলোর ফ্ল্যাগ ডিফল্টভাবে বন্ধ থাকে এবং যাচাইকরণ প্রক্রিয়া অসম্পূর্ণ গ্রুপগুলো চালু করতে বাধা দেয়। টাস্কের নাম এবং উদাহরণ ভেরিয়েবলগুলোকে সেই ফিচারগুলোর কার্যকর বাস্তবায়ন হিসেবে উপস্থাপন করা যাবে না।
+মূল টাস্কের ক্রম [tasks/main.yml](../../../tasks/main.yml)-এ সংজ্ঞায়িত করা আছে। মনিটরিং, ব্যাকআপ, Fail2ban, নিরাপত্তা, ক্যাশিং এবং ফায়ারওয়াল গ্রুপগুলোর অনুপস্থিত টেমপ্লেট চুক্তিগুলো [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml)-এ নথিভুক্ত আছে। এগুলোর ফ্ল্যাগ ডিফল্টভাবে বন্ধ থাকে এবং যাচাইকরণ প্রক্রিয়া অসম্পূর্ণ গ্রুপগুলো চালু করতে বাধা দেয়। টাস্কের নাম এবং উদাহরণ ভেরিয়েবলগুলোকে সেই ফিচারগুলোর কার্যকর বাস্তবায়ন হিসেবে উপস্থাপন করা যাবে না।
 
 TLS, ডেটাবেস ক্রেডেনশিয়াল, জেনারেট করা WordPress সিক্রেট, পাথ গার্ড এবং OS-নির্দিষ্ট পরিচালনার জন্য নথিভুক্ত কনফিগারেশন ও রানটাইম যাচাইকরণ প্রয়োজন। এখানে কোনো স্বয়ংক্রিয় ফেইলওভার, ক্লাউড-ব্যাপী প্রাপ্যতা SLA বা সর্বজনীন প্রোডাকশন-প্রস্তুতির দাবি করা হয়নি।
 
@@ -54,7 +54,8 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ ansible-galaxy collection install -r requirements.yml
 
 ## ডেভেলপমেন্ট ও টেস্টিং
 
-[Makefile](../../../Makefile), [CONTRIBUTING.md](../../../CONTRIBUTING.md), এবং [TESTING.md](../../../TESTING.md) হ্যাশকৃত ডিপেন্ডেন্সি সেটআপ, লিন্ট পরীক্ষা, ইউনিট টেস্ট এবং ডিসপোজেবল Docker/Molecule চুক্তিগুলো সংজ্ঞায়িত করে। ইউনিট টেস্ট এবং লিন্ট সফল ডিপ্লয়মেন্টের নিশ্চয়তা দেয় না।
+[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md), এবং [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) হ্যাশকৃত ডিপেন্ডেন্সি সেটআপ, লিন্ট পরীক্ষা, ইউনিট টেস্ট এবং ডিসপোজেবল Docker/Molecule চুক্তিগুলো সংজ্ঞায়িত করে। ইউনিট টেস্ট এবং লিন্ট সফল ডিপ্লয়মেন্টের নিশ্চয়তা দেয় না।
 
 ```bash
 make lint
@@ -83,4 +84,4 @@ make lint
 
 ## নিরাপত্তা এবং লাইসেন্স
 
-[SECURITY.md](../../../SECURITY.md) এবং [MIT লাইসেন্স](../../../LICENSE) দেখুন। প্যাকেজের মেটাডেটা, প্ল্যাটফর্ম সমর্থন নীতি এবং রিলিজ যাচাইকরণ অবশ্যই সরবরাহকৃত রোলের সাথে সামঞ্জস্যপূর্ণ থাকতে হবে।
+[SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) এবং [MIT লাইসেন্স](../../../LICENSE) দেখুন। প্যাকেজের মেটাডেটা, প্ল্যাটফর্ম সমর্থন নীতি এবং রিলিজ যাচাইকরণ অবশ্যই সরবরাহকৃত রোলের সাথে সামঞ্জস্যপূর্ণ থাকতে হবে।

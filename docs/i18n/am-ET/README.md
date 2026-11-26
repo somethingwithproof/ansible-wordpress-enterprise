@@ -34,7 +34,7 @@ SPDX-License-Identifier: MIT
 
 ## የባህሪ ብስለት
 
-ዋናው የተግባራት ቅደም ተከተል በ[tasks/main.yml](../../../tasks/main.yml) ውስጥ ተገልጿል። የክትትል፣ የመጠባበቂያ ቅጂ፣ የFail2ban፣ የደህንነት፣ የመሸጎጫ እና የፋየርዎል ቡድኖች በ[tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml) ውስጥ የተመዘገቡ የጎደሉ የአብነት ውሎች አሏቸው። መቀየሪያዎቻቸው በነባሪነት ጠፍተው ይቆያሉ እንዲሁም ማረጋገጫው ያልተሟሉ ቡድኖችን ማንቃትን አይቀበልም። የተግባር ስሞች እና የምሳሌ ተለዋዋጮች የእነዚያ ባህሪያት የሚሠሩ አተገባበሮች ተደርገው መቅረብ የለባቸውም።
+ዋናው የተግባራት ቅደም ተከተል በ[tasks/main.yml](../../../tasks/main.yml) ውስጥ ተገልጿል። የክትትል፣ የመጠባበቂያ ቅጂ፣ የFail2ban፣ የደህንነት፣ የመሸጎጫ እና የፋየርዎል ቡድኖች በ[tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml) ውስጥ የተመዘገቡ የጎደሉ የአብነት ውሎች አሏቸው። መቀየሪያዎቻቸው በነባሪነት ጠፍተው ይቆያሉ እንዲሁም ማረጋገጫው ያልተሟሉ ቡድኖችን ማንቃትን አይቀበልም። የተግባር ስሞች እና የምሳሌ ተለዋዋጮች የእነዚያ ባህሪያት የሚሠሩ አተገባበሮች ተደርገው መቅረብ የለባቸውም።
 
 TLS፣ የውሂብ ጎታ ማረጋገጫዎች፣ የተመነጩ የWordPress ምስጢሮች፣ የዱካ ጥበቃዎች እና ለሥርዓተ ክወና የተለዩ አያያዞች የተመዘገበውን ውቅር እና የአሂድ ጊዜ ፍተሻዎችን ይፈልጋሉ። እዚህ ምንም ዓይነት ራስ-ሰር መተካካት፣ ደመና-አቀፍ የተደራሽነት SLA ወይም ሁለንተናዊ ለምርት ዝግጁነት አይገለጽም።
 
@@ -54,7 +54,8 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ ansible-galaxy collection install -r requirements.yml
 
 ## ልማት እና ሙከራ
 
-[Makefile](../../../Makefile)፣ [CONTRIBUTING.md](../../../CONTRIBUTING.md) እና [TESTING.md](../../../TESTING.md) ሃሽ የተደረገውን የጥገኝነት አወቃቀር፣ የlint ፍተሻዎችን፣ የአሃድ ሙከራዎችን እና ጊዜያዊ የDocker/Molecule ውሎችን ይገልጻሉ። የአሃድ ሙከራዎች እና lint የተሳካ ማሰማራትን አያረጋግጡም።
+[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile)፣ [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md) እና [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) ሃሽ የተደረገውን የጥገኝነት አወቃቀር፣ የlint ፍተሻዎችን፣ የአሃድ ሙከራዎችን እና ጊዜያዊ የDocker/Molecule ውሎችን ይገልጻሉ። የአሃድ ሙከራዎች እና lint የተሳካ ማሰማራትን አያረጋግጡም።
 
 ```bash
 make lint
@@ -83,4 +84,4 @@ make lint
 
 ## ደህንነት እና ፈቃድ
 
-[SECURITY.md](../../../SECURITY.md) እና [የMIT ፈቃድ](../../../LICENSE)ን ይመልከቱ። የጥቅል ሜታዳታ፣ የመድረክ ድጋፍ ፖሊሲ እና የልቀት ማረጋገጫ ከሚሰራጨው ሚና ጋር የተጣጣሙ መሆን አለባቸው።
+[SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) እና [የMIT ፈቃድ](../../../LICENSE)ን ይመልከቱ። የጥቅል ሜታዳታ፣ የመድረክ ድጋፍ ፖሊሲ እና የልቀት ማረጋገጫ ከሚሰራጨው ሚና ጋር የተጣጣሙ መሆን አለባቸው።

@@ -34,7 +34,7 @@ Les contrôleurs Python 3.12 utilisent Ansible 14.6 ou une version ultérieure d
 
 ## Maturité des fonctionnalités
 
-La séquence principale des tâches est définie dans [tasks/main.yml](../../../tasks/main.yml). Les groupes de supervision, sauvegarde, Fail2ban, sécurité, mise en cache et pare-feu présentent des contrats de modèles manquants consignés dans [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml). Leurs indicateurs restent désactivés par défaut et la validation rejette l'activation de groupes incomplets. Les noms de tâches et les exemples de variables ne doivent pas être présentés comme des implémentations fonctionnelles de ces fonctionnalités.
+La séquence principale des tâches est définie dans [tasks/main.yml](../../../tasks/main.yml). Les groupes de supervision, sauvegarde, Fail2ban, sécurité, mise en cache et pare-feu présentent des contrats de modèles manquants consignés dans [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Leurs indicateurs restent désactivés par défaut et la validation rejette l'activation de groupes incomplets. Les noms de tâches et les exemples de variables ne doivent pas être présentés comme des implémentations fonctionnelles de ces fonctionnalités.
 
 TLS, les identifiants de base de données, les secrets WordPress générés, les garde-fous de chemins et les traitements spécifiques au système d'exploitation nécessitent la configuration et les vérifications d'exécution documentées. Aucun basculement automatique, aucun SLA de disponibilité à l'échelle du cloud ni aucune garantie universelle de mise en production ne sont revendiqués ici.
 
@@ -54,7 +54,8 @@ Exécutez la commande de collection depuis cette copie locale. Passez en revue [
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ Fournissez les secrets référencés via Ansible Vault ou un gestionnaire de sec
 
 ## Développement et tests
 
-Le [Makefile](../../../Makefile), [CONTRIBUTING.md](../../../CONTRIBUTING.md) et [TESTING.md](../../../TESTING.md) définissent la configuration des dépendances vérifiées par empreinte, les vérifications de lint, les tests unitaires ainsi que les contrats Docker/Molecule jetables. Les tests unitaires et le lint ne garantissent pas un déploiement réussi.
+Le [Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md) et [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) définissent la configuration des dépendances vérifiées par empreinte, les vérifications de lint, les tests unitaires ainsi que les contrats Docker/Molecule jetables. Les tests unitaires et le lint ne garantissent pas un déploiement réussi.
 
 ```bash
 make lint
@@ -83,4 +84,4 @@ Vérifiez les téléchargements avec `sha256sum --check SHA256SUMS`. Installez l
 
 ## Sécurité et licence
 
-Consultez [SECURITY.md](../../../SECURITY.md) et la [licence MIT](../../../LICENSE). Les métadonnées du paquet, la politique de prise en charge des plateformes et la validation des publications doivent rester alignées avec le rôle distribué.
+Consultez [SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) et la [licence MIT](../../../LICENSE). Les métadonnées du paquet, la politique de prise en charge des plateformes et la validation des publications doivent rester alignées avec le rôle distribué.

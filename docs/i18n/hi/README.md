@@ -34,7 +34,7 @@ Python 3.12 कंट्रोलर 14.x शृंखला में Ansible 1
 
 ## फ़ीचर परिपक्वता
 
-मुख्य कार्य अनुक्रम [tasks/main.yml](../../../tasks/main.yml) में परिभाषित है। मॉनिटरिंग, बैकअप, Fail2ban, सुरक्षा, कैशिंग और फ़ायरवॉल समूहों के अनुपलब्ध टेम्पलेट अनुबंध [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml) में दर्ज हैं। उनके फ़्लैग डिफ़ॉल्ट रूप से बंद रहते हैं और सत्यापन अधूरे समूहों को सक्षम करने को अस्वीकार कर देता है। कार्य नामों और उदाहरण वेरिएबल को उन फ़ीचर के कार्यशील कार्यान्वयन के रूप में प्रस्तुत नहीं किया जाना चाहिए।
+मुख्य कार्य अनुक्रम [tasks/main.yml](../../../tasks/main.yml) में परिभाषित है। मॉनिटरिंग, बैकअप, Fail2ban, सुरक्षा, कैशिंग और फ़ायरवॉल समूहों के अनुपलब्ध टेम्पलेट अनुबंध [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml) में दर्ज हैं। उनके फ़्लैग डिफ़ॉल्ट रूप से बंद रहते हैं और सत्यापन अधूरे समूहों को सक्षम करने को अस्वीकार कर देता है। कार्य नामों और उदाहरण वेरिएबल को उन फ़ीचर के कार्यशील कार्यान्वयन के रूप में प्रस्तुत नहीं किया जाना चाहिए।
 
 TLS, डेटाबेस क्रेडेंशियल, जनरेट किए गए WordPress सीक्रेट्स, पाथ गार्ड और OS-विशिष्ट हैंडलिंग के लिए प्रलेखित कॉन्फ़िगरेशन और रनटाइम जाँच की आवश्यकता होती है। यहाँ किसी स्वचालित फ़ेलओवर, क्लाउड-व्यापी उपलब्धता SLA या सार्वभौमिक प्रोडक्शन-तैयारी का दावा नहीं किया गया है।
 
@@ -54,7 +54,8 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ ansible-galaxy collection install -r requirements.yml
 
 ## विकास और परीक्षण
 
-[Makefile](../../../Makefile), [CONTRIBUTING.md](../../../CONTRIBUTING.md), और [TESTING.md](../../../TESTING.md) हैश्ड निर्भरता सेटअप, लिंट जाँच, यूनिट परीक्षण और डिस्पोज़ेबल Docker/Molecule अनुबंधों को परिभाषित करते हैं। यूनिट परीक्षण और लिंट सफल परिनियोजन को सिद्ध नहीं करते हैं।
+[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md), और [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) हैश्ड निर्भरता सेटअप, लिंट जाँच, यूनिट परीक्षण और डिस्पोज़ेबल Docker/Molecule अनुबंधों को परिभाषित करते हैं। यूनिट परीक्षण और लिंट सफल परिनियोजन को सिद्ध नहीं करते हैं।
 
 ```bash
 make lint
@@ -83,4 +84,4 @@ make lint
 
 ## सुरक्षा और लाइसेंस
 
-[SECURITY.md](../../../SECURITY.md) और [MIT लाइसेंस](../../../LICENSE) देखें। पैकेज मेटाडेटा, प्लेटफ़ॉर्म समर्थन नीति और रिलीज़ सत्यापन को वितरित रोल के साथ संरेखित रहना चाहिए।
+[SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) और [MIT लाइसेंस](../../../LICENSE) देखें। पैकेज मेटाडेटा, प्लेटफ़ॉर्म समर्थन नीति और रिलीज़ सत्यापन को वितरित रोल के साथ संरेखित रहना चाहिए।

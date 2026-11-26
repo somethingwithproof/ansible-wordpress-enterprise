@@ -34,7 +34,7 @@ Ny mpibaiko (controller) Python 3.12 dia mampiasa Ansible 14.6 na vaovao kokoa a
 
 ## Fahamatoran'ny endri-javatra
 
-Ny filaharan'ny asa fototra dia voafaritra ao amin'ny [tasks/main.yml](../../../tasks/main.yml). Ny vondrona fanaraha-maso, tahiry fiarovana (backup), Fail2ban, fiarovana, cache, ary aro-afo (firewall) dia manana fifanarahana modely tsy ampy voarakitra ao amin'ny [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml). Mijanona ho maty ho azy ny saina (flags) mifandray amin'izy ireo ary mandà ny fampandehanana vondrona tsy feno ny fanamarinana. Tsy tokony haseho ho fampiharana miasa an'ireo endri-javatra ireo ny anaran'asa sy ny ohatra miovaova (variables).
+Ny filaharan'ny asa fototra dia voafaritra ao amin'ny [tasks/main.yml](../../../tasks/main.yml). Ny vondrona fanaraha-maso, tahiry fiarovana (backup), Fail2ban, fiarovana, cache, ary aro-afo (firewall) dia manana fifanarahana modely tsy ampy voarakitra ao amin'ny [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Mijanona ho maty ho azy ny saina (flags) mifandray amin'izy ireo ary mandà ny fampandehanana vondrona tsy feno ny fanamarinana. Tsy tokony haseho ho fampiharana miasa an'ireo endri-javatra ireo ny anaran'asa sy ny ohatra miovaova (variables).
 
 Ny TLS, ny fahazoan-dalana miditra amin'ny angon-drakitra, ny tsiambaratelo WordPress vokarina, ny fiarovana lalana, ary ny fikirakirana manokana isaky ny OS dia mitaky ny fandrindrana voarakitra an-tsoratra sy ny fanamarinana mandritra ny fampandehanana. Tsy misy filazana momba ny fiverenana ho azy (automatic failover), SLA fisiana manerana ny rahona, na fahavononana ho an'ny famokarana maneran-tany atao eto.
 
@@ -54,7 +54,8 @@ Alefaso avy amin'ity dika nalaina ity ny baiko ho an'ny angona. Jereo ny [defaul
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ Omeo amin'ny alalan'ny Ansible Vault na mpitantana tsiambaratelo efa misy ireo t
 
 ## Fampandrosoana sy fitsapana
 
-Ny [Makefile](../../../Makefile), [CONTRIBUTING.md](../../../CONTRIBUTING.md), ary [TESTING.md](../../../TESTING.md) no mamaritra ny fametrahana fiankinan-doha misy hash, fanamarinana lint, fitsapana singa (unit tests), ary fifanarahana Docker/Molecule azo ariana. Ny fitsapana singa sy ny lint dia tsy manaporofo fametrahana mahomby.
+Ny [Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md), ary [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) no mamaritra ny fametrahana fiankinan-doha misy hash, fanamarinana lint, fitsapana singa (unit tests), ary fifanarahana Docker/Molecule azo ariana. Ny fitsapana singa sy ny lint dia tsy manaporofo fametrahana mahomby.
 
 ```bash
 make lint
@@ -83,4 +84,4 @@ Hamarino ny rakitra nalaina amin'ny `sha256sum --check SHA256SUMS`. Apetraho ny 
 
 ## Fiarovana sy fahazoan-dalana
 
-Jereo ny [SECURITY.md](../../../SECURITY.md) sy ny [fahazoan-dalana MIT](../../../LICENSE). Ny metadata-n'ny fonosana, ny politikan'ny fanohanana sehatra, ary ny fanamarinana famoahana dia tsy maintsy mijanona ho mifanaraka amin'ny anjara asa aterina.
+Jereo ny [SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) sy ny [fahazoan-dalana MIT](../../../LICENSE). Ny metadata-n'ny fonosana, ny politikan'ny fanohanana sehatra, ary ny fanamarinana famoahana dia tsy maintsy mijanona ho mifanaraka amin'ny anjara asa aterina.

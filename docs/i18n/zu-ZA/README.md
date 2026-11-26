@@ -34,7 +34,7 @@ Ama-controller e-Python 3.12 asebenzisa i-Ansible 14.6 noma entsha emgqeni we-14
 
 ## Ukukhula kwezici
 
-Ukulandelana okuyisisekelo kwemisebenzi kuchazwe ku-[tasks/main.yml](../../../tasks/main.yml). Amaqembu okuqapha (monitoring), okwenza ikhophi eyisipele, i-Fail2ban, ukuvikeleka, i-caching, kanye ne-firewall anezinkontileka zamathemphulethi ezishodayo ezirekhodwe ku-[tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml). Amafulegi awo ahlala evaliwe ngokuzenzakalelayo futhi ukuqinisekiswa kuyenqaba ukuvula amaqembu angaphelele. Amagama emisebenzi nezibonelo zokuguquguqukayo (variables) akufanele kwethulwe njengokusebenza okuphelele kwalezo zici.
+Ukulandelana okuyisisekelo kwemisebenzi kuchazwe ku-[tasks/main.yml](../../../tasks/main.yml). Amaqembu okuqapha (monitoring), okwenza ikhophi eyisipele, i-Fail2ban, ukuvikeleka, i-caching, kanye ne-firewall anezinkontileka zamathemphulethi ezishodayo ezirekhodwe ku-[tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Amafulegi awo ahlala evaliwe ngokuzenzakalelayo futhi ukuqinisekiswa kuyenqaba ukuvula amaqembu angaphelele. Amagama emisebenzi nezibonelo zokuguquguqukayo (variables) akufanele kwethulwe njengokusebenza okuphelele kwalezo zici.
 
 I-TLS, imininingwane yokungena yesizindalwazi, izimfihlo ze-WordPress ezikhiqiziwe, izivikeli zendlela, nokuphathwa okuqondene ne-OS kudinga izilungiselelo ezibhaliwe nokuhlolwa kokusebenza. Akukho ukuguqukela kokunye ngokuzenzakalelayo (failover), i-SLA yokutholakala kwefu lonke, noma isiqinisekiso sokulungela ukukhiqiza kuyo yonke indawo esenziwa lapha.
 
@@ -54,7 +54,8 @@ Sebenzisa umyalo weqoqo usuka kule khophi yekhodi. Buyekeza i-[defaults/main.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ Nikeza izimfihlo okukhulunywe ngazo nge-Ansible Vault noma ngomphathi wezimfihlo
 
 ## Ukuthuthukiswa nokuhlola
 
-I-[Makefile](../../../Makefile), i-[CONTRIBUTING.md](../../../CONTRIBUTING.md), kanye ne-[TESTING.md](../../../TESTING.md) kuchaza ukusethwa kwezidingo okune-hash, ukuhlolwa kwe-lint, ukuhlolwa kweyunithi, kanye nezinkontileka ze-Docker/Molecule ezilahlwayo. Ukuhlolwa kweyunithi ne-lint akuqinisekisi ukuthunyelwa okuphumelelayo.
+I-[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), i-[CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md), kanye ne-[TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) kuchaza ukusethwa kwezidingo okune-hash, ukuhlolwa kwe-lint, ukuhlolwa kweyunithi, kanye nezinkontileka ze-Docker/Molecule ezilahlwayo. Ukuhlolwa kweyunithi ne-lint akuqinisekisi ukuthunyelwa okuphumelelayo.
 
 ```bash
 make lint
@@ -98,4 +99,4 @@ ngesikhathi sokufakwa. I-CI ifaka, ihlole futhi isuse zombili izinhlobo.
 
 ## Ukuvikeleka nelayisense
 
-Bheka i-[SECURITY.md](../../../SECURITY.md) kanye [nelayisense ye-MIT](../../../LICENSE). Imethadatha yephakheji, inqubomgomo yokusekelwa kwepulatifomu, nokuqinisekiswa kokukhishwa kufanele kuhlale kuhambisana nendima ethunyelwayo.
+Bheka i-[SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) kanye [nelayisense ye-MIT](../../../LICENSE). Imethadatha yephakheji, inqubomgomo yokusekelwa kwepulatifomu, nokuqinisekiswa kokukhishwa kufanele kuhlale kuhambisana nendima ethunyelwayo.

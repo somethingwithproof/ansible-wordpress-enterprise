@@ -34,7 +34,7 @@ Controladores com Python 3.12 usam Ansible 14.6 ou posterior na linha 14.x com a
 
 ## Maturidade dos recursos
 
-A sequência principal de tarefas é definida em [tasks/main.yml](../../../tasks/main.yml). Os grupos de monitoramento, backup, Fail2ban, segurança, cache e firewall possuem contratos de template ausentes registrados em [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml). Suas flags permanecem desativadas por padrão e a validação rejeita a ativação de grupos incompletos. Nomes de tarefas e variáveis de exemplo não devem ser apresentados como implementações funcionais desses recursos.
+A sequência principal de tarefas é definida em [tasks/main.yml](../../../tasks/main.yml). Os grupos de monitoramento, backup, Fail2ban, segurança, cache e firewall possuem contratos de template ausentes registrados em [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Suas flags permanecem desativadas por padrão e a validação rejeita a ativação de grupos incompletos. Nomes de tarefas e variáveis de exemplo não devem ser apresentados como implementações funcionais desses recursos.
 
 TLS, credenciais de banco de dados, segredos gerados do WordPress, proteções de caminho e tratamento específico de SO exigem a configuração documentada e verificações em tempo de execução. Não há garantia de failover automático, SLA de disponibilidade em nuvem nem prontidão universal para produção.
 
@@ -54,7 +54,8 @@ Execute o comando de coleção a partir deste checkout. Revise [defaults/main.ym
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ Forneça os segredos referenciados por meio do Ansible Vault ou de um gerenciado
 
 ## Desenvolvimento e testes
 
-O [Makefile](../../../Makefile), o [CONTRIBUTING.md](../../../CONTRIBUTING.md) e o [TESTING.md](../../../TESTING.md) definem a configuração de dependências com hash, verificações de lint, testes unitários e contratos descartáveis de Docker/Molecule. Testes unitários e lint não garantem uma implantação bem-sucedida.
+O [Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), o [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md) e o [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) definem a configuração de dependências com hash, verificações de lint, testes unitários e contratos descartáveis de Docker/Molecule. Testes unitários e lint não garantem uma implantação bem-sucedida.
 
 ```bash
 make lint
@@ -99,4 +100,4 @@ de implantação durante a instalação. O CI instala, verifica e remove ambos o
 
 ## Segurança e licença
 
-Consulte [SECURITY.md](../../../SECURITY.md) e a [licença MIT](../../../LICENSE). Os metadados do pacote, a política de suporte a plataformas e a validação de lançamentos devem permanecer alinhados com a role distribuída.
+Consulte [SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) e a [licença MIT](../../../LICENSE). Os metadados do pacote, a política de suporte a plataformas e a validação de lançamentos devem permanecer alinhados com a role distribuída.

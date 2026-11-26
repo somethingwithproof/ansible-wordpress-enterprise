@@ -34,7 +34,7 @@ Ipa Ansible kan fún ṣíṣètò àwọn ẹ̀rọ olùgbàlejò WordPress p�
 
 ## Ìpele ìdàgbà àwọn ẹ̀yà-iṣẹ́
 
-A ṣàlàyé ìtòlẹ́sẹẹsẹ iṣẹ́ pàtàkì nínú [tasks/main.yml](../../../tasks/main.yml). Àwọn ẹgbẹ́ àbójútó, àdàkọ ààbò, Fail2ban, ààbò, ìfipamọ́ kíákíá, àti ògiri-iná ní àwọn àdéhùn àwòkọ́ṣe tí ó sọnù tí a ṣàkọsílẹ̀ nínú [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml). Àwọn àsíá wọn wà ní ìpa ní ìbẹ̀rẹ̀, ìjẹ́rìísí sì ń kọ̀ láti tan àwọn ẹgbẹ́ tí kò pé. A kò gbọ́dọ̀ fi àwọn orúkọ iṣẹ́ àti àwọn àpẹẹrẹ oníyípadà hàn gẹ́gẹ́ bí ìmúṣẹ tí ń ṣiṣẹ́ fún àwọn ẹ̀yà-iṣẹ́ wọ̀nyẹn.
+A ṣàlàyé ìtòlẹ́sẹẹsẹ iṣẹ́ pàtàkì nínú [tasks/main.yml](../../../tasks/main.yml). Àwọn ẹgbẹ́ àbójútó, àdàkọ ààbò, Fail2ban, ààbò, ìfipamọ́ kíákíá, àti ògiri-iná ní àwọn àdéhùn àwòkọ́ṣe tí ó sọnù tí a ṣàkọsílẹ̀ nínú [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Àwọn àsíá wọn wà ní ìpa ní ìbẹ̀rẹ̀, ìjẹ́rìísí sì ń kọ̀ láti tan àwọn ẹgbẹ́ tí kò pé. A kò gbọ́dọ̀ fi àwọn orúkọ iṣẹ́ àti àwọn àpẹẹrẹ oníyípadà hàn gẹ́gẹ́ bí ìmúṣẹ tí ń ṣiṣẹ́ fún àwọn ẹ̀yà-iṣẹ́ wọ̀nyẹn.
 
 TLS, àwọn ẹ̀rí ìwọlé ibi-ìpamọ́ dátà, àwọn àṣírí WordPress tí a ṣẹ̀dá, àwọn ìṣọ́ ọ̀nà, àti ìṣàkóso pàtó fún OS nílò ìṣètò tí a kọ sílẹ̀ àti àwọn ìṣàyẹ̀wò nígbà ìṣiṣẹ́. Kò sí ìpèsè ìyípadà-àìdáwọ́dúró aládàáṣe, SLA wíwà-ní-ìmúrasílẹ̀ káàkiri àwọsánmà, tàbí ẹ̀tọ́ ìmúrasílẹ̀ fún ìṣẹ̀dá gidi ní gbogbo ibi tí a sọ níbí.
 
@@ -54,7 +54,8 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ Pèsè àwọn àṣírí tí a tọ́ka sí nípasẹ̀ Ansible Vault tàbí ol
 
 ## Ìdàgbàsókè àti ìdánwò
 
-[Makefile](../../../Makefile), [CONTRIBUTING.md](../../../CONTRIBUTING.md), àti [TESTING.md](../../../TESTING.md) ṣàlàyé ìṣètò ìgbẹ́kẹ̀lé tí a ṣe haṣì rẹ̀, àwọn ìṣàyẹ̀wò lint, àwọn ìdánwò ẹyọkan, àti àwọn àdéhùn Docker/Molecule tí a lè dà nù lẹ́yìn ìlò. Àwọn ìdánwò ẹyọkan àti lint kò fìdí ìgbékalẹ̀ àṣeyọrí múlẹ̀.
+[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md), àti [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) ṣàlàyé ìṣètò ìgbẹ́kẹ̀lé tí a ṣe haṣì rẹ̀, àwọn ìṣàyẹ̀wò lint, àwọn ìdánwò ẹyọkan, àti àwọn àdéhùn Docker/Molecule tí a lè dà nù lẹ́yìn ìlò. Àwọn ìdánwò ẹyọkan àti lint kò fìdí ìgbékalẹ̀ àṣeyọrí múlẹ̀.
 
 ```bash
 make lint
@@ -83,4 +84,4 @@ Jẹ́rìísí àwọn ìgbàsílẹ̀ pẹ̀lú `sha256sum --check SHA256SUMS`.
 
 ## Ààbò àti ìwé-àṣẹ
 
-Wo [SECURITY.md](../../../SECURITY.md) àti [ìwé-àṣẹ MIT](../../../LICENSE). Àwọn dátà-àpèjúwe àpò, ìlànà àtìlẹ́yìn pẹpẹ, àti ìjẹ́rìísí ìtújáde gbọ́dọ̀ bá ipa tí a fi ránṣẹ́ mu nígbà gbogbo.
+Wo [SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) àti [ìwé-àṣẹ MIT](../../../LICENSE). Àwọn dátà-àpèjúwe àpò, ìlànà àtìlẹ́yìn pẹpẹ, àti ìjẹ́rìísí ìtújáde gbọ́dọ̀ bá ipa tí a fi ránṣẹ́ mu nígbà gbogbo.

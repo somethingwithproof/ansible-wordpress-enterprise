@@ -34,7 +34,7 @@ Controller Python 3.12 menggunakan Ansible 14.6 atau lebih baru pada lini 14.x d
 
 ## Kematangan fitur
 
-Urutan tugas inti didefinisikan di [tasks/main.yml](../../../tasks/main.yml). Grup pemantauan, pencadangan, Fail2ban, keamanan, caching, dan firewall memiliki kontrak templat yang belum lengkap dan tercatat di [tests/unit/missing_templates.yml](../../../tests/unit/missing_templates.yml). Flag untuk grup tersebut tetap nonaktif secara default dan validasi akan menolak pengaktifan grup yang belum lengkap. Nama tugas dan contoh variabel tidak boleh disajikan sebagai implementasi yang berfungsi dari fitur-fitur tersebut.
+Urutan tugas inti didefinisikan di [tasks/main.yml](../../../tasks/main.yml). Grup pemantauan, pencadangan, Fail2ban, keamanan, caching, dan firewall memiliki kontrak templat yang belum lengkap dan tercatat di [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Flag untuk grup tersebut tetap nonaktif secara default dan validasi akan menolak pengaktifan grup yang belum lengkap. Nama tugas dan contoh variabel tidak boleh disajikan sebagai implementasi yang berfungsi dari fitur-fitur tersebut.
 
 TLS, kredensial basis data, rahasia WordPress yang dihasilkan, pengaman jalur, dan penanganan khusus OS memerlukan konfigurasi serta pemeriksaan runtime sesuai dokumentasi. Tidak ada klaim failover otomatis, SLA ketersediaan lintas cloud, atau kesiapan produksi universal yang dibuat di sini.
 
@@ -54,7 +54,8 @@ Jalankan perintah koleksi dari salinan repositori ini. Tinjau [defaults/main.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "http://wordpress.example.com"
+    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_enable_ssl: true
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
@@ -67,7 +68,7 @@ Sediakan rahasia yang dirujuk melalui Ansible Vault atau pengelola rahasia yang 
 
 ## Pengembangan dan pengujian
 
-[Makefile](../../../Makefile), [CONTRIBUTING.md](../../../CONTRIBUTING.md), dan [TESTING.md](../../../TESTING.md) mendefinisikan penyiapan dependensi ber-hash, pemeriksaan lint, pengujian unit, serta kontrak Docker/Molecule sementara. Pengujian unit dan lint tidak menjamin keberhasilan penerapan.
+[Makefile](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/Makefile), [CONTRIBUTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/CONTRIBUTING.md), dan [TESTING.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/TESTING.md) mendefinisikan penyiapan dependensi ber-hash, pemeriksaan lint, pengujian unit, serta kontrak Docker/Molecule sementara. Pengujian unit dan lint tidak menjamin keberhasilan penerapan.
 
 ```bash
 make lint
@@ -99,4 +100,4 @@ penerapan saat pemasangan. CI memasang, memeriksa, dan menghapus kedua format te
 
 ## Keamanan dan lisensi
 
-Lihat [SECURITY.md](../../../SECURITY.md) dan [lisensi MIT](../../../LICENSE). Metadata paket, kebijakan dukungan platform, dan validasi rilis harus tetap selaras dengan peran yang dikirimkan.
+Lihat [SECURITY.md](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/SECURITY.md) dan [lisensi MIT](../../../LICENSE). Metadata paket, kebijakan dukungan platform, dan validasi rilis harus tetap selaras dengan peran yang dikirimkan.
