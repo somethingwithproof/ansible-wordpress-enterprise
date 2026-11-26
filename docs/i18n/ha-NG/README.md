@@ -34,7 +34,7 @@ Masu sarrafawa (controllers) na Python 3.12 suna amfani da Ansible 14.6 ko sabo 
 
 ## Balagar fasaloli
 
-An bayyana jerin manyan ayyuka a cikin [tasks/main.yml](../../../tasks/main.yml). Rukunonin sa ido, ajiyar baya, Fail2ban, tsaro, adanar wucin gadi (caching), da firewall suna da yarjejeniyoyin samfuri da suka ɓata waɗanda aka rubuta a [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Alamomin kunnawa nasu suna kashe a matsayin tsoho kuma tantancewa tana ƙin kunna rukunonin da ba su cika ba. Kada a gabatar da sunayen ayyuka da misalan masu canji a matsayin aiwatarwa masu aiki na waɗannan fasalolin.
+An bayyana jerin manyan ayyuka a cikin [tasks/main.yml](../../../tasks/main.yml). Rukunonin sa ido, ajiyar baya, Fail2ban, tsaro, adanar wucin gadi (caching), da firewall suna da yarjejeniyoyin samfuri da suka ɓata waɗanda aka rubuta a [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Alamomin kunnawa nasu suna kashe a matsayin tsoho, kuma rukunin da ba ya cika idan an kunna shi yana tsayawa ne kawai lokacin da ayyukansa suka fara aiki, bayan matakan baya sun riga sun gudana. Kada a gabatar da sunayen ayyuka da misalan masu canji a matsayin aiwatarwa masu aiki na waɗannan fasalolin.
 
 TLS, takardun shaidar rumbun adana bayanai, sirrikan WordPress da aka samar, masu tsaron hanya, da sarrafawa ta musamman ga OS suna buƙatar saitin da aka rubuta da kuma binciken lokacin aiki. Ba a da'awar sauyawa ta atomatik yayin gazawa (failover), yarjejeniyar samuwar sabis ta girgije (SLA), ko shiryawa gaba ɗaya don aikin zahiri a nan.
 

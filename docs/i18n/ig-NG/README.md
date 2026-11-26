@@ -34,7 +34,7 @@ Controller Python 3.12 na-eji Ansible 14.6 ma ọ bụ nke ọhụrụ karịa n
 
 ## Ntozuoke nke atụmatụ ọrụ
 
-A kọwara usoro ọrụ bụ isi na [tasks/main.yml](../../../tasks/main.yml). Otu nlekọta, nchekwa ndabere, Fail2ban, nchekwa, caching, na firewall nwere nkwekọrịta ndebiri na-efu e dekọrọ na [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Flag ha ka gbanyụrụ na ndabara ma nnyocha na-ajụ ịgbanye otu ndị ezughị oke. E kwesịghị igosi aha ọrụ na variable ihe atụ dị ka mmejupụta na-arụ ọrụ nke atụmatụ ndị ahụ.
+A kọwara usoro ọrụ bụ isi na [tasks/main.yml](../../../tasks/main.yml). Otu nlekọta, nchekwa ndabere, Fail2ban, nchekwa, caching, na firewall nwere nkwekọrịta ndebiri na-efu e dekọrọ na [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Flag ha ka gbanyụrụ na ndabara, ma otu ezughị oke a gbanyere na-akwụsị naanị mgbe ọrụ ya na-agba, mgbe usoro ndị mbụ gbachara. E kwesịghị igosi aha ọrụ na variable ihe atụ dị ka mmejupụta na-arụ ọrụ nke atụmatụ ndị ahụ.
 
 TLS, nzere nchekwa data, ihe nzuzo WordPress a rụpụtara, nchedo ụzọ faịlụ, na njikwa pụrụ iche maka OS chọrọ nhazi e dere ede na nnyocha oge ọrụ. Enweghị nkwupụta e mere ebe a maka mgbanwe ọdịda n'akpaghị aka, SLA nnweta n'igwe ojii niile, ma ọ bụ njikere mmepụta maka ebe niile.
 

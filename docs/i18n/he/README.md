@@ -34,7 +34,7 @@ SPDX-License-Identifier: MIT
 
 ## בשלות התכונות
 
-רצף המשימות המרכזי מוגדר ב-[tasks/main.yml](../../../tasks/main.yml). לקבוצות הניטור, הגיבוי, Fail2ban, האבטחה, המטמון וחומת האש יש חוזי תבניות חסרים המתועדים ב-[tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). הדגלים שלהן נותרים כבויים כברירת מחדל והאימות דוחה הפעלה של קבוצות לא שלמות. אין להציג שמות משימות ומשתני דוגמה כמימושים פעילים של תכונות אלו.
+רצף המשימות המרכזי מוגדר ב-[tasks/main.yml](../../../tasks/main.yml). לקבוצות הניטור, הגיבוי, Fail2ban, האבטחה, המטמון וחומת האש יש חוזי תבניות חסרים המתועדים ב-[tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). הדגלים שלהן נותרים כבויים כברירת מחדל, וקבוצה לא שלמה שהופעלה נעצרת רק כאשר משימותיה רצות, לאחר שהשלבים הקודמים כבר רצו. אין להציג שמות משימות ומשתני דוגמה כמימושים פעילים של תכונות אלו.
 
 TLS, פרטי התחברות למסד הנתונים, סודות WordPress שנוצרו, הגנות נתיבים וטיפול ייעודי למערכת ההפעלה מחייבים את התצורה המתועדת ובדיקות זמן ריצה. לא נטענות כאן יכולת מעבר אוטומטי לגיבוי (failover), הבטחת זמינות (SLA) כלל-עננית או מוכנות אוניברסלית לייצור.
 

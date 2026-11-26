@@ -34,7 +34,7 @@ Python 3.12 控制节点使用 14.x 系列的 Ansible 14.6 或更高版本，搭
 
 ## 功能成熟度
 
-核心任务序列定义在 [tasks/main.yml](../../../tasks/main.yml) 中。监控、备份、Fail2ban、安全、缓存和防火墙分组存在缺失的模板契约，记录在 [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml) 中。它们的开关默认保持关闭，验证逻辑会拒绝启用未完成的分组。任务名称和示例变量不得被视为这些功能的可用实现。
+核心任务序列定义在 [tasks/main.yml](../../../tasks/main.yml) 中。监控、备份、Fail2ban、安全、缓存和防火墙分组存在缺失的模板契约，记录在 [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml) 中。它们的开关默认保持关闭，启用的未完成分组只会在前面的阶段运行完毕后、轮到其自身任务执行时才停止。任务名称和示例变量不得被视为这些功能的可用实现。
 
 TLS、数据库凭据、生成的 WordPress 密钥、路径保护和特定于操作系统的处理均需要按文档要求进行配置和运行时检查。此处不声明自动故障转移、跨云可用性 SLA 或通用的生产就绪性。
 

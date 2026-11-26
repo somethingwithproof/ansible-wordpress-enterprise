@@ -34,7 +34,7 @@ SPDX-License-Identifier: MIT
 
 ## የባህሪ ብስለት
 
-ዋናው የተግባራት ቅደም ተከተል በ[tasks/main.yml](../../../tasks/main.yml) ውስጥ ተገልጿል። የክትትል፣ የመጠባበቂያ ቅጂ፣ የFail2ban፣ የደህንነት፣ የመሸጎጫ እና የፋየርዎል ቡድኖች በ[tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml) ውስጥ የተመዘገቡ የጎደሉ የአብነት ውሎች አሏቸው። መቀየሪያዎቻቸው በነባሪነት ጠፍተው ይቆያሉ እንዲሁም ማረጋገጫው ያልተሟሉ ቡድኖችን ማንቃትን አይቀበልም። የተግባር ስሞች እና የምሳሌ ተለዋዋጮች የእነዚያ ባህሪያት የሚሠሩ አተገባበሮች ተደርገው መቅረብ የለባቸውም።
+ዋናው የተግባራት ቅደም ተከተል በ[tasks/main.yml](../../../tasks/main.yml) ውስጥ ተገልጿል። የክትትል፣ የመጠባበቂያ ቅጂ፣ የFail2ban፣ የደህንነት፣ የመሸጎጫ እና የፋየርዎል ቡድኖች በ[tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml) ውስጥ የተመዘገቡ የጎደሉ የአብነት ውሎች አሏቸው። መቀየሪያዎቻቸው በነባሪነት ጠፍተው ይቆያሉ፣ እና የነቃ ያልተሟላ ቡድን የሚቆመው ቀደም ያሉ ምዕራፎች ከተፈጸሙ በኋላ የራሱ ተግባራት ሲሰሩ ብቻ ነው። የተግባር ስሞች እና የምሳሌ ተለዋዋጮች የእነዚያ ባህሪያት የሚሠሩ አተገባበሮች ተደርገው መቅረብ የለባቸውም።
 
 TLS፣ የውሂብ ጎታ ማረጋገጫዎች፣ የተመነጩ የWordPress ምስጢሮች፣ የዱካ ጥበቃዎች እና ለሥርዓተ ክወና የተለዩ አያያዞች የተመዘገበውን ውቅር እና የአሂድ ጊዜ ፍተሻዎችን ይፈልጋሉ። እዚህ ምንም ዓይነት ራስ-ሰር መተካካት፣ ደመና-አቀፍ የተደራሽነት SLA ወይም ሁለንተናዊ ለምርት ዝግጁነት አይገለጽም።
 

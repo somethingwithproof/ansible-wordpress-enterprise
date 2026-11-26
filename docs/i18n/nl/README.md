@@ -34,7 +34,7 @@ Controllers met Python 3.12 gebruiken Ansible 14.6 of nieuwer binnen de 14.x-lij
 
 ## Volwassenheid van functies
 
-De kerntaakvolgorde is gedefinieerd in [tasks/main.yml](../../../tasks/main.yml). De groepen voor monitoring, back-up, Fail2ban, beveiliging, caching en firewall hebben ontbrekende sjablooncontracten die zijn vastgelegd in [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Hun vlaggen staan standaard uit en de validatie weigert het inschakelen van onvolledige groepen. Taaknamen en voorbeeldvariabelen mogen niet worden gepresenteerd als werkende implementaties van die functies.
+De kerntaakvolgorde is gedefinieerd in [tasks/main.yml](../../../tasks/main.yml). De groepen voor monitoring, back-up, Fail2ban, beveiliging, caching en firewall hebben ontbrekende sjablooncontracten die zijn vastgelegd in [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Hun vlaggen staan standaard uit, en een ingeschakelde onvolledige groep stopt pas wanneer de bijbehorende taken worden uitgevoerd, nadat eerdere fasen al hebben gedraaid. Taaknamen en voorbeeldvariabelen mogen niet worden gepresenteerd als werkende implementaties van die functies.
 
 TLS, databasegegevens, gegenereerde WordPress-geheimen, padbeveiligingen en OS-specifieke afhandeling vereisen de gedocumenteerde configuratie en runtime-controles. Er wordt hier geen automatische failover, cloudbrede beschikbaarheids-SLA of universele claim van productiegeschiktheid gedaan.
 

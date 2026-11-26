@@ -34,7 +34,7 @@ Python 3.12 컨트롤러는 14.x 계열의 Ansible 14.6 이상과 2.21 계열의
 
 ## 기능 성숙도
 
-핵심 작업 순서는 [tasks/main.yml](../../../tasks/main.yml)에 정의되어 있습니다. 모니터링, 백업, Fail2ban, 보안, 캐싱, 방화벽 그룹에는 누락된 템플릿 계약이 있으며 이는 [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml)에 기록되어 있습니다. 해당 플래그는 기본값이 비활성화 상태이며, 미완성 그룹을 활성화하면 검증 단계에서 거부됩니다. 작업 이름이나 예제 변수가 해당 기능의 완성된 구현인 것처럼 제시되어서는 안 됩니다.
+핵심 작업 순서는 [tasks/main.yml](../../../tasks/main.yml)에 정의되어 있습니다. 모니터링, 백업, Fail2ban, 보안, 캐싱, 방화벽 그룹에는 누락된 템플릿 계약이 있으며 이는 [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml)에 기록되어 있습니다. 해당 플래그는 기본값이 비활성화 상태이며, 활성화된 미완성 그룹은 이전 단계들이 실행된 뒤 해당 그룹의 작업이 실행될 때 비로소 중단됩니다. 작업 이름이나 예제 변수가 해당 기능의 완성된 구현인 것처럼 제시되어서는 안 됩니다.
 
 TLS, 데이터베이스 자격 증명, 생성된 WordPress 시크릿, 경로 보호 장치, 그리고 OS별 처리는 문서화된 구성과 런타임 검증이 필요합니다. 여기서는 자동 장애 조치, 클라우드 전역 가용성 SLA 또는 범용 프로덕션 준비 완료를 보장하지 않습니다.
 

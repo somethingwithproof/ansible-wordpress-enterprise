@@ -34,7 +34,7 @@ Kontrollnoder med Python 3.12 använder Ansible 14.6 eller senare i 14.x-serien 
 
 ## Funktionsmognad
 
-Den centrala uppgiftssekvensen definieras i [tasks/main.yml](../../../tasks/main.yml). Grupperna för övervakning, säkerhetskopiering, Fail2ban, säkerhet, cachning och brandvägg saknar mallkontrakt som är dokumenterade i [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Deras flaggor är avstängda som standard och valideringen avvisar aktivering av ofullständiga grupper. Uppgiftsnamn och exempelvariabler får inte framställas som fungerande implementeringar av dessa funktioner.
+Den centrala uppgiftssekvensen definieras i [tasks/main.yml](../../../tasks/main.yml). Grupperna för övervakning, säkerhetskopiering, Fail2ban, säkerhet, cachning och brandvägg saknar mallkontrakt som är dokumenterade i [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Deras flaggor är avstängda som standard, och en aktiverad ofullständig grupp stannar först när dess uppgifter körs, efter att tidigare faser redan har körts. Uppgiftsnamn och exempelvariabler får inte framställas som fungerande implementeringar av dessa funktioner.
 
 TLS, databasautentiseringsuppgifter, genererade WordPress-hemligheter, sökvägsskydd och OS-specifik hantering kräver den dokumenterade konfigurationen och körtidskontrollerna. Ingen automatisk redundansväxling, molnövergripande tillgänglighets-SLA eller generell garanti om produktionsmognad görs gällande här.
 

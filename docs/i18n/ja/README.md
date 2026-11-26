@@ -34,7 +34,7 @@ Python 3.12 コントローラーでは、14.x 系の Ansible 14.6 以降およ�
 
 ## 機能の成熟度
 
-コアタスクの実行順序は [tasks/main.yml](../../../tasks/main.yml) で定義されています。監視、バックアップ、Fail2ban、セキュリティ、キャッシュ、ファイアウォールの各グループには未実装のテンプレート契約があり、[tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml) に記録されています。これらのフラグはデフォルトで無効のままになっており、未完成のグループを有効にしようとすると検証で拒否されます。タスク名や設定例変数を、これらの機能が動作する実装として扱わないでください。
+コアタスクの実行順序は [tasks/main.yml](../../../tasks/main.yml) で定義されています。監視、バックアップ、Fail2ban、セキュリティ、キャッシュ、ファイアウォールの各グループには未実装のテンプレート契約があり、[tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml) に記録されています。これらのフラグはデフォルトで無効のままになっており、有効化された未完成のグループは先行フェーズの実行後にそのタスクが実行される段階で初めて停止します。タスク名や設定例変数を、これらの機能が動作する実装として扱わないでください。
 
 TLS、データベース認証情報、生成される WordPress シークレット、パスガード、および OS 固有の処理には、ドキュメントに記載された設定と実行時チェックが必要です。ここでは自動フェイルオーバー、クラウド全体の可用性 SLA、またはあらゆる環境での本番運用対応を保証するものではありません。
 

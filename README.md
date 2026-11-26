@@ -34,7 +34,7 @@ Python 3.12 controllers use Ansible 14.6 or later in the 14.x line with ansible-
 
 ## Feature maturity
 
-The core task sequence is defined in [tasks/main.yml](tasks/main.yml). Monitoring, backup, Fail2ban, security, caching, and firewall groups have missing template contracts recorded in [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Their flags remain default-off and validation rejects enabling incomplete groups. Task names and example variables must not be presented as working implementations of those features.
+The core task sequence is defined in [tasks/main.yml](tasks/main.yml). Monitoring, backup, Fail2ban, security, caching, and firewall groups have missing template contracts recorded in [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Their flags remain default-off, and an enabled incomplete group stops only when its tasks run, after earlier phases have run. Task names and example variables must not be presented as working implementations of those features.
 
 TLS, database credentials, generated WordPress secrets, path guards, and OS-specific handling require the documented configuration and runtime checks. No automatic failover, cloud-wide availability SLA, or universal production-readiness claim is made here.
 

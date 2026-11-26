@@ -34,7 +34,7 @@ Python 3.12 控制器使用 14.x 系列的 Ansible 14.6 或更新版本，搭配
 
 ## 功能成熟度
 
-核心工作順序定義於 [tasks/main.yml](../../../tasks/main.yml)。監控、備份、Fail2ban、安全性、快取與防火牆群組尚有缺失的範本契約，均記錄於 [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml)。這些群組的旗標預設為關閉，且驗證流程會拒絕啟用尚未完成的群組。不得將工作名稱與範例變數視為上述功能的可用實作。
+核心工作順序定義於 [tasks/main.yml](../../../tasks/main.yml)。監控、備份、Fail2ban、安全性、快取與防火牆群組尚有缺失的範本契約，均記錄於 [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml)。這些群組的旗標預設為關閉，已啟用的未完成群組只會在先前階段執行完畢後、輪到其本身工作執行時才會停止。不得將工作名稱與範例變數視為上述功能的可用實作。
 
 TLS、資料庫認證資訊、產生的 WordPress 機密金鑰、路徑保護機制以及特定作業系統的處理方式，皆須符合文件記載的設定與執行時期檢查。本專案不提供自動容錯移轉、跨雲端可用性 SLA，亦不宣稱適用於所有正式環境。
 

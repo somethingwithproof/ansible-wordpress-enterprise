@@ -34,7 +34,7 @@ Controladores com Python 3.12 usam Ansible 14.6 ou posterior na linha 14.x com a
 
 ## Maturidade dos recursos
 
-A sequência principal de tarefas é definida em [tasks/main.yml](../../../tasks/main.yml). Os grupos de monitoramento, backup, Fail2ban, segurança, cache e firewall possuem contratos de template ausentes registrados em [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Suas flags permanecem desativadas por padrão e a validação rejeita a ativação de grupos incompletos. Nomes de tarefas e variáveis de exemplo não devem ser apresentados como implementações funcionais desses recursos.
+A sequência principal de tarefas é definida em [tasks/main.yml](../../../tasks/main.yml). Os grupos de monitoramento, backup, Fail2ban, segurança, cache e firewall possuem contratos de template ausentes registrados em [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Suas flags permanecem desativadas por padrão, e um grupo incompleto ativado só é interrompido quando suas tarefas são executadas, depois que fases anteriores já foram executadas. Nomes de tarefas e variáveis de exemplo não devem ser apresentados como implementações funcionais desses recursos.
 
 TLS, credenciais de banco de dados, segredos gerados do WordPress, proteções de caminho e tratamento específico de SO exigem a configuração documentada e verificações em tempo de execução. Não há garantia de failover automático, SLA de disponibilidade em nuvem nem prontidão universal para produção.
 

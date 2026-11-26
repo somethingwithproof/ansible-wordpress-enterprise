@@ -34,7 +34,7 @@ Vidhibiti vya Python 3.12 hutumia Ansible 14.6 au toleo jipya zaidi katika mfulu
 
 ## Ukomavu wa vipengele
 
-Mlolongo mkuu wa kazi umefafanuliwa katika [tasks/main.yml](../../../tasks/main.yml). Vikundi vya ufuatiliaji, nakala rudufu, Fail2ban, usalama, akiba ya muda (caching), na firewall vina mikataba ya violezo inayokosekana iliyorekodiwa katika [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Bendera zake hubaki zimezimwa kwa chaguo-msingi na uthibitishaji hukataa kuwasha vikundi visivyokamilika. Majina ya kazi na vigeu vya mifano havipaswi kuwasilishwa kama utekelezaji unaofanya kazi wa vipengele hivyo.
+Mlolongo mkuu wa kazi umefafanuliwa katika [tasks/main.yml](../../../tasks/main.yml). Vikundi vya ufuatiliaji, nakala rudufu, Fail2ban, usalama, akiba ya muda (caching), na firewall vina mikataba ya violezo inayokosekana iliyorekodiwa katika [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Bendera zake hubaki zimezimwa kwa chaguo-msingi, na kikundi kisichokamilika kilichowashwa husimama tu wakati kazi zake zinapoendeshwa, baada ya awamu za awali kuendeshwa. Majina ya kazi na vigeu vya mifano havipaswi kuwasilishwa kama utekelezaji unaofanya kazi wa vipengele hivyo.
 
 TLS, vitambulisho vya hifadhidata, siri za WordPress zinazozalishwa, ulinzi wa njia za faili, na ushughulikiaji mahususi wa mfumo endeshi huhitaji usanidi ulioandikwa na ukaguzi wakati wa uendeshaji. Hakuna uhamishaji wa kiotomatiki wakati wa hitilafu, SLA ya upatikanaji wa wingu zima, wala dai la utayari wa uzalishaji kwa mazingira yote linalotolewa hapa.
 

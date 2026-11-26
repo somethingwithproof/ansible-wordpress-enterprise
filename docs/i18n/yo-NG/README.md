@@ -34,7 +34,7 @@ Ipa Ansible kan fún ṣíṣètò àwọn ẹ̀rọ olùgbàlejò WordPress p�
 
 ## Ìpele ìdàgbà àwọn ẹ̀yà-iṣẹ́
 
-A ṣàlàyé ìtòlẹ́sẹẹsẹ iṣẹ́ pàtàkì nínú [tasks/main.yml](../../../tasks/main.yml). Àwọn ẹgbẹ́ àbójútó, àdàkọ ààbò, Fail2ban, ààbò, ìfipamọ́ kíákíá, àti ògiri-iná ní àwọn àdéhùn àwòkọ́ṣe tí ó sọnù tí a ṣàkọsílẹ̀ nínú [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Àwọn àsíá wọn wà ní ìpa ní ìbẹ̀rẹ̀, ìjẹ́rìísí sì ń kọ̀ láti tan àwọn ẹgbẹ́ tí kò pé. A kò gbọ́dọ̀ fi àwọn orúkọ iṣẹ́ àti àwọn àpẹẹrẹ oníyípadà hàn gẹ́gẹ́ bí ìmúṣẹ tí ń ṣiṣẹ́ fún àwọn ẹ̀yà-iṣẹ́ wọ̀nyẹn.
+A ṣàlàyé ìtòlẹ́sẹẹsẹ iṣẹ́ pàtàkì nínú [tasks/main.yml](../../../tasks/main.yml). Àwọn ẹgbẹ́ àbójútó, àdàkọ ààbò, Fail2ban, ààbò, ìfipamọ́ kíákíá, àti ògiri-iná ní àwọn àdéhùn àwòkọ́ṣe tí ó sọnù tí a ṣàkọsílẹ̀ nínú [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Àwọn àsíá wọn wà ní ìpa ní ìbẹ̀rẹ̀, ẹgbẹ́ tí kò pé tí a bá tàn sì máa ń dáwọ́ dúró nìkan nígbà tí àwọn iṣẹ́ rẹ̀ bá bẹ̀rẹ̀ sí í ṣiṣẹ́, lẹ́yìn tí àwọn ìpele ìṣáájú bá ti ṣiṣẹ́. A kò gbọ́dọ̀ fi àwọn orúkọ iṣẹ́ àti àwọn àpẹẹrẹ oníyípadà hàn gẹ́gẹ́ bí ìmúṣẹ tí ń ṣiṣẹ́ fún àwọn ẹ̀yà-iṣẹ́ wọ̀nyẹn.
 
 TLS, àwọn ẹ̀rí ìwọlé ibi-ìpamọ́ dátà, àwọn àṣírí WordPress tí a ṣẹ̀dá, àwọn ìṣọ́ ọ̀nà, àti ìṣàkóso pàtó fún OS nílò ìṣètò tí a kọ sílẹ̀ àti àwọn ìṣàyẹ̀wò nígbà ìṣiṣẹ́. Kò sí ìpèsè ìyípadà-àìdáwọ́dúró aládàáṣe, SLA wíwà-ní-ìmúrasílẹ̀ káàkiri àwọsánmà, tàbí ẹ̀tọ́ ìmúrasílẹ̀ fún ìṣẹ̀dá gidi ní gbogbo ibi tí a sọ níbí.
 

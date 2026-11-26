@@ -34,7 +34,7 @@ Controller Python 3.12 menggunakan Ansible 14.6 atau lebih baru pada lini 14.x d
 
 ## Kematangan fitur
 
-Urutan tugas inti didefinisikan di [tasks/main.yml](../../../tasks/main.yml). Grup pemantauan, pencadangan, Fail2ban, keamanan, caching, dan firewall memiliki kontrak templat yang belum lengkap dan tercatat di [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Flag untuk grup tersebut tetap nonaktif secara default dan validasi akan menolak pengaktifan grup yang belum lengkap. Nama tugas dan contoh variabel tidak boleh disajikan sebagai implementasi yang berfungsi dari fitur-fitur tersebut.
+Urutan tugas inti didefinisikan di [tasks/main.yml](../../../tasks/main.yml). Grup pemantauan, pencadangan, Fail2ban, keamanan, caching, dan firewall memiliki kontrak templat yang belum lengkap dan tercatat di [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Flag untuk grup tersebut tetap nonaktif secara default, dan grup belum lengkap yang diaktifkan hanya berhenti saat tugasnya dijalankan, setelah fase-fase sebelumnya berjalan. Nama tugas dan contoh variabel tidak boleh disajikan sebagai implementasi yang berfungsi dari fitur-fitur tersebut.
 
 TLS, kredensial basis data, rahasia WordPress yang dihasilkan, pengaman jalur, dan penanganan khusus OS memerlukan konfigurasi serta pemeriksaan runtime sesuai dokumentasi. Tidak ada klaim failover otomatis, SLA ketersediaan lintas cloud, atau kesiapan produksi universal yang dibuat di sini.
 

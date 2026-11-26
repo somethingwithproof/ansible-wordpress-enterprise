@@ -34,7 +34,7 @@ Controller mit Python 3.12 verwenden Ansible 14.6 oder neuer aus der 14.x-Reihe 
 
 ## Funktionsreife
 
-Die zentrale Aufgabenfolge ist in [tasks/main.yml](../../../tasks/main.yml) definiert. Für die Gruppen Monitoring, Backup, Fail2ban, Sicherheit, Caching und Firewall fehlen Vorlagenverträge, die in [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml) dokumentiert sind. Ihre Flags sind standardmäßig deaktiviert, und die Validierung lehnt das Aktivieren unvollständiger Gruppen ab. Aufgabennamen und Beispielvariablen dürfen nicht als funktionierende Implementierungen dieser Funktionen dargestellt werden.
+Die zentrale Aufgabenfolge ist in [tasks/main.yml](../../../tasks/main.yml) definiert. Für die Gruppen Monitoring, Backup, Fail2ban, Sicherheit, Caching und Firewall fehlen Vorlagenverträge, die in [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml) dokumentiert sind. Ihre Flags sind standardmäßig deaktiviert, und eine aktivierte unvollständige Gruppe bricht erst ab, wenn ihre Aufgaben nach den vorherigen Phasen ausgeführt werden. Aufgabennamen und Beispielvariablen dürfen nicht als funktionierende Implementierungen dieser Funktionen dargestellt werden.
 
 TLS, Datenbank-Zugangsdaten, generierte WordPress-Secrets, Pfadschutzprüfungen und betriebssystemspezifische Abläufe erfordern die dokumentierte Konfiguration sowie Laufzeitprüfungen. Es wird hier weder automatisches Failover noch ein cloudweites Verfügbarkeits-SLA oder eine allgemeine Produktionsreife zugesichert.
 

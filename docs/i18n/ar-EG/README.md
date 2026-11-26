@@ -34,7 +34,7 @@ SPDX-License-Identifier: MIT
 
 ## نضج الميزات
 
-تسلسل المهام الأساسي متعرّف في [tasks/main.yml](../../../tasks/main.yml). مجموعات المراقبة، والنسخ الاحتياطي، وFail2ban، والأمان، والـ caching، والـ firewall عندها عقود قوالب ناقصة متسجّلة في [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). الإعدادات (flags) بتاعتها بتفضل مقفولة افتراضيًا، والتحقق بيرفض تفعيل المجموعات غير المكتملة. ما ينفعش تقديم أسماء المهام أو متغيرات الأمثلة على إنها تنفيذ شغال للميزات دي.
+تسلسل المهام الأساسي متعرّف في [tasks/main.yml](../../../tasks/main.yml). مجموعات المراقبة، والنسخ الاحتياطي، وFail2ban، والأمان، والـ caching، والـ firewall عندها عقود قوالب ناقصة متسجّلة في [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). الإعدادات (flags) بتاعتها بتفضل مقفولة افتراضيًا، وأي مجموعة غير مكتملة متفعّلة بتقف بس لما مهامها تشتغل، بعد ما المراحل اللي قبلها تكون اشتغلت. ما ينفعش تقديم أسماء المهام أو متغيرات الأمثلة على إنها تنفيذ شغال للميزات دي.
 
 الـ TLS، وبيانات اعتماد قاعدة البيانات، وأسرار WordPress المولّدة، وحمايات المسارات، والتعامل الخاص بكل نظام تشغيل محتاجين الإعدادات الموثّقة وفحوصات وقت التشغيل. مفيش هنا أي ادعاء بوجود failover تلقائي، أو اتفاقية مستوى خدمة (SLA) للتوافر على مستوى السحابة، أو جاهزية إنتاجية شاملة.
 

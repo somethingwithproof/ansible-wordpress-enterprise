@@ -34,7 +34,7 @@ Python 3.12-beheerders gebruik Ansible 14.6 of nuwer in die 14.x-reeks met ansib
 
 ## Funksievolwassenheid
 
-Die kerntaakvolgorde word in [tasks/main.yml](../../../tasks/main.yml) gedefinieer. Monitering-, rugsteun-, Fail2ban-, sekuriteit-, kasgeheue- en brandmuurgroepe het ontbrekende sjabloonkontrakte wat in [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml) aangeteken is. Hul vlae bly by verstek afgeskakel en validering verwerp die aktivering van onvolledige groepe. Taakname en voorbeeldveranderlikes mag nie as werkende implementerings van daardie funksies voorgestel word nie.
+Die kerntaakvolgorde word in [tasks/main.yml](../../../tasks/main.yml) gedefinieer. Monitering-, rugsteun-, Fail2ban-, sekuriteit-, kasgeheue- en brandmuurgroepe het ontbrekende sjabloonkontrakte wat in [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml) aangeteken is. Hul vlae bly by verstek afgeskakel, en 'n geaktiveerde onvolledige groep stop eers wanneer sy take loop, nadat vroeëre fases reeds geloop het. Taakname en voorbeeldveranderlikes mag nie as werkende implementerings van daardie funksies voorgestel word nie.
 
 TLS, databasis-aanmeldbewyse, gegenereerde WordPress-geheime, padwagte en bedryfstelselspesifieke hantering vereis die gedokumenteerde konfigurasie en looptydkontroles. Geen outomatiese foutoorskakeling, wolk-wye beskikbaarheids-SLA of universele produksiegereedheid word hier beweer nie.
 

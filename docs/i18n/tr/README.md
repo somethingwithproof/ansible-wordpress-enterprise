@@ -34,7 +34,7 @@ Python 3.12 denetleyicileri, 14.x serisinde Ansible 14.6 veya üzeri ile 2.21 se
 
 ## Özellik olgunluğu
 
-Temel görev sırası [tasks/main.yml](../../../tasks/main.yml) dosyasında tanımlanmıştır. İzleme, yedekleme, Fail2ban, güvenlik, önbellekleme ve güvenlik duvarı gruplarının eksik şablon sözleşmeleri [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml) dosyasında kayıtlıdır. Bu grupların bayrakları varsayılan olarak kapalıdır ve doğrulama, tamamlanmamış grupların etkinleştirilmesini reddeder. Görev adları ve örnek değişkenler bu özelliklerin çalışan uygulamaları olarak sunulmamalıdır.
+Temel görev sırası [tasks/main.yml](../../../tasks/main.yml) dosyasında tanımlanmıştır. İzleme, yedekleme, Fail2ban, güvenlik, önbellekleme ve güvenlik duvarı gruplarının eksik şablon sözleşmeleri [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml) dosyasında kayıtlıdır. Bu grupların bayrakları varsayılan olarak kapalıdır ve etkinleştirilen tamamlanmamış bir grup yalnızca önceki aşamalar çalıştıktan sonra kendi görevleri çalıştığında durur. Görev adları ve örnek değişkenler bu özelliklerin çalışan uygulamaları olarak sunulmamalıdır.
 
 TLS, veritabanı kimlik bilgileri, oluşturulan WordPress gizli anahtarları, yol korumaları ve işletim sistemine özgü işlemler belgelenmiş yapılandırma ve çalışma zamanı kontrollerini gerektirir. Burada otomatik yük devretme, bulut genelinde erişilebilirlik SLA'sı veya evrensel üretim hazır olma iddiası sunulmamaktadır.
 

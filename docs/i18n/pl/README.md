@@ -34,7 +34,7 @@ Kontrolery z Pythonem 3.12 używają Ansible 14.6 lub nowszego z linii 14.x wraz
 
 ## Dojrzałość funkcji
 
-Podstawowa sekwencja zadań jest zdefiniowana w [tasks/main.yml](../../../tasks/main.yml). Grupy monitoringu, kopii zapasowych, Fail2ban, bezpieczeństwa, pamięci podręcznej i zapory sieciowej mają brakujące kontrakty szablonów zapisane w [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Ich flagi pozostają domyślnie wyłączone, a walidacja odrzuca włączenie niekompletnych grup. Nazw zadań i przykładowych zmiennych nie należy przedstawiać jako działających implementacji tych funkcji.
+Podstawowa sekwencja zadań jest zdefiniowana w [tasks/main.yml](../../../tasks/main.yml). Grupy monitoringu, kopii zapasowych, Fail2ban, bezpieczeństwa, pamięci podręcznej i zapory sieciowej mają brakujące kontrakty szablonów zapisane w [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Ich flagi pozostają domyślnie wyłączone, a włączona niekompletna grupa zatrzymuje się dopiero podczas wykonywania swoich zadań, po zakończeniu wcześniejszych faz. Nazw zadań i przykładowych zmiennych nie należy przedstawiać jako działających implementacji tych funkcji.
 
 Obsługa TLS, poświadczeń bazy danych, generowanych sekretów WordPress, zabezpieczeń ścieżek oraz specyfiki systemów operacyjnych wymaga udokumentowanej konfiguracji i weryfikacji w środowisku uruchomieniowym. Nie deklaruje się tu automatycznego przełączania awaryjnego, gwarancji SLA dla całej chmury ani uniwersalnej gotowości produkcyjnej.
 

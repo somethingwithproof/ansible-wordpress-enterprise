@@ -34,7 +34,7 @@ Pengawal Python 3.12 menggunakan Ansible 14.6 atau lebih baharu dalam siri 14.x 
 
 ## Kematangan ciri
 
-Jujukan tugas teras ditakrifkan dalam [tasks/main.yml](../../../tasks/main.yml). Kumpulan pemantauan, sandaran, Fail2ban, keselamatan, cache, dan tembok api mempunyai kontrak templat yang tiada yang direkodkan dalam [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Benderanya kekal dimatikan secara lalai dan pengesahan menolak pengaktifan kumpulan yang tidak lengkap. Nama tugas dan pemboleh ubah contoh tidak boleh dipersembahkan sebagai pelaksanaan yang berfungsi bagi ciri-ciri tersebut.
+Jujukan tugas teras ditakrifkan dalam [tasks/main.yml](../../../tasks/main.yml). Kumpulan pemantauan, sandaran, Fail2ban, keselamatan, cache, dan tembok api mempunyai kontrak templat yang tiada yang direkodkan dalam [tests/unit/missing_templates.yml](https://github.com/somethingwithproof/ansible-wordpress-enterprise/blob/main/tests/unit/missing_templates.yml). Benderanya kekal dimatikan secara lalai, dan kumpulan tidak lengkap yang diaktifkan hanya berhenti apabila tugasnya dijalankan, selepas fasa terdahulu selesai dijalankan. Nama tugas dan pemboleh ubah contoh tidak boleh dipersembahkan sebagai pelaksanaan yang berfungsi bagi ciri-ciri tersebut.
 
 TLS, bukti kelayakan pangkalan data, rahsia WordPress yang dijana, semakan pelindung laluan, dan pengendalian khusus OS memerlukan konfigurasi serta semakan masa jalan yang didokumenkan. Tiada tuntutan gagal alih automatik, SLA ketersediaan merentas awan, atau kesediaan pengeluaran sejagat dibuat di sini.
 
