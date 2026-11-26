@@ -43,7 +43,7 @@ TLS, учётные данные базы данных, сгенерирован
 Установите роль из источника репозитория и её зависимости коллекций:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 Передавайте указанные секреты через Ansible Vault или используемый менеджер секретов. Перед запуском развёртывания настройте сертификаты и разрешение имён хостов для целевого узла. Оставляйте незавершённые группы функций отключёнными.
@@ -79,7 +79,7 @@ make lint
 
 Релизы проекта используют полную версию SemVer из `VERSION` независимо от минимальной версии Ansible в `meta/main.yml`. Отправьте соответствующий тег `v2.22.1` в ветку main для запуска рабочего процесса Release или запустите его вручную из main после создания соответствующего тега. Рабочий процесс проверяет, что существующий тег указывает на проверяемый исходный код, запускает полный набор CI (включая все четыре сценария Molecule) и публикует архив роли, совместимый с Galaxy, пакет Debian, пакет RPM, `release.json` и `SHA256SUMS`. Публикация использует этот проверенный существующий тег без переопределения целевой ссылки API релизов по умолчанию, поэтому последующее обновление рабочего процесса в main не требует расширенных прав записи в рабочие процессы. Отсутствующий или несовпадающий тег приводит к ошибке ещё до начала тестирования.
 
-Проверяйте загруженные файлы с помощью `sha256sum --check SHA256SUMS`. Установите нативные пакеты командой `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` на Ubuntu 24.04 или `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` на Rocky Linux 9. Оба пакета устанавливают роль в `/usr/share/ansible/roles/wordpress_enterprise`; предоставьте поддерживаемый управляющий узел Ansible и установите зависимости из `requirements.yml` отдельно. Архив можно установить с помощью `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`. Нативные пакеты содержат исходные файлы роли и документацию и не выполняют никаких скриптов развёртывания при установке. CI устанавливает, проверяет и удаляет оба формата.
+Проверяйте загруженные файлы с помощью `sha256sum --check SHA256SUMS`. Установите нативные пакеты командой `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` на Ubuntu 24.04 или `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` на Rocky Linux 9. Оба пакета устанавливают роль в `/usr/share/ansible/roles/wordpress_enterprise`; предоставьте поддерживаемый управляющий узел Ansible и установите зависимости из `requirements.yml` отдельно. Архив можно установить с помощью `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`. Нативные пакеты содержат исходные файлы роли и документацию и не выполняют никаких скриптов развёртывания при установке. CI устанавливает, проверяет и удаляет оба формата.
 
 ## Безопасность и лицензия
 

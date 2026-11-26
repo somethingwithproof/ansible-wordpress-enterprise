@@ -43,7 +43,7 @@ TLS, les identifiants de base de données, les secrets WordPress générés, les
 Installez le rôle depuis son dépôt source ainsi que ses dépendances de collections :
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ Exécutez la commande de collection depuis ce dépôt local. Consultez [defaults
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 Fournissez les secrets référencés via Ansible Vault ou un gestionnaire de secrets existant. Configurez les certificats et la résolution de nom d'hôte pour la machine cible avant de lancer un déploiement. Laissez les groupes de fonctionnalités incomplets désactivés.
@@ -93,7 +93,7 @@ avec `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` sur Ubuntu
 Rocky Linux 9. Les deux installent le rôle dans
 `/usr/share/ansible/roles/wordpress_enterprise` ; prévoyez un contrôleur Ansible
 pris en charge et installez `requirements.yml` séparément. L'archive peut être
-installée avec `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`.
+installée avec `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`.
 Les paquets natifs contiennent les sources du rôle ainsi que la documentation et n'exécutent aucun
 script de déploiement lors de l'installation. La CI installe, vérifie puis supprime les deux formats.
 

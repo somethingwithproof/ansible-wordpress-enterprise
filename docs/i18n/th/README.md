@@ -43,7 +43,7 @@ TLS ข้อมูลรับรองฐานข้อมูล ค่าค
 ติดตั้ง role จากซอร์สในรีโพซิทอรีพร้อมคอลเลกชันที่ต้องพึ่งพา:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 จัดเตรียมค่าความลับที่อ้างอิงผ่าน Ansible Vault หรือระบบจัดการความลับที่มีอยู่ ตั้งค่าใบรับรองและการแปลงชื่อโฮสต์ (hostname resolution) สำหรับโฮสต์เป้าหมายก่อนรันการดีพลอย และคงสถานะปิดใช้งานสำหรับกลุ่มฟีเจอร์ที่ยังไม่สมบูรณ์
@@ -79,7 +79,7 @@ make lint
 
 การออกรีลีสของโปรเจกต์ใช้เลขเวอร์ชัน SemVer แบบเต็มในไฟล์ `VERSION` โดยแยกอิสระจากเวอร์ชัน Ansible ขั้นต่ำใน `meta/main.yml` ให้พุชแท็ก `v2.22.1` ที่ตรงกันบนบรานช์ main เพื่อทริกเกอร์เวิร์กโฟลว์ Release หรือสั่งรันด้วยตนเองจาก main หลังจากสร้างแท็กที่ตรงกันแล้ว เวิร์กโฟลว์จะตรวจสอบว่าแท็กที่มีอยู่ชี้ไปยังซอร์สโค้ดที่ตรวจสอบไว้ รันชุดทดสอบ CI เต็มรูปแบบ (รวมถึงสถานการณ์ทดสอบ Molecule ทั้ง 4 ชุด) และเผยแพร่ไฟล์เก็บถาวรของ role ที่เข้ากันได้กับ Galaxy, แพ็กเกจ Debian, RPM, `release.json` และ `SHA256SUMS` การเผยแพร่จะใช้แท็กที่มีอยู่และผ่านการตรวจสอบแล้วนั้นโดยไม่เขียนทับเป้าหมายเริ่มต้นของ release API เพื่อให้การอัปเดตเวิร์กโฟลว์บน main ในภายหลังไม่จำเป็นต้องใช้สิทธิ์การเขียนเวิร์กโฟลว์ที่กว้างขึ้น หากไม่มีแท็กหรือแท็กไม่ตรงกัน เวิร์กโฟลว์จะล้มเหลวก่อนเริ่มการทดสอบ
 
-ตรวจสอบไฟล์ที่ดาวน์โหลดด้วย `sha256sum --check SHA256SUMS` ติดตั้งแพ็กเกจเนทีฟด้วย `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` บน Ubuntu 24.04 หรือ `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` บน Rocky Linux 9 แพ็กเกจทั้งสองจะติดตั้ง role ไว้ที่ `/usr/share/ansible/roles/wordpress_enterprise` โดยต้องเตรียมคอนโทรลเลอร์ Ansible ที่รองรับและติดตั้ง `requirements.yml` แยกต่างหาก สามารถติดตั้งไฟล์เก็บถาวรได้ด้วย `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz` แพ็กเกจเนทีฟประกอบด้วยซอร์สโค้ดของ role และเอกสารประกอบเท่านั้น และจะไม่รันสคริปต์ดีพลอยใด ๆ ระหว่างการติดตั้ง ทั้งนี้ CI จะทำการติดตั้ง ตรวจสอบ และถอนการติดตั้งแพ็กเกจทั้งสองรูปแบบ
+ตรวจสอบไฟล์ที่ดาวน์โหลดด้วย `sha256sum --check SHA256SUMS` ติดตั้งแพ็กเกจเนทีฟด้วย `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` บน Ubuntu 24.04 หรือ `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` บน Rocky Linux 9 แพ็กเกจทั้งสองจะติดตั้ง role ไว้ที่ `/usr/share/ansible/roles/wordpress_enterprise` โดยต้องเตรียมคอนโทรลเลอร์ Ansible ที่รองรับและติดตั้ง `requirements.yml` แยกต่างหาก สามารถติดตั้งไฟล์เก็บถาวรได้ด้วย `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise` แพ็กเกจเนทีฟประกอบด้วยซอร์สโค้ดของ role และเอกสารประกอบเท่านั้น และจะไม่รันสคริปต์ดีพลอยใด ๆ ระหว่างการติดตั้ง ทั้งนี้ CI จะทำการติดตั้ง ตรวจสอบ และถอนการติดตั้งแพ็กเกจทั้งสองรูปแบบ
 
 ## ความปลอดภัยและสัญญาอนุญาต
 

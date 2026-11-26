@@ -43,7 +43,7 @@ TLS, las credenciales de base de datos, los secretos generados de WordPress, las
 Instale el rol desde el origen de su repositorio y sus dependencias de colección:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ Ejecute el comando de colección desde esta copia local. Revise [defaults/main.y
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 Proporcione los secretos referenciados mediante Ansible Vault o un gestor de secretos existente. Configure los certificados y la resolución de nombres de host para el host de destino antes de ejecutar un despliegue. Mantenga desactivados los grupos de funcionalidades incompletos.
@@ -93,7 +93,7 @@ con `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` en Ubuntu
 Rocky Linux 9. Ambos instalan el rol en
 `/usr/share/ansible/roles/wordpress_enterprise`; proporcione un controlador de Ansible
 compatible e instale `requirements.yml` por separado. El archivo comprimido puede
-instalarse con `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`.
+instalarse con `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`.
 Los paquetes nativos contienen el código fuente del rol y la documentación, y no ejecutan scripts de despliegue
 durante la instalación. CI instala, comprueba y elimina ambos formatos.
 

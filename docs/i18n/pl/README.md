@@ -43,7 +43,7 @@ Obsługa TLS, poświadczeń bazy danych, generowanych sekretów WordPress, zabez
 Zainstaluj rolę ze źródła repozytorium oraz wymagane kolekcje:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ Uruchom polecenie instalacji kolekcji z tej kopii roboczej. Przed wdrożeniem pr
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 Przekaż wskazane sekrety przez Ansible Vault lub istniejący menedżer sekretów. Przed uruchomieniem wdrożenia skonfiguruj certyfikaty oraz rozwiązywanie nazw dla hosta docelowego. Pozostaw niekompletne grupy funkcji wyłączone.
@@ -93,7 +93,7 @@ za pomocą `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` w Ub
 Rocky Linux 9. Oba pakiety instalują rolę w katalogu
 `/usr/share/ansible/roles/wordpress_enterprise`; zapewnij wspierany kontroler Ansible
 i osobno zainstaluj zależności z `requirements.yml`. Archiwum można zainstalować
-za pomocą `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`.
+za pomocą `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`.
 Natywne pakiety zawierają kod źródłowy roli i dokumentację oraz nie uruchamiają żadnych
 skryptów wdrożeniowych podczas instalacji. CI instaluje, sprawdza i usuwa oba formaty.
 

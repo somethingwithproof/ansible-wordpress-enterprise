@@ -43,7 +43,7 @@ TLS、資料庫認證資訊、產生的 WordPress 機密金鑰、路徑保護機
 從儲存庫來源安裝此角色及其 collection 相依項目：
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 請透過 Ansible Vault 或現有的機密管理服務提供所參照的機密資訊。執行部署前，請先為目標主機設定憑證與主機名稱解析。請保持未完成的功能群組為停用狀態。
@@ -79,7 +79,7 @@ make lint
 
 專案發行採用 `VERSION` 中的完整 SemVer 版本號，獨立於 `meta/main.yml` 的最低 Ansible 版本要求。在 main 分支推送對應的 `v2.22.1` 標籤以觸發 Release 工作流程，或在建立對應標籤後從 main 手動執行。該工作流程會驗證既有標籤是否指向受檢核的原始碼、執行完整的 CI 測試套件（包含全部四個 Molecule 情境），並發布與 Galaxy 相容的角色封存檔、Debian 套件、RPM、`release.json` 與 `SHA256SUMS`。發布流程直接使用該已驗證的既有標籤，而不覆寫發行 API 的預設目標，因此日後在 main 上更新工作流程時，不需要更廣泛的 workflow 寫入權限。若標籤缺失或不符，流程會在測試之前即告失敗。
 
-請使用 `sha256sum --check SHA256SUMS` 驗證下載檔案。在 Ubuntu 24.04 上請使用 `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb`，或在 Rocky Linux 9 上使用 `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` 安裝原生套件。兩者皆會將角色安裝於 `/usr/share/ansible/roles/wordpress_enterprise`；請自行提供受支援的 Ansible 控制器並另行安裝 `requirements.yml`。封存檔可使用 `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz` 進行安裝。原生套件僅包含角色原始碼與文件，安裝期間不會執行任何部署腳本。CI 會針對兩種格式執行安裝、檢查與移除驗證。
+請使用 `sha256sum --check SHA256SUMS` 驗證下載檔案。在 Ubuntu 24.04 上請使用 `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb`，或在 Rocky Linux 9 上使用 `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` 安裝原生套件。兩者皆會將角色安裝於 `/usr/share/ansible/roles/wordpress_enterprise`；請自行提供受支援的 Ansible 控制器並另行安裝 `requirements.yml`。封存檔可使用 `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise` 進行安裝。原生套件僅包含角色原始碼與文件，安裝期間不會執行任何部署腳本。CI 會針對兩種格式執行安裝、檢查與移除驗證。
 
 ## 安全性與授權
 

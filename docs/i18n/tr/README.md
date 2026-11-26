@@ -43,7 +43,7 @@ TLS, veritabanı kimlik bilgileri, oluşturulan WordPress gizli anahtarları, yo
 Rolü depo kaynağından ve koleksiyon bağımlılıklarıyla birlikte kurun:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ Koleksiyon komutunu bu çalışma kopyasından çalıştırın. Dağıtımdan ö
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 Başvurulan gizli bilgileri Ansible Vault veya mevcut bir gizli bilgi yöneticisi aracılığıyla sağlayın. Bir dağıtım çalıştırmadan önce hedef ana bilgisayar için sertifikaları ve ana bilgisayar adı çözümlemesini yapılandırın. Tamamlanmamış özellik gruplarını devre dışı bırakın.
@@ -79,7 +79,7 @@ Kararlı `default` ve `tls` senaryoları ile ön koşulları için test kılavuz
 
 Proje sürümleri, `meta/main.yml` dosyasındaki minimum Ansible sürümünden bağımsız olarak `VERSION` dosyasındaki tam SemVer sürümünü kullanır. Release iş akışını tetiklemek için main dalında eşleşen bir `v2.22.1` etiketi gönderin veya eşleşen etiketi oluşturduktan sonra iş akışını main üzerinden elle çalıştırın. İş akışı mevcut etiketin denetlenen kaynağa işaret ettiğini doğrular, tam CI paketini (dört Molecule senaryosunun tamamı dahil) çalıştırır ve Galaxy uyumlu bir rol arşivi, Debian paketi, RPM, `release.json` ve `SHA256SUMS` dosyalarını yayınlar. Yayınlama, sürüm API'sinin varsayılan hedefini geçersiz kılmadan bu doğrulanmış mevcut etiketi kullanır; böylece main dalındaki daha sonraki bir iş akışı güncellemesi daha geniş iş akışı yazma kimlik bilgileri gerektirmez. Eksik veya eşleşmeyen bir etiket, test aşamasından önce başarısız olur.
 
-İndirilen dosyaları `sha256sum --check SHA256SUMS` ile doğrulayın. Yerel paketleri Ubuntu 24.04 üzerinde `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` veya Rocky Linux 9 üzerinde `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` komutuyla kurun. Her ikisi de rolü `/usr/share/ansible/roles/wordpress_enterprise` altına kurar; desteklenen bir Ansible denetleyicisi sağlayın ve `requirements.yml` dosyasını ayrı olarak kurun. Arşiv `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz` ile kurulabilir. Yerel paketler rol kaynaklarını ve belgelerini içerir; kurulum sırasında hiçbir dağıtım betiği çalıştırmaz. CI her iki biçimi de kurar, kontrol eder ve kaldırır.
+İndirilen dosyaları `sha256sum --check SHA256SUMS` ile doğrulayın. Yerel paketleri Ubuntu 24.04 üzerinde `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` veya Rocky Linux 9 üzerinde `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` komutuyla kurun. Her ikisi de rolü `/usr/share/ansible/roles/wordpress_enterprise` altına kurar; desteklenen bir Ansible denetleyicisi sağlayın ve `requirements.yml` dosyasını ayrı olarak kurun. Arşiv `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise` ile kurulabilir. Yerel paketler rol kaynaklarını ve belgelerini içerir; kurulum sırasında hiçbir dağıtım betiği çalıştırmaz. CI her iki biçimi de kurar, kontrol eder ve kaldırır.
 
 ## Güvenlik ve lisans
 

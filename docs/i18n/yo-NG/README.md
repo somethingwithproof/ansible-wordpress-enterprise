@@ -43,7 +43,7 @@ TLS, àwọn ẹ̀rí ìwọlé ibi-ìpamọ́ dátà, àwọn àṣírí WordPr
 Fi ipa náà sórí ẹ̀rọ láti orísun ibi-ìpamọ́ rẹ̀ àti àwọn ìgbẹ́kẹ̀lé àkójọpọ̀ rẹ̀:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 Pèsè àwọn àṣírí tí a tọ́ka sí nípasẹ̀ Ansible Vault tàbí olùṣàkóso àṣírí tí ó wà tẹ́lẹ̀. Ṣètò àwọn ìwé-ẹ̀rí àti ìtúmọ̀ orúkọ-ẹ̀rọ fún ẹ̀rọ olùgbàlejò ìfojúsùn ṣáájú ṣíṣiṣẹ́ ìgbékalẹ̀. Pa àwọn ẹgbẹ́ ẹ̀yà-iṣẹ́ tí kò pé mọ́ ní ìpa.
@@ -79,7 +79,7 @@ Lo ìtọ́sọ́nà ìdánwò fún àwọn ìṣẹ̀lẹ̀ `default` àti `tls
 
 Àwọn ìtújáde iṣẹ́ àkànṣe ń lo ẹ̀yà SemVer pípé nínú `VERSION`, lọ́tọ̀ sí ẹ̀yà Ansible tó kéré jùlọ nínú `meta/main.yml`. Tì àmì `v2.22.1` tí ó bá a mu lọ sí main láti mú Release ṣiṣẹ́, tàbí ṣiṣẹ́ rẹ̀ pẹ̀lú ọwọ́ láti main lẹ́yìn ṣíṣẹ̀dá àmì tí ó bá a mu. Ìṣàn-iṣẹ́ náà ń jẹ́rìísí pé àmì tí ó wà tẹ́lẹ̀ tọ́ka sí orísun tí a ṣàyẹ̀wò, ó ń ṣiṣẹ́ gbogbo àkójọ CI (pẹ̀lú gbogbo ìṣẹ̀lẹ̀ Molecule mẹ́rẹ̀ẹ̀rin), ó sì ń tẹ àpò-ìpamọ́ ipa tí ó bá Galaxy mu, àpò Debian, RPM, `release.json`, àti `SHA256SUMS` jáde. Ìtẹ̀jáde ń lo àmì tí ó wà tẹ́lẹ̀ tí a ti jẹ́rìísí láìyí ìfojúsùn àkọ́kọ́ ti API ìtújáde padà, nítorí náà àtúnṣe ìṣàn-iṣẹ́ tí ó tẹ̀lé e lórí main kò nílò àwọn ẹ̀rí ìwọlé kíkọ ìṣàn-iṣẹ́ tí ó gbòòrò sí i. Àmì tí ó sọnù tàbí tí kò bá mu yóò kùnà ṣáájú ìdánwò.
 
-Jẹ́rìísí àwọn ìgbàsílẹ̀ pẹ̀lú `sha256sum --check SHA256SUMS`. Fi àwọn àpò abínibí sórí ẹ̀rọ pẹ̀lú `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` lórí Ubuntu 24.04 tàbí `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` lórí Rocky Linux 9. Àwọn méjèèjì ń fi ipa náà sílẹ̀ lábẹ́ `/usr/share/ansible/roles/wordpress_enterprise`; pèsè olùṣàkóso Ansible tí a ṣètìlẹ́yìn fún kí o sì fi `requirements.yml` sórí ẹ̀rọ lọ́tọ̀. A lè fi àpò-ìpamọ́ náà sórí ẹ̀rọ pẹ̀lú `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`. Àwọn àpò abínibí ní àwọn orísun ipa àti ìwé-àkọsílẹ̀ nínú, wọn kò sì ṣiṣẹ́ ìwé-àṣẹ ìgbékalẹ̀ kankan nígbà ìfisílẹ̀. CI ń fi àwọn ọ̀nà méjèèjì sórí ẹ̀rọ, ó ń ṣàyẹ̀wò wọn, ó sì ń yọ wọ́n kúrò.
+Jẹ́rìísí àwọn ìgbàsílẹ̀ pẹ̀lú `sha256sum --check SHA256SUMS`. Fi àwọn àpò abínibí sórí ẹ̀rọ pẹ̀lú `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` lórí Ubuntu 24.04 tàbí `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` lórí Rocky Linux 9. Àwọn méjèèjì ń fi ipa náà sílẹ̀ lábẹ́ `/usr/share/ansible/roles/wordpress_enterprise`; pèsè olùṣàkóso Ansible tí a ṣètìlẹ́yìn fún kí o sì fi `requirements.yml` sórí ẹ̀rọ lọ́tọ̀. A lè fi àpò-ìpamọ́ náà sórí ẹ̀rọ pẹ̀lú `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`. Àwọn àpò abínibí ní àwọn orísun ipa àti ìwé-àkọsílẹ̀ nínú, wọn kò sì ṣiṣẹ́ ìwé-àṣẹ ìgbékalẹ̀ kankan nígbà ìfisílẹ̀. CI ń fi àwọn ọ̀nà méjèèjì sórí ẹ̀rọ, ó ń ṣàyẹ̀wò wọn, ó sì ń yọ wọ́n kúrò.
 
 ## Ààbò àti ìwé-àṣẹ
 

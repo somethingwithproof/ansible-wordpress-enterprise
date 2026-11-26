@@ -43,7 +43,7 @@ TLS, credenziali del database, segreti WordPress generati, controlli di sicurezz
 Installa il ruolo dal sorgente del repository e le sue dipendenze di collection:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ Esegui il comando della collection da questo checkout. Esamina [defaults/main.ym
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 Fornisci i segreti referenziati tramite Ansible Vault o un secret manager esistente. Configura i certificati e la risoluzione del nome host per l'host di destinazione prima di eseguire un deployment. Mantieni disabilitati i gruppi di funzionalità incompleti.
@@ -93,7 +93,7 @@ con `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` su Ubuntu
 Rocky Linux 9. Entrambi installano il ruolo in
 `/usr/share/ansible/roles/wordpress_enterprise`; predisponi un controller Ansible
 supportato e installa separatamente `requirements.yml`. L'archivio può essere
-installato con `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`.
+installato con `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`.
 I pacchetti nativi contengono i sorgenti del ruolo e la documentazione e non eseguono alcuno script
 di deployment durante l'installazione. La CI installa, verifica e rimuove entrambi i formati.
 

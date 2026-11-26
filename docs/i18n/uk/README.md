@@ -43,7 +43,7 @@ TLS, облікові дані бази даних, згенеровані се�
 Встановіть роль із її репозиторію та залежності її колекцій:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 Передавайте зазначені секрети через Ansible Vault або наявний менеджер секретів. Перед запуском розгортання налаштуйте сертифікати та розпізнавання імені хоста для цільового сервера. Залишайте незавершені групи функцій вимкненими.
@@ -79,7 +79,7 @@ make lint
 
 Релізи проєкту використовують повну версію SemVer із файлу `VERSION`, незалежно від мінімальної версії Ansible у `meta/main.yml`. Надішліть відповідний тег `v2.22.1` у гілку main, щоб запустити робочий процес Release, або запустіть його вручну з main після створення відповідного тегу. Робочий процес перевіряє, що наявний тег указує на перевірений вихідний код, виконує повний набір CI (включно з усіма чотирма сценаріями Molecule) та публікує сумісний із Galaxy архів ролі, пакет Debian, RPM, `release.json` і `SHA256SUMS`. Публікація використовує цей перевірений наявний тег без перевизначення цілі за замовчуванням у API релізів, тому подальше оновлення робочого процесу в main не вимагає ширших прав запису для робочих процесів. Відсутній або невідповідний тег призводить до помилки ще до початку тестування.
 
-Перевірте завантажені файли командою `sha256sum --check SHA256SUMS`. Встановіть системні пакети за допомогою `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` на Ubuntu 24.04 або `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` на Rocky Linux 9. Обидва встановлюють роль у каталог `/usr/share/ansible/roles/wordpress_enterprise`; забезпечте підтримуваний контролер Ansible та встановіть `requirements.yml` окремо. Архів можна встановити командою `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`. Системні пакети містять вихідний код ролі та документацію і не запускають жодних скриптів розгортання під час встановлення. CI встановлює, перевіряє та видаляє обидва формати.
+Перевірте завантажені файли командою `sha256sum --check SHA256SUMS`. Встановіть системні пакети за допомогою `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` на Ubuntu 24.04 або `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` на Rocky Linux 9. Обидва встановлюють роль у каталог `/usr/share/ansible/roles/wordpress_enterprise`; забезпечте підтримуваний контролер Ansible та встановіть `requirements.yml` окремо. Архів можна встановити командою `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`. Системні пакети містять вихідний код ролі та документацію і не запускають жодних скриптів розгортання під час встановлення. CI встановлює, перевіряє та видаляє обидва формати.
 
 ## Безпека та ліцензія
 

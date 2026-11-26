@@ -43,7 +43,7 @@ TLS, 데이터베이스 자격 증명, 생성된 WordPress 시크릿, 경로 보
 저장소 소스에서 역할과 컬렉션 의존성을 설치합니다:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 참조되는 시크릿은 Ansible Vault 또는 기존 시크릿 관리자를 통해 제공하세요. 배포를 실행하기 전에 대상 호스트의 인증서와 호스트 이름 확인을 구성하세요. 미완성 기능 그룹은 비활성화 상태로 유지하세요.
@@ -79,7 +79,7 @@ make lint
 
 프로젝트 릴리스는 `meta/main.yml`의 최소 Ansible 버전과는 독립적으로 `VERSION`에 지정된 전체 SemVer 버전을 사용합니다. main 브랜치에 일치하는 `v2.22.1` 태그를 푸시하여 Release를 트리거하거나, 일치하는 태그를 생성한 뒤 main에서 수동으로 실행하세요. 워크플로는 기존 태그가 검사 대상 소스를 가리키는지 확인하고, 전체 CI 스위트(4개의 Molecule 시나리오 모두 포함)를 실행한 다음, Galaxy 호환 역할 아카이브, Debian 패키지, RPM, `release.json` 및 `SHA256SUMS`를 게시합니다. 게시는 릴리스 API의 기본 대상을 덮어쓰지 않고 검증된 기존 태그를 사용하므로, 이후 main에서 워크플로를 업데이트하더라도 더 넓은 워크플로 쓰기 권한이 필요하지 않습니다. 태그가 누락되었거나 일치하지 않으면 테스트 전에 실패합니다.
 
-다운로드한 파일은 `sha256sum --check SHA256SUMS`로 검증하세요. 네이티브 패키지는 Ubuntu 24.04에서 `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb`로, Rocky Linux 9에서는 `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm`으로 설치할 수 있습니다. 두 패키지 모두 역할을 `/usr/share/ansible/roles/wordpress_enterprise` 경로에 설치합니다. 지원되는 Ansible 컨트롤러를 준비하고 `requirements.yml`은 별도로 설치하세요. 아카이브는 `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`로 설치할 수 있습니다. 네이티브 패키지에는 역할 소스와 문서만 포함되며 설치 중에 배포 스크립트를 실행하지 않습니다. CI는 두 형식을 모두 설치, 확인 및 제거합니다.
+다운로드한 파일은 `sha256sum --check SHA256SUMS`로 검증하세요. 네이티브 패키지는 Ubuntu 24.04에서 `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb`로, Rocky Linux 9에서는 `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm`으로 설치할 수 있습니다. 두 패키지 모두 역할을 `/usr/share/ansible/roles/wordpress_enterprise` 경로에 설치합니다. 지원되는 Ansible 컨트롤러를 준비하고 `requirements.yml`은 별도로 설치하세요. 아카이브는 `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`로 설치할 수 있습니다. 네이티브 패키지에는 역할 소스와 문서만 포함되며 설치 중에 배포 스크립트를 실행하지 않습니다. CI는 두 형식을 모두 설치, 확인 및 제거합니다.
 
 ## 보안 및 라이선스
 

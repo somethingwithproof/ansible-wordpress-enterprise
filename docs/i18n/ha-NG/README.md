@@ -43,7 +43,7 @@ TLS, takardun shaidar rumbun adana bayanai, sirrikan WordPress da aka samar, mas
 Girka aikin (role) daga tushen ma'ajiyarsa da abubuwan dogaro na tarinsa:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ Gudanar da umarnin tarin daga wannan kwafin ma'ajiyar. Duba [defaults/main.yml](
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 Samar da sirrikan da aka ambata ta hanyar Ansible Vault ko manajan sirri da ke akwai. Saita takardun shaida da fassarar sunan na'ura (hostname resolution) don na'urar da aka yi niyya kafin gudanar da turawa. Bar rukunonin fasalolin da ba su cika ba a kashe.
@@ -93,7 +93,7 @@ da `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` a kan Ubuntu
 Rocky Linux 9. Dukansu biyu suna girka aikin a ƙarƙashin
 `/usr/share/ansible/roles/wordpress_enterprise`; ka samar da mai sarrafa Ansible da ake goyon baya
 kuma ka girka `requirements.yml` daban. Ana iya girka kundin ajiyar
-da `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`.
+da `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`.
 Fakiti na asali suna ɗauke da tushen aikin da takardu kuma ba sa gudanar da wani rubutun turawa
 yayin girkawa. CI yana girkawa, bincikawa da cire duka nau'ikan biyu.
 

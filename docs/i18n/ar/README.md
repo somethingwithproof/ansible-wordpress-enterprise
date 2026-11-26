@@ -43,7 +43,7 @@ SPDX-License-Identifier: MIT
 ثبّت الدور من مصدر مستودعه وتبعيات مجموعاته:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 زوّد الأسرار المشار إليها عبر Ansible Vault أو مدير أسرار قائم. وهيّئ الشهادات وتحليل أسماء المضيفات للمضيف المستهدف قبل تشغيل النشر. وأبقِ مجموعات الميزات غير المكتملة معطّلة.
@@ -79,7 +79,7 @@ make lint
 
 تستخدم إصدارات المشروع رقم إصدار SemVer الكامل الموجود في `VERSION`، بصورة مستقلة عن الحد الأدنى لإصدار Ansible المحدّد في `meta/main.yml`. ادفع وسماً مطابقاً مثل `v2.22.1` على الفرع main لتشغيل سير عمل الإطلاق (Release)، أو شغّله يدوياً من الفرع main بعد إنشاء الوسم المطابق. يتحقق سير العمل من أن الوسم الموجود يشير إلى الشفرة المصدرية التي جرى فحصها، ويشغّل حزمة التكامل المستمر (CI) الكاملة (بما في ذلك جميع سيناريوهات Molecule الأربعة)، ثم ينشر أرشيف دور متوافقاً مع Galaxy وحزمة Debian وحزمة RPM وملفي `release.json` و`SHA256SUMS`. يعتمد النشر على ذلك الوسم الموجود والمتحقَّق منه دون تجاوز الهدف الافتراضي لواجهة برمجة تطبيقات الإطلاقات، بحيث لا يتطلب أي تحديث لاحق لسير العمل على main صلاحيات أوسع لكتابة سير العمل. ويفشل التشغيل قبل الاختبار في حال كان الوسم مفقوداً أو غير مطابق.
 
-تحقق من التنزيلات باستخدام `sha256sum --check SHA256SUMS`. ثبّت الحزم الأصلية باستخدام `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` على Ubuntu 24.04 أو `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` على Rocky Linux 9. يثبّت كلاهما الدور تحت المسار `/usr/share/ansible/roles/wordpress_enterprise`؛ وفّر عقدة تحكم Ansible مدعومة وثبّت `requirements.yml` بشكل منفصل. ويمكن تثبيت الأرشيف باستخدام `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`. تحتوي الحزم الأصلية على مصادر الدور وتوثيقه ولا تشغّل أي نصوص نشر برمجية أثناء التثبيت. ويقوم التكامل المستمر (CI) بتثبيت كلا التنسيقين والتحقق منهما وإزالتهما.
+تحقق من التنزيلات باستخدام `sha256sum --check SHA256SUMS`. ثبّت الحزم الأصلية باستخدام `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` على Ubuntu 24.04 أو `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` على Rocky Linux 9. يثبّت كلاهما الدور تحت المسار `/usr/share/ansible/roles/wordpress_enterprise`؛ وفّر عقدة تحكم Ansible مدعومة وثبّت `requirements.yml` بشكل منفصل. ويمكن تثبيت الأرشيف باستخدام `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`. تحتوي الحزم الأصلية على مصادر الدور وتوثيقه ولا تشغّل أي نصوص نشر برمجية أثناء التثبيت. ويقوم التكامل المستمر (CI) بتثبيت كلا التنسيقين والتحقق منهما وإزالتهما.
 
 ## الأمان والترخيص
 

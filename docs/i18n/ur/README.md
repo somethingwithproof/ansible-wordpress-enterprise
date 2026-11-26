@@ -43,7 +43,7 @@ TLS، ڈیٹا بیس کریڈنشلز، تیار کردہ WordPress سیکرٹ�
 رول کو اس کے ریپوزیٹری سورس سے اور اس کی کلیکشن ڈیپینڈنسیز کو انسٹال کریں:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 حوالہ دیے گئے سیکرٹس کو Ansible Vault یا کسی موجودہ سیکرٹ مینیجر کے ذریعے فراہم کریں۔ تعیناتی چلانے سے پہلے ٹارگٹ ہوسٹ کے لیے سرٹیفکیٹس اور ہوسٹ نیم ریزولوشن کنفیگر کریں۔ نامکمل فیچر گروپس کو غیر فعال رکھیں۔
@@ -79,7 +79,7 @@ make lint
 
 پروجیکٹ ریلیزز `meta/main.yml` کے کم از کم Ansible ورژن سے آزادانہ طور پر `VERSION` میں موجود مکمل SemVer ورژن استعمال کرتی ہیں۔ ریلیز کو ٹرگر کرنے کے لیے main برانچ پر مماثل `v2.22.1` ٹیگ پش کریں، یا مماثل ٹیگ بنانے کے بعد اسے main سے دستی طور پر چلائیں۔ ورک فلو تصدیق کرتا ہے کہ موجودہ ٹیگ چیک شدہ سورس کی طرف اشارہ کرتا ہے، مکمل CI سوٹ (بشمول چاروں Molecule منظرنامے) چلاتا ہے، اور Galaxy سے ہم آہنگ رول آرکائیو، Debian پیکیج، RPM، `release.json` اور `SHA256SUMS` شائع کرتا ہے۔ اشاعت ریلیز API کے ڈیفالٹ ٹارگٹ کو اوور رائیڈ کیے بغیر اسی تصدیق شدہ موجودہ ٹیگ کو استعمال کرتی ہے، چنانچہ main پر بعد کی کسی ورک فلو اپ ڈیٹ کے لیے وسیع تر workflow-write کریڈنشلز کی ضرورت نہیں پڑتی۔ غائب یا غیر مماثل ٹیگ ٹیسٹنگ سے پہلے ہی ناکام ہو جاتا ہے۔
 
-ڈاؤن لوڈز کی تصدیق `sha256sum --check SHA256SUMS` سے کریں۔ مقامی پیکیجز کو Ubuntu 24.04 پر `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` یا Rocky Linux 9 پر `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` کے ذریعے انسٹال کریں۔ دونوں رول کو `/usr/share/ansible/roles/wordpress_enterprise` کے تحت انسٹال کرتے ہیں؛ ایک سپورٹ شدہ Ansible کنٹرولر فراہم کریں اور `requirements.yml` کو الگ سے انسٹال کریں۔ آرکائیو کو `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz` سے انسٹال کیا جا سکتا ہے۔ مقامی پیکیجز میں رول کے سورسز اور دستاویزات شامل ہوتی ہیں اور انسٹالیشن کے دوران کوئی تعیناتی اسکرپٹ نہیں چلاتے۔ CI دونوں فارمیٹس کو انسٹال، چیک اور ریموو کرتا ہے۔
+ڈاؤن لوڈز کی تصدیق `sha256sum --check SHA256SUMS` سے کریں۔ مقامی پیکیجز کو Ubuntu 24.04 پر `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` یا Rocky Linux 9 پر `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` کے ذریعے انسٹال کریں۔ دونوں رول کو `/usr/share/ansible/roles/wordpress_enterprise` کے تحت انسٹال کرتے ہیں؛ ایک سپورٹ شدہ Ansible کنٹرولر فراہم کریں اور `requirements.yml` کو الگ سے انسٹال کریں۔ آرکائیو کو `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise` سے انسٹال کیا جا سکتا ہے۔ مقامی پیکیجز میں رول کے سورسز اور دستاویزات شامل ہوتی ہیں اور انسٹالیشن کے دوران کوئی تعیناتی اسکرپٹ نہیں چلاتے۔ CI دونوں فارمیٹس کو انسٹال، چیک اور ریموو کرتا ہے۔
 
 ## سیکیورٹی اور لائسنس
 

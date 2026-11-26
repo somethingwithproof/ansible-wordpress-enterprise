@@ -43,7 +43,7 @@ TLS, bukti kelayakan pangkalan data, rahsia WordPress yang dijana, semakan pelin
 Pasang peranan ini daripada sumber repositorinya berserta kebergantungan koleksinya:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ Jalankan arahan koleksi daripada salinan semak keluar ini. Semak [defaults/main.
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 Sediakan rahsia yang dirujuk melalui Ansible Vault atau pengurus rahsia sedia ada. Konfigurasikan sijil dan peleraian nama hos untuk hos sasaran sebelum menjalankan pengerahan. Kekalkan kumpulan ciri yang tidak lengkap dalam keadaan dilumpuhkan.
@@ -79,7 +79,7 @@ Gunakan panduan pengujian untuk senario `default` dan `tls` yang stabil serta pr
 
 Keluaran projek menggunakan versi SemVer lengkap dalam `VERSION`, secara bebas daripada versi Ansible minimum dalam `meta/main.yml`. Tolak teg `v2.22.1` yang sepadan pada cabang main untuk mencetuskan Release, atau jalankannya secara manual daripada main selepas mencipta teg yang sepadan. Aliran kerja ini mengesahkan bahawa teg sedia ada menunjuk kepada sumber yang disemak keluar, menjalankan keseluruhan suit CI (termasuk keempat-empat senario Molecule), dan menerbitkan arkib peranan yang serasi dengan Galaxy, pakej Debian, RPM, `release.json` dan `SHA256SUMS`. Penerbitan menggunakan teg sedia ada yang telah ditentusahkan itu tanpa menggantikan sasaran lalai API keluaran, supaya kemas kini aliran kerja seterusnya pada main tidak memerlukan bukti kelayakan tulis-aliran-kerja yang lebih luas. Teg yang tiada atau tidak sepadan akan gagal sebelum pengujian.
 
-Tentusahkan muat turun dengan `sha256sum --check SHA256SUMS`. Pasang pakej asli dengan `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` pada Ubuntu 24.04 atau `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` pada Rocky Linux 9. Kedua-duanya memasang peranan di bawah `/usr/share/ansible/roles/wordpress_enterprise`; sediakan pengawal Ansible yang disokong dan pasang `requirements.yml` secara berasingan. Arkib tersebut boleh dipasang dengan `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`. Pakej asli mengandungi sumber peranan serta dokumentasi dan tidak menjalankan sebarang skrip pengerahan semasa pemasangan. CI memasang, menyemak dan membuang kedua-dua format tersebut.
+Tentusahkan muat turun dengan `sha256sum --check SHA256SUMS`. Pasang pakej asli dengan `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` pada Ubuntu 24.04 atau `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` pada Rocky Linux 9. Kedua-duanya memasang peranan di bawah `/usr/share/ansible/roles/wordpress_enterprise`; sediakan pengawal Ansible yang disokong dan pasang `requirements.yml` secara berasingan. Arkib tersebut boleh dipasang dengan `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`. Pakej asli mengandungi sumber peranan serta dokumentasi dan tidak menjalankan sebarang skrip pengerahan semasa pemasangan. CI memasang, menyemak dan membuang kedua-dua format tersebut.
 
 ## Keselamatan dan lesen
 

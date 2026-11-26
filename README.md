@@ -43,7 +43,7 @@ TLS, database credentials, generated WordPress secrets, path guards, and OS-spec
 Install the role from its repository source and its collection dependencies:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ Run the collection command from this checkout. Review [defaults/main.yml](defaul
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 Provide the referenced secrets through Ansible Vault or an existing secret manager. Configure certificates and hostname resolution for the target host before running a deployment. Keep incomplete feature groups disabled.
@@ -93,7 +93,7 @@ with `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` on Ubuntu
 Rocky Linux 9. Both install the role under
 `/usr/share/ansible/roles/wordpress_enterprise`; supply a supported Ansible
 controller and install `requirements.yml` separately. The archive can be
-installed with `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`.
+installed with `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`.
 Native packages contain role sources and documentation and run no deployment
 scripts during installation. CI installs, checks and removes both formats.
 

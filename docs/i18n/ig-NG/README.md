@@ -43,7 +43,7 @@ TLS, nzere nchekwa data, ihe nzuzo WordPress a rụpụtara, nchedo ụzọ fa�
 Wụnye ọrụ a site n'isi mmalite ebe nchekwa ya na ndabere mkpokọta ya:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ Gbaa iwu mkpokọta ahụ site na nkopi koodu a. Lelee [defaults/main.yml](../..
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 Nye ihe nzuzo ndị e zoro aka na ha site na Ansible Vault ma ọ bụ njikwa ihe nzuzo dịbu. Hazie asambodo na mkpebi hostname maka host e zubere tupu ịgba ntinye n'ọrụ. Dobe otu atụmatụ ndị ezughị oke ka ha gbanyụọ.
@@ -93,7 +93,7 @@ site na `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` na Ubun
 Rocky Linux 9. Ha abụọ na-awụnye ọrụ ahụ n'okpuru
 `/usr/share/ansible/roles/wordpress_enterprise`; nye controller Ansible a kwadoro
 ma wụnye `requirements.yml` iche. Enwere ike ịwụnye archive ahụ
-site na `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`.
+site na `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`.
 Ngwugwu nke sistemụ nwere isi mmalite ọrụ na akwụkwọ nkọwa ma anaghị agba skriptị ntinye n'ọrụ
 ọ bụla n'oge nwụnye. CI na-awụnye, na-enyocha ma na-ewepụ ụdị abụọ ahụ.
 

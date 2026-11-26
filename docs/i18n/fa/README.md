@@ -43,7 +43,7 @@ TLS، اعتبارنامه‌های پایگاه داده، اسرار تولی�
 نقش را از منبع مخزن آن به همراه وابستگی‌های مجموعه‌اش نصب کنید:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 اسرار ارجاع‌شده را از طریق Ansible Vault یا یک مدیر اسرار موجود تأمین کنید. پیش از اجرای استقرار، گواهینامه‌ها و تفکیک نام میزبان را برای میزبان هدف پیکربندی کنید. گروه‌های قابلیت ناقص را غیرفعال نگه دارید.
@@ -79,7 +79,7 @@ make lint
 
 انتشارهای پروژه از نسخه کامل SemVer در `VERSION` به‌طور مستقل از حداقل نسخه Ansible در `meta/main.yml` استفاده می‌کنند. برای آغاز گردش‌کار Release، یک برچسب منطبق مانند `v2.22.1` را روی شاخه main ارسال کنید یا پس از ایجاد برچسب منطبق، آن را به‌صورت دستی از main اجرا کنید. گردش‌کار تأیید می‌کند که برچسب موجود به منبع بررسی‌شده اشاره دارد، مجموعه کامل CI (شامل هر چهار سناریوی Molecule) را اجرا می‌کند و یک آرشیو نقش سازگار با Galaxy، بسته Debian، بسته RPM، `release.json` و `SHA256SUMS` را منتشر می‌کند. انتشار از همان برچسب موجود و تأییدشده بدون بازنویسی هدف پیش‌فرض API انتشار استفاده می‌کند، بنابراین به‌روزرسانی بعدی گردش‌کار روی main نیازمند مجوزهای گسترده‌تر نوشتن گردش‌کار نیست. نبود برچسب یا عدم تطابق آن پیش از مرحله آزمون باعث شکست می‌شود.
 
-فایل‌های دریافتی را با `sha256sum --check SHA256SUMS` راستی‌آزمایی کنید. بسته‌های بومی را با `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` در Ubuntu 24.04 یا با `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` در Rocky Linux 9 نصب کنید. هر دو، نقش را در مسیر `/usr/share/ansible/roles/wordpress_enterprise` نصب می‌کنند؛ یک کنترلر پشتیبانی‌شده Ansible فراهم کنید و `requirements.yml` را به‌صورت جداگانه نصب کنید. آرشیو را می‌توان با `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz` نصب کرد. بسته‌های بومی حاوی کد منبع و مستندات نقش هستند و هنگام نصب هیچ اسکریپت استقراری اجرا نمی‌کنند. CI هر دو قالب را نصب، بررسی و حذف می‌کند.
+فایل‌های دریافتی را با `sha256sum --check SHA256SUMS` راستی‌آزمایی کنید. بسته‌های بومی را با `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` در Ubuntu 24.04 یا با `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` در Rocky Linux 9 نصب کنید. هر دو، نقش را در مسیر `/usr/share/ansible/roles/wordpress_enterprise` نصب می‌کنند؛ یک کنترلر پشتیبانی‌شده Ansible فراهم کنید و `requirements.yml` را به‌صورت جداگانه نصب کنید. آرشیو را می‌توان با `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise` نصب کرد. بسته‌های بومی حاوی کد منبع و مستندات نقش هستند و هنگام نصب هیچ اسکریپت استقراری اجرا نمی‌کنند. CI هر دو قالب را نصب، بررسی و حذف می‌کند.
 
 ## امنیت و مجوز
 

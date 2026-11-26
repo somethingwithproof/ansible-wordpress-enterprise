@@ -43,7 +43,7 @@ TLS, credenciais de banco de dados, segredos gerados do WordPress, proteções d
 Instale a role a partir do repositório de origem e suas dependências de coleção:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ Execute o comando de coleção a partir deste checkout. Revise [defaults/main.ym
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 Forneça os segredos referenciados por meio do Ansible Vault ou de um gerenciador de segredos existente. Configure certificados e resolução de nomes de host para o host de destino antes de executar uma implantação. Mantenha os grupos de recursos incompletos desativados.
@@ -93,7 +93,7 @@ com `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` no Ubuntu
 Rocky Linux 9. Ambos instalam a role em
 `/usr/share/ansible/roles/wordpress_enterprise`; forneça um controlador Ansible
 suportado e instale `requirements.yml` separadamente. O arquivo compactado pode ser
-instalado com `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`.
+instalado com `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`.
 Os pacotes nativos contêm o código-fonte e a documentação da role e não executam scripts
 de implantação durante a instalação. O CI instala, verifica e remove ambos os formatos.
 

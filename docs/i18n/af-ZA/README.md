@@ -43,7 +43,7 @@ TLS, databasis-aanmeldbewyse, gegenereerde WordPress-geheime, padwagte en bedryf
 Installeer die rol vanuit sy bewaarplekbron en sy versamelingsafhanklikhede:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ Voer die versamelingsopdrag vanuit hierdie werkskopie uit. Hersien [defaults/mai
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 Verskaf die verwysde geheime deur middel van Ansible Vault of 'n bestaande geheimbestuurder. Konfigureer sertifikate en gasheernaam-oplossing vir die teikengasheer voordat 'n ontplooiing uitgevoer word. Hou onvolledige funksiegroepe gedeaktiveer.
@@ -93,7 +93,7 @@ met `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` op Ubuntu 2
 of `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` op Rocky Linux 9.
 Albei installeer die rol onder `/usr/share/ansible/roles/wordpress_enterprise`; verskaf
 'n ondersteunde Ansible-beheerder en installeer `requirements.yml` afsonderlik. Die argief
-kan geïnstalleer word met `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`.
+kan geïnstalleer word met `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`.
 Inheemse pakkette bevat rolbronkode en dokumentasie en voer geen ontplooiingskripte tydens
 installasie uit nie. CI installeer, kontroleer en verwyder albei formate.
 

@@ -43,7 +43,7 @@ TLS, தரவுத்தள நற்சான்றிதழ்கள், உ
 இந்தப் பாத்திரத்தை அதன் களஞ்சிய மூலத்திலிருந்தும், அதன் தொகுப்புச் சார்புகளையும் நிறுவவும்:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 குறிப்பிடப்பட்டுள்ள இரகசியங்களை Ansible Vault அல்லது தற்போதுள்ள இரகசிய மேலாளர் மூலம் வழங்கவும். வரிசைப்படுத்தலை இயக்குவதற்கு முன்பு இலக்கு ஹோஸ்ட்டிற்கான சான்றிதழ்களையும் ஹோஸ்ட் பெயர் தீர்வையும் கட்டமைக்கவும். முழுமையற்ற அம்சக் குழுக்களை முடக்கியே வைத்திருக்கவும்.
@@ -79,7 +79,7 @@ make lint
 
 திட்ட வெளியீடுகள் `meta/main.yml`-இன் குறைந்தபட்ச Ansible பதிப்பிலிருந்து சுயாதீனமாக, `VERSION`-இல் உள்ள முழு SemVer பதிப்பைப் பயன்படுத்துகின்றன. வெளியீட்டைத் தூண்ட main கிளையில் பொருந்தும் `v2.22.1` குறிச்சொல்லைத் தள்ளவும், அல்லது பொருந்தும் குறிச்சொல்லை உருவாக்கிய பிறகு main-இலிருந்து கைமுறையாக இயக்கவும். இந்தப் பணிப்பாய்வு, தற்போதுள்ள குறிச்சொல் சரிபார்க்கப்பட்ட மூலக் குறியீட்டைச் சுட்டிக்காட்டுவதை உறுதிசெய்து, முழு CI தொகுப்பையும் (நான்கு Molecule சூழ்நிலைகளையும் உள்ளடக்கி) இயக்கி, Galaxy-இணக்கமான பாத்திரக் காப்பகம், Debian தொகுப்பு, RPM, `release.json` மற்றும் `SHA256SUMS` ஆகியவற்றை வெளியிடுகிறது. வெளியீட்டு API-இன் இயல்புநிலை இலக்கை மேலெழுதாமல் அந்தச் சரிபார்க்கப்பட்ட குறிச்சொல்லையே வெளியீடு பயன்படுத்துகிறது; இதனால் main-இல் பிற்காலத்தில் செய்யப்படும் பணிப்பாய்வுப் புதுப்பிப்புக்குப் பரந்த workflow-write அனுமதிகள் தேவையில்லை. விடுபட்ட அல்லது பொருந்தாத குறிச்சொல் சோதனைக்கு முன்பே தோல்வியடையும்.
 
-பதிவிறக்கங்களை `sha256sum --check SHA256SUMS` மூலம் சரிபார்க்கவும். Ubuntu 24.04-இல் `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` மூலமாகவோ அல்லது Rocky Linux 9-இல் `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` மூலமாகவோ இயல்பான தொகுப்புகளை நிறுவவும். இரண்டும் இந்தப் பாத்திரத்தை `/usr/share/ansible/roles/wordpress_enterprise`-இன் கீழ் நிறுவுகின்றன; ஆதரிக்கப்படும் Ansible கட்டுப்படுத்தியை வழங்கி `requirements.yml`-ஐத் தனியாக நிறுவவும். காப்பகத்தை `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz` மூலம் நிறுவலாம். இயல்பான தொகுப்புகள் பாத்திர மூலக் கோப்புகளையும் ஆவணங்களையும் மட்டுமே கொண்டிருக்கின்றன; நிறுவலின்போது எந்த வரிசைப்படுத்தல் ஸ்கிரிப்டுகளையும் இயக்குவதில்லை. CI இரண்டு வடிவங்களையும் நிறுவி, சரிபார்த்து, அகற்றுகிறது.
+பதிவிறக்கங்களை `sha256sum --check SHA256SUMS` மூலம் சரிபார்க்கவும். Ubuntu 24.04-இல் `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` மூலமாகவோ அல்லது Rocky Linux 9-இல் `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` மூலமாகவோ இயல்பான தொகுப்புகளை நிறுவவும். இரண்டும் இந்தப் பாத்திரத்தை `/usr/share/ansible/roles/wordpress_enterprise`-இன் கீழ் நிறுவுகின்றன; ஆதரிக்கப்படும் Ansible கட்டுப்படுத்தியை வழங்கி `requirements.yml`-ஐத் தனியாக நிறுவவும். காப்பகத்தை `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise` மூலம் நிறுவலாம். இயல்பான தொகுப்புகள் பாத்திர மூலக் கோப்புகளையும் ஆவணங்களையும் மட்டுமே கொண்டிருக்கின்றன; நிறுவலின்போது எந்த வரிசைப்படுத்தல் ஸ்கிரிப்டுகளையும் இயக்குவதில்லை. CI இரண்டு வடிவங்களையும் நிறுவி, சரிபார்த்து, அகற்றுகிறது.
 
 ## பாதுகாப்பு மற்றும் உரிமம்
 

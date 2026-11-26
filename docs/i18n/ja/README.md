@@ -43,7 +43,7 @@ TLS、データベース認証情報、生成される WordPress シークレッ
 リポジトリソースからロールおよび依存するコレクションをインストールします。
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 参照されるシークレットは、Ansible Vault または既存のシークレットマネージャーを通じて提供してください。デプロイを実行する前に、対象ホストの証明書とホスト名解決を設定してください。未完成の機能グループは無効のままにしてください。
@@ -79,7 +79,7 @@ make lint
 
 プロジェクトのリリースでは、`meta/main.yml` に記載された最小 Ansible バージョンとは独立して、`VERSION` ファイル内の完全な SemVer バージョンを使用します。main ブランチに一致する `v2.22.1` タグをプッシュして Release ワークフローを起動するか、一致するタグを作成した後に main から手動で実行してください。ワークフローは、既存のタグがチェック対象のソースを指していることを検証し、4 つの Molecule シナリオすべてを含む完全な CI スイートを実行したうえで、Galaxy 互換のロールアーカイブ、Debian パッケージ、RPM、`release.json`、および `SHA256SUMS` を公開します。公開処理ではリリース API のデフォルトターゲットを上書きせずに検証済みの既存タグを使用するため、後続の main でのワークフロー更新時に広範なワークフロー書き込み権限を必要としません。タグが存在しないか一致しない場合は、テスト実行前に失敗します。
 
-ダウンロードしたファイルは `sha256sum --check SHA256SUMS` で検証してください。ネイティブパッケージは、Ubuntu 24.04 では `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb`、Rocky Linux 9 では `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` でインストールできます。どちらも `/usr/share/ansible/roles/wordpress_enterprise` 配下にロールをインストールします。サポートされている Ansible コントローラーを用意し、`requirements.yml` を別途インストールしてください。アーカイブは `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz` でインストールできます。ネイティブパッケージにはロールのソースとドキュメントが含まれており、インストール時にデプロイスクリプトは実行されません。CI では両方の形式についてインストール、検証、およびアンインストールを行っています。
+ダウンロードしたファイルは `sha256sum --check SHA256SUMS` で検証してください。ネイティブパッケージは、Ubuntu 24.04 では `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb`、Rocky Linux 9 では `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` でインストールできます。どちらも `/usr/share/ansible/roles/wordpress_enterprise` 配下にロールをインストールします。サポートされている Ansible コントローラーを用意し、`requirements.yml` を別途インストールしてください。アーカイブは `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise` でインストールできます。ネイティブパッケージにはロールのソースとドキュメントが含まれており、インストール時にデプロイスクリプトは実行されません。CI では両方の形式についてインストール、検証、およびアンインストールを行っています。
 
 ## セキュリティとライセンス
 

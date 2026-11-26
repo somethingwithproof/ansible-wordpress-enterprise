@@ -43,7 +43,7 @@ TLS, kredensial basis data, rahasia WordPress yang dihasilkan, pengaman jalur, d
 Pasang peran ini dari sumber repositorinya beserta dependensi koleksinya:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ Jalankan perintah koleksi dari salinan repositori ini. Tinjau [defaults/main.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 Sediakan rahasia yang dirujuk melalui Ansible Vault atau pengelola rahasia yang sudah ada. Konfigurasikan sertifikat dan resolusi nama host untuk host target sebelum menjalankan penerapan. Biarkan grup fitur yang belum lengkap tetap nonaktif.
@@ -93,7 +93,7 @@ dengan `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` pada Ubu
 Rocky Linux 9. Keduanya memasang peran di bawah
 `/usr/share/ansible/roles/wordpress_enterprise`; sediakan controller Ansible
 yang didukung dan pasang `requirements.yml` secara terpisah. Arsip dapat
-dipasang dengan `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`.
+dipasang dengan `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`.
 Paket asli berisi kode sumber peran dan dokumentasi serta tidak menjalankan skrip
 penerapan saat pemasangan. CI memasang, memeriksa, dan menghapus kedua format tersebut.
 

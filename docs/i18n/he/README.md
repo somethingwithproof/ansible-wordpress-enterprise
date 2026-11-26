@@ -43,7 +43,7 @@ TLS, פרטי התחברות למסד הנתונים, סודות WordPress שנ�
 התקינו את התפקיד ממקור המאגר שלו ואת תלויות האוספים שלו:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 ספקו את הסודות הנדרשים באמצעות Ansible Vault או מנהל סודות קיים. הגדירו תעודות ופתרון שמות מארחים (hostname resolution) עבור מארח היעד לפני הרצת פריסה. השאירו קבוצות תכונות לא שלמות מושבתות.
@@ -79,7 +79,7 @@ make lint
 
 שחרורי הפרויקט משתמשים בגרסת SemVer המלאה בקובץ `VERSION`, ללא תלות בגרסת ה-Ansible המינימלית שב-`meta/main.yml`. דחפו תג `v2.22.1` תואם בענף main כדי להפעיל את Release, או הריצו אותו ידנית מתוך main לאחר יצירת התג התואם. התהליך מאמת שהתג הקיים מצביע על קוד המקור הנבדק, מריץ את חבילת ה-CI המלאה (כולל כל ארבעת תרחישי Molecule), ומפרסם ארכיון תפקיד תואם Galaxy, חבילת Debian, חבילת RPM, `release.json` ו-`SHA256SUMS`. הפרסום משתמש בתג הקיים והמאומת מבלי לדרוס את יעד ברירת המחדל של ה-API לשחרורים, כך שעדכון מאוחר יותר של התהליך בענף main אינו דורש הרשאות כתיבה רחבות יותר לתהליכי עבודה. תג חסר או לא תואם נכשל עוד לפני הבדיקות.
 
-אמתו את ההורדות באמצעות `sha256sum --check SHA256SUMS`. התקינו חבילות מקומיות באמצעות `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` על Ubuntu 24.04 או באמצעות `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` על Rocky Linux 9. שתי החבילות מתקינות את התפקיד תחת `/usr/share/ansible/roles/wordpress_enterprise`; יש לספק בקר Ansible נתמך ולהתקין את `requirements.yml` בנפרד. ניתן להתקין את הארכיון באמצעות `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`. החבילות המקומיות מכילות את מקורות התפקיד והתיעוד ואינן מריצות סקריפטי פריסה במהלך ההתקנה. ה-CI מתקין, בודק ומסיר את שני הפורמטים.
+אמתו את ההורדות באמצעות `sha256sum --check SHA256SUMS`. התקינו חבילות מקומיות באמצעות `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` על Ubuntu 24.04 או באמצעות `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` על Rocky Linux 9. שתי החבילות מתקינות את התפקיד תחת `/usr/share/ansible/roles/wordpress_enterprise`; יש לספק בקר Ansible נתמך ולהתקין את `requirements.yml` בנפרד. ניתן להתקין את הארכיון באמצעות `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`. החבילות המקומיות מכילות את מקורות התפקיד והתיעוד ואינן מריצות סקריפטי פריסה במהלך ההתקנה. ה-CI מתקין, בודק ומסיר את שני הפורמטים.
 
 ## אבטחה ורישיון
 

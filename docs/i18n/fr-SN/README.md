@@ -43,7 +43,7 @@ TLS, les identifiants de base de données, les secrets WordPress générés, les
 Installez le rôle depuis la source de son dépôt ainsi que ses dépendances de collections :
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ Exécutez la commande de collection depuis cette copie locale. Passez en revue [
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 Fournissez les secrets référencés via Ansible Vault ou un gestionnaire de secrets existant. Configurez les certificats et la résolution de noms d'hôtes pour la machine cible avant de lancer un déploiement. Laissez les groupes de fonctionnalités incomplets désactivés.
@@ -79,7 +79,7 @@ Consultez le guide de test pour les scénarios stables `default` et `tls` ainsi 
 
 Les versions publiées du projet utilisent la version SemVer complète indiquée dans `VERSION`, indépendamment de la version minimale d'Ansible figurant dans `meta/main.yml`. Poussez un tag `v2.22.1` correspondant sur main pour déclencher la publication, ou exécutez le workflow manuellement depuis main après avoir créé le tag correspondant. Le workflow vérifie que le tag existant pointe vers les sources contrôlées, exécute la suite CI complète (y compris les quatre scénarios Molecule) et publie une archive de rôle compatible Galaxy, un paquet Debian, un RPM, `release.json` et `SHA256SUMS`. La publication utilise ce tag existant vérifié sans remplacer la cible par défaut de l'API de publication, afin qu'une mise à jour ultérieure du workflow sur main ne nécessite pas d'autorisations plus étendues en écriture sur les workflows. Un tag manquant ou non concordant provoque un échec avant l'exécution des tests.
 
-Vérifiez les téléchargements avec `sha256sum --check SHA256SUMS`. Installez les paquets natifs avec `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` sur Ubuntu 24.04 ou `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` sur Rocky Linux 9. Les deux installent le rôle sous `/usr/share/ansible/roles/wordpress_enterprise` ; fournissez un contrôleur Ansible pris en charge et installez `requirements.yml` séparément. L'archive peut être installée avec `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`. Les paquets natifs contiennent les sources du rôle ainsi que la documentation et n'exécutent aucun script de déploiement lors de l'installation. La CI installe, vérifie et supprime les deux formats.
+Vérifiez les téléchargements avec `sha256sum --check SHA256SUMS`. Installez les paquets natifs avec `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` sur Ubuntu 24.04 ou `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` sur Rocky Linux 9. Les deux installent le rôle sous `/usr/share/ansible/roles/wordpress_enterprise` ; fournissez un contrôleur Ansible pris en charge et installez `requirements.yml` séparément. L'archive peut être installée avec `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`. Les paquets natifs contiennent les sources du rôle ainsi que la documentation et n'exécutent aucun script de déploiement lors de l'installation. La CI installe, vérifie et supprime les deux formats.
 
 ## Sécurité et licence
 

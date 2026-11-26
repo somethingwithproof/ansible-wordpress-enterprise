@@ -43,7 +43,7 @@ TLS, డేటాబేస్ క్రెడెన్షియల్స్, జ
 ఈ రోల్‌ను దాని రిపోజిటరీ మూలం నుండి మరియు దాని కలెక్షన్ డిపెండెన్సీలను ఇన్‌స్టాల్ చేయండి:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 ప్రస్తావించిన సీక్రెట్‌లను Ansible Vault లేదా ఇప్పటికే ఉన్న సీక్రెట్ మేనేజర్ ద్వారా అందించండి. డిప్లాయ్‌మెంట్‌ను అమలు చేయడానికి ముందు లక్ష్య హోస్ట్ కోసం సర్టిఫికేట్లు మరియు హోస్ట్‌నేమ్ రిజల్యూషన్‌ను కాన్ఫిగర్ చేయండి. అసంపూర్ణ ఫీచర్ గ్రూపులను డిజేబుల్‌లో ఉంచండి.
@@ -92,7 +92,7 @@ make lint
 `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm`తో నేటివ్ ప్యాకేజీలను
 ఇన్‌స్టాల్ చేయండి. రెండూ రోల్‌ను `/usr/share/ansible/roles/wordpress_enterprise` క్రింద
 ఇన్‌స్టాల్ చేస్తాయి; మద్దతు ఉన్న Ansible కంట్రోలర్‌ను అందించి `requirements.yml`ను విడిగా
-ఇన్‌స్టాల్ చేయండి. ఆర్కైవ్‌ను `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`తో
+ఇన్‌స్టాల్ చేయండి. ఆర్కైవ్‌ను `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`తో
 ఇన్‌స్టాల్ చేయవచ్చు. నేటివ్ ప్యాకేజీలు రోల్ సోర్స్‌లు మరియు డాక్యుమెంటేషన్‌ను కలిగి ఉంటాయి మరియు
 ఇన్‌స్టాలేషన్ సమయంలో ఎటువంటి డిప్లాయ్‌మెంట్ స్క్రిప్ట్‌లను అమలు చేయవు. CI రెండు ఫార్మాట్‌లను ఇన్‌స్టాల్ చేస్తుంది, తనిఖీ చేస్తుంది మరియు తొలగిస్తుంది.
 

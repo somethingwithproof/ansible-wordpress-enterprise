@@ -43,7 +43,7 @@ Ny TLS, ny fahazoan-dalana miditra amin'ny angon-drakitra, ny tsiambaratelo Word
 Apetraho ny anjara asa avy amin'ny loharanon'ny tahiry sy ny angona ilainy:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ Alefaso avy amin'ity dika nalaina ity ny baiko ho an'ny angona. Jereo ny [defaul
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 Omeo amin'ny alalan'ny Ansible Vault na mpitantana tsiambaratelo efa misy ireo tsiambaratelo voatondro. Rindrio ny taratasy fanamarinana (certificates) sy ny famahana anaran'ny mpampiantrano (hostname resolution) ho an'ny mpampiantrano kendrena alohan'ny hampandehanana fametrahana. Tazony ho maty ireo vondrona endri-javatra tsy feno.
@@ -79,7 +79,7 @@ Ampiasao ny torolalana fitsapana ho an'ireo sehatra fitsapana marin-toerana `def
 
 Ny famoahana ny tetikasa dia mampiasa ny dika SemVer feno ao amin'ny `VERSION`, mahaleo tena amin'ny dika Ansible farany ambany ao amin'ny `meta/main.yml`. Alefaso ny marika `v2.22.1` mifanaraka aminy ao amin'ny main hanombohana ny Release, na alefaso tanana avy ao amin'ny main aorian'ny famoronana ilay marika mifanaraka aminy. Manamarina ny fizotran'asa fa manondro ny loharano nojerena ilay marika efa misy, mandefa ny andian-tsapana CI feno (anisan'izany ireo sehatra fitsapana Molecule efatra), ary mamoaka arsiva anjara asa mifanaraka amin'ny Galaxy, fonosana Debian, RPM, `release.json` ary `SHA256SUMS`. Mampiasa izany marika efa misy voamarina izany ny famoahana nefa tsy manolo ny tanjona fototry ny API famoahana, ka ny fanavaozana fizotran'asa ao amin'ny main aty aoriana dia tsy mitaky alalana fanoratana fizotran'asa midadasika kokoa. Tsy mahomby alohan'ny fitsapana ny marika tsy ampy na tsy mifanaraka.
 
-Hamarino ny rakitra nalaina amin'ny `sha256sum --check SHA256SUMS`. Apetraho ny fonosana voajanahary amin'ny `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` amin'ny Ubuntu 24.04 na `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` amin'ny Rocky Linux 9. Samy mametraka ny anjara asa ao amin'ny `/usr/share/ansible/roles/wordpress_enterprise` izy roa; omeo mpibaiko Ansible tohanana ary apetraho mitokana ny `requirements.yml`. Azo apetraka amin'ny `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz` ny arsiva. Ny fonosana voajanahary dia ahitana ny loharanon'ny anjara asa sy ny antontan-taratasy ary tsy mandefa soratra fametrahana (deployment scripts) mandritra ny fametrahana. Ny CI dia mametraka, manamarina ary manala ireo endrika roa ireo.
+Hamarino ny rakitra nalaina amin'ny `sha256sum --check SHA256SUMS`. Apetraho ny fonosana voajanahary amin'ny `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` amin'ny Ubuntu 24.04 na `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` amin'ny Rocky Linux 9. Samy mametraka ny anjara asa ao amin'ny `/usr/share/ansible/roles/wordpress_enterprise` izy roa; omeo mpibaiko Ansible tohanana ary apetraho mitokana ny `requirements.yml`. Azo apetraka amin'ny `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise` ny arsiva. Ny fonosana voajanahary dia ahitana ny loharanon'ny anjara asa sy ny antontan-taratasy ary tsy mandefa soratra fametrahana (deployment scripts) mandritra ny fametrahana. Ny CI dia mametraka, manamarina ary manala ireo endrika roa ireo.
 
 ## Fiarovana sy fahazoan-dalana
 

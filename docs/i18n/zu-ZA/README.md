@@ -43,7 +43,7 @@ I-TLS, imininingwane yokungena yesizindalwazi, izimfihlo ze-WordPress ezikhiqizi
 Faka indima (role) kusuka kumthombo wayo wenqolobane kanye nezidingo zayo zeqoqo:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ Sebenzisa umyalo weqoqo usuka kule khophi yekhodi. Buyekeza i-[defaults/main.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 Nikeza izimfihlo okukhulunywe ngazo nge-Ansible Vault noma ngomphathi wezimfihlo okhona. Lungiselela izitifiketi nokuxazululwa kwegama lomshini (hostname) kumshini oqondiswe kuwo ngaphambi kokwenza ukuthunyelwa. Gcina amaqembu ezici ezingaphelele evaliwe.
@@ -92,7 +92,7 @@ nge-`sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` ku-Ubuntu
 24.04 noma nge-`sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` ku-Rocky Linux 9.
 Womabili afaka indima ngaphansi kwe-`/usr/share/ansible/roles/wordpress_enterprise`;
 nikeza i-controller ye-Ansible esekelwayo bese ufaka i-`requirements.yml` ngokwehlukana. Ifayela eliqoqelwe lingafakwa
-nge-`ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`.
+nge-`ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`.
 Amaphakheji omdabu aqukethe imithombo yendima nemibhalo futhi awasebenzisi imibhalo yokuthunyelwa
 ngesikhathi sokufakwa. I-CI ifaka, ihlole futhi isuse zombili izinhlobo.
 

@@ -43,7 +43,7 @@ TLS፣ የውሂብ ጎታ ማረጋገጫዎች፣ የተመነጩ የWordPress
 ሚናውን ከማከማቻ ምንጩ እና ከስብስብ ጥገኞቹ ጋር ይጫኑ፦
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ ansible-galaxy collection install -r requirements.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 የተጠቀሱትን ምስጢሮች በAnsible Vault ወይም ባለው የምስጢር አስተዳዳሪ በኩል ያቅርቡ። ማሰማራት ከማስኬድዎ በፊት ለታለመው አስተናጋጅ የምስክር ወረቀቶችን እና የአስተናጋጅ ስም መፍቻን ያዋቅሩ። ያልተሟሉ የባህሪ ቡድኖችን እንደተሰናከሉ ይተዉ።
@@ -79,7 +79,7 @@ make lint
 
 የፕሮጀክት ልቀቶች ከ`meta/main.yml` ዝቅተኛው የAnsible ሥሪት ተለይተው በ`VERSION` ውስጥ ያለውን ሙሉ የSemVer ሥሪት ይጠቀማሉ። ልቀቱን ለማስጀመር የሚዛመድ `v2.22.1` መለያ ወደ main ይግፉ፣ ወይም የሚዛመደውን መለያ ከፈጠሩ በኋላ ከmain በእጅ ያስኪዱት። የሥራ ፍሰቱ ያለው መለያ ወደ ተፈተሸው ምንጭ እንደሚያመለክት ያረጋግጣል፣ ሙሉውን የCI ስብስብ (ሁሉንም አራቱን የMolecule ሁኔታዎች ጨምሮ) ያስኪዳል፣ እንዲሁም ከGalaxy ጋር የሚጣጣም የሚና ማህደር፣ የDebian ጥቅል፣ RPM፣ `release.json` እና `SHA256SUMS` ያትማል። ማተም የልቀት APIን ነባሪ ዒላማ ሳይሽር ያንን የተረጋገጠ ነባር መለያ ይጠቀማል፣ ስለዚህ በኋላ በmain ላይ የሚደረግ የሥራ ፍሰት ዝማኔ ሰፊ የሥራ ፍሰት መጻፊያ ፈቃዶችን አይፈልግም። የጎደለ ወይም የማይዛመድ መለያ ከሙከራ በፊት ይከሽፋል።
 
-ውርዶችን በ`sha256sum --check SHA256SUMS` ያረጋግጡ። ነባር ጥቅሎችን በUbuntu 24.04 ላይ በ`sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` ወይም በRocky Linux 9 ላይ በ`sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` ይጫኑ። ሁለቱም ሚናውን በ`/usr/share/ansible/roles/wordpress_enterprise` ሥር ይጭናሉ፤ የሚደገፍ የAnsible ተቆጣጣሪ ያቅርቡ እና `requirements.yml`ን በተናጠል ይጫኑ። ማህደሩ በ`ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz` ሊጫን ይችላል። ነባር ጥቅሎች የሚና ምንጮችን እና ሰነዶችን ይይዛሉ እንዲሁም በመጫን ጊዜ ምንም የማሰማራት ስክሪፕቶችን አያስኪዱም። CI ሁለቱንም ቅርጸቶች ይጭናል፣ ይፈትሻል እና ያስወግዳል።
+ውርዶችን በ`sha256sum --check SHA256SUMS` ያረጋግጡ። ነባር ጥቅሎችን በUbuntu 24.04 ላይ በ`sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` ወይም በRocky Linux 9 ላይ በ`sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` ይጫኑ። ሁለቱም ሚናውን በ`/usr/share/ansible/roles/wordpress_enterprise` ሥር ይጭናሉ፤ የሚደገፍ የAnsible ተቆጣጣሪ ያቅርቡ እና `requirements.yml`ን በተናጠል ይጫኑ። ማህደሩ በ`ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise` ሊጫን ይችላል። ነባር ጥቅሎች የሚና ምንጮችን እና ሰነዶችን ይይዛሉ እንዲሁም በመጫን ጊዜ ምንም የማሰማራት ስክሪፕቶችን አያስኪዱም። CI ሁለቱንም ቅርጸቶች ይጭናል፣ ይፈትሻል እና ያስወግዳል።
 
 ## ደህንነት እና ፈቃድ
 

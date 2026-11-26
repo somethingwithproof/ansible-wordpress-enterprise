@@ -43,7 +43,7 @@ TLS, thông tin xác thực cơ sở dữ liệu, các khóa bí mật WordPress
 Cài đặt vai trò từ mã nguồn kho lưu trữ và các bộ sưu tập phụ thuộc của nó:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ Chạy lệnh cài đặt bộ sưu tập từ bản sao mã nguồn này. Hãy 
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 Cung cấp các bí mật được tham chiếu thông qua Ansible Vault hoặc trình quản lý bí mật hiện có. Cấu hình chứng chỉ và phân giải tên máy chủ cho máy đích trước khi chạy triển khai. Giữ trạng thái tắt đối với các nhóm tính năng chưa hoàn thiện.
@@ -79,7 +79,7 @@ Tham khảo hướng dẫn kiểm thử cho hai kịch bản ổn định `defau
 
 Các bản phát hành của dự án sử dụng phiên bản SemVer đầy đủ trong `VERSION`, độc lập với phiên bản Ansible tối thiểu trong `meta/main.yml`. Đẩy một thẻ `v2.22.1` tương ứng trên nhánh main để kích hoạt quy trình Release, hoặc chạy thủ công từ nhánh main sau khi tạo thẻ tương ứng. Quy trình sẽ xác minh thẻ hiện có trỏ đúng đến mã nguồn được kiểm tra, chạy toàn bộ bộ kiểm thử CI (bao gồm cả bốn kịch bản Molecule), và xuất bản tệp lưu trữ vai trò tương thích Galaxy, gói Debian, gói RPM, `release.json` và `SHA256SUMS`. Việc xuất bản sử dụng thẻ hiện có đã được xác minh đó mà không ghi đè đích mặc định của API phát hành, nhờ vậy các bản cập nhật quy trình sau này trên nhánh main không yêu cầu quyền ghi quy trình rộng hơn. Thẻ bị thiếu hoặc không khớp sẽ gây lỗi trước khi kiểm thử.
 
-Xác minh các tệp tải xuống bằng `sha256sum --check SHA256SUMS`. Cài đặt gói gốc bằng `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` trên Ubuntu 24.04 hoặc `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` trên Rocky Linux 9. Cả hai đều cài đặt vai trò vào `/usr/share/ansible/roles/wordpress_enterprise`; hãy cung cấp máy điều khiển Ansible được hỗ trợ và cài đặt riêng `requirements.yml`. Tệp lưu trữ có thể được cài đặt bằng `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`. Các gói gốc chứa mã nguồn vai trò cùng tài liệu và không chạy bất kỳ kịch bản triển khai nào trong quá trình cài đặt. CI sẽ cài đặt, kiểm tra và gỡ bỏ cả hai định dạng.
+Xác minh các tệp tải xuống bằng `sha256sum --check SHA256SUMS`. Cài đặt gói gốc bằng `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` trên Ubuntu 24.04 hoặc `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` trên Rocky Linux 9. Cả hai đều cài đặt vai trò vào `/usr/share/ansible/roles/wordpress_enterprise`; hãy cung cấp máy điều khiển Ansible được hỗ trợ và cài đặt riêng `requirements.yml`. Tệp lưu trữ có thể được cài đặt bằng `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`. Các gói gốc chứa mã nguồn vai trò cùng tài liệu và không chạy bất kỳ kịch bản triển khai nào trong quá trình cài đặt. CI sẽ cài đặt, kiểm tra và gỡ bỏ cả hai định dạng.
 
 ## Bảo mật và giấy phép
 

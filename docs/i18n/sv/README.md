@@ -43,7 +43,7 @@ TLS, databasautentiseringsuppgifter, genererade WordPress-hemligheter, sökvägs
 Installera rollen från dess kodarkiv och dess samlingsberoenden:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ Kör samlingskommandot från denna utcheckning. Granska [defaults/main.yml](../.
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 Tillhandahåll de refererade hemligheterna via Ansible Vault eller en befintlig hemlighetshanterare. Konfigurera certifikat och värdnamnsuppslagning för målvärden innan du kör en driftsättning. Håll ofullständiga funktionsgrupper inaktiverade.
@@ -79,7 +79,7 @@ Använd testguiden för de stabila scenarierna `default` och `tls` och deras fö
 
 Projektets utgåvor använder den fullständiga SemVer-versionen i `VERSION`, oberoende av den lägsta Ansible-versionen i `meta/main.yml`. Pusha en matchande `v2.22.1`-tagg på main för att utlösa Release, eller kör den manuellt från main efter att den matchande taggen skapats. Arbetsflödet validerar att den befintliga taggen pekar på den utcheckade källkoden, kör hela CI-sviten (inklusive alla fyra Molecule-scenarier) och publicerar ett Galaxy-kompatibelt rollarkiv, ett Debian-paket, en RPM, `release.json` och `SHA256SUMS`. Publiceringen använder den verifierade befintliga taggen utan att åsidosätta release-API:ets standardmål, så en senare arbetsflödesuppdatering på main kräver inte utökade skrivrättigheter för arbetsflöden. En saknad eller felaktig tagg gör att körningen avbryts före testning.
 
-Verifiera nedladdningar med `sha256sum --check SHA256SUMS`. Installera systempaket med `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` på Ubuntu 24.04 eller `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` på Rocky Linux 9. Båda installerar rollen under `/usr/share/ansible/roles/wordpress_enterprise`; tillhandahåll en Ansible-kontrollnod som stöds och installera `requirements.yml` separat. Arkivet kan installeras med `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`. Systempaketen innehåller rollens källkod och dokumentation och kör inga driftsättningsskript vid installationen. CI installerar, kontrollerar och tar bort båda formaten.
+Verifiera nedladdningar med `sha256sum --check SHA256SUMS`. Installera systempaket med `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` på Ubuntu 24.04 eller `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` på Rocky Linux 9. Båda installerar rollen under `/usr/share/ansible/roles/wordpress_enterprise`; tillhandahåll en Ansible-kontrollnod som stöds och installera `requirements.yml` separat. Arkivet kan installeras med `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`. Systempaketen innehåller rollens källkod och dokumentation och kör inga driftsättningsskript vid installationen. CI installerar, kontrollerar och tar bort båda formaten.
 
 ## Säkerhet och licens
 

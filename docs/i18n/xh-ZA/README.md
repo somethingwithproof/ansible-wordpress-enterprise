@@ -43,7 +43,7 @@ I-TLS, iinkcukacha zokungena kwisiseko sedatha, iimfihlo ze-WordPress ezivelisiw
 Faka indima ukusuka kumthombo wayo we-repository kunye nezinto ezixhomekeke kuzo zengqokelela:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ Qhuba umyalelo wengqokelela ukusuka kule kope yekhowudi. Phonononga i-[defaults/
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 Nikezela ngeemfihlo ekubhekiselwe kuzo nge-Ansible Vault okanye ngomlawuli weemfihlo okhoyo. Qwalasela izatifikethi kunye nokuguqulelwa kwegama lomncedisi kulo mncedisi ekujoliswe kuye phambi kokuqhuba ufakelo. Gcina amaqela eempawu angagqibekanga ecinyiwe.
@@ -92,7 +92,7 @@ nge-`sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` kwi-Ubuntu
 24.04 okanye nge-`sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` kwi-Rocky
 Linux 9. Zombini zifaka indima phantsi kwe-`/usr/share/ansible/roles/wordpress_enterprise`;
 nikezela ngesilawuli se-Ansible esixhaswayo uze ufake i-`requirements.yml` ngokwahlukeneyo.
-Ugcino lunokufakwa nge-`ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`.
+Ugcino lunokufakwa nge-`ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`.
 Iipakethe zemveli ziqulethe imithombo yendima kunye namaxwebhu kwaye aziqhubi naziphi na izikripthi
 zokufakela ngexesha lofakelo. I-CI iyazifaka, iyazihlola kwaye iyazisusa zombini ezi fomathi.
 

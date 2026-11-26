@@ -43,7 +43,7 @@ Ang TLS, mga kredensyal ng database, mga nalikhang sikreto ng WordPress, mga pat
 I-install ang role mula sa repository source nito at ang mga dependency ng koleksiyon nito:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ Patakbuhin ang command ng koleksiyon mula sa checkout na ito. Suriin ang [defaul
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 Ibigay ang mga tinutukoy na sikreto sa pamamagitan ng Ansible Vault o isang umiiral na secret manager. I-configure ang mga sertipiko at hostname resolution para sa target na host bago magpatakbo ng deployment. Panatilihing naka-disable ang mga hindi kumpletong pangkat ng feature.
@@ -93,7 +93,7 @@ gamit ang `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` sa Ub
 Rocky Linux 9. Pareho nitong ini-install ang role sa ilalim ng
 `/usr/share/ansible/roles/wordpress_enterprise`; magbigay ng sinusuportahang Ansible
 controller at hiwalay na i-install ang `requirements.yml`. Maaaring i-install ang archive
-gamit ang `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`.
+gamit ang `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`.
 Naglalaman ang mga native na package ng mga source at dokumentasyon ng role at walang pinatatakbong deployment
 script sa panahon ng pag-install. Ini-install, sinusuri, at tinatanggal ng CI ang parehong format.
 

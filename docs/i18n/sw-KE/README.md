@@ -43,7 +43,7 @@ TLS, vitambulisho vya hifadhidata, siri za WordPress zinazozalishwa, ulinzi wa n
 Sakinisha role kutoka chanzo cha hazina yake pamoja na vitegemezi vyake vya mkusanyiko:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ Endesha amri ya mkusanyiko kutoka nakala hii ya hazina. Kagua [defaults/main.yml
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 Weka siri zilizorejelewa kupitia Ansible Vault au kidhibiti cha siri kilichopo. Sanidi vyeti na utatuzi wa jina la mashine lengwa kabla ya kuendesha utekelezaji. Acha vikundi vya vipengele visivyokamilika vimezimwa.
@@ -79,7 +79,7 @@ Tumia mwongozo wa majaribio kwa matukio thabiti ya `default` na `tls` pamoja na 
 
 Matoleo ya mradi hutumia toleo kamili la SemVer katika `VERSION`, bila kutegemea toleo la chini la Ansible katika `meta/main.yml`. Sukuma lebo inayolingana ya `v2.22.1` kwenye tawi la main ili kuanzisha Release, au uendeshe mtiririko huo kwa mkono kutoka main baada ya kuunda lebo inayolingana. Mtiririko wa kazi huthibitisha kuwa lebo iliyopo inaelekeza kwenye msimbo uliokaguliwa, huendesha seti kamili ya CI (ikiwa ni pamoja na matukio yote manne ya Molecule), na huchapisha kumbukumbu ya role inayolingana na Galaxy, kifurushi cha Debian, RPM, `release.json` na `SHA256SUMS`. Uchapishaji hutumia lebo hiyo iliyothibitishwa bila kubatilisha lengo chaguo-msingi la API ya uchapishaji, hivyo sasisho la baadaye la mtiririko wa kazi kwenye main halihitaji ruhusa pana zaidi za uandishi wa mtiririko wa kazi. Lebo inayokosekana au isiyolingana hushindwa kabla ya majaribio.
 
-Thibitisha faili zilizopakuliwa kwa `sha256sum --check SHA256SUMS`. Sakinisha vifurushi asili kwa `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` kwenye Ubuntu 24.04 au `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` kwenye Rocky Linux 9. Vyote viwili husakinisha role katika `/usr/share/ansible/roles/wordpress_enterprise`; tumia kidhibiti cha Ansible kinachotumika na usakinishe `requirements.yml` kando. Kumbukumbu inaweza kusakinishwa kwa `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`. Vifurushi asili vina msimbo chanzo wa role na nyaraka na haviendeshi hati zozote za utekelezaji wakati wa usakinishaji. CI husakinisha, hukagua na kuondoa miundo yote miwili.
+Thibitisha faili zilizopakuliwa kwa `sha256sum --check SHA256SUMS`. Sakinisha vifurushi asili kwa `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` kwenye Ubuntu 24.04 au `sudo dnf install ./ansible-wordpress-enterprise_2.22.1_noarch.rpm` kwenye Rocky Linux 9. Vyote viwili husakinisha role katika `/usr/share/ansible/roles/wordpress_enterprise`; tumia kidhibiti cha Ansible kinachotumika na usakinishe `requirements.yml` kando. Kumbukumbu inaweza kusakinishwa kwa `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`. Vifurushi asili vina msimbo chanzo wa role na nyaraka na haviendeshi hati zozote za utekelezaji wakati wa usakinishaji. CI husakinisha, hukagua na kuondoa miundo yote miwili.
 
 ## Usalama na leseni
 

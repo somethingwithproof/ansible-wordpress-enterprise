@@ -43,7 +43,7 @@ TLS, amakuru yo kwinjira mu bubiko bw'amakuru, amabanga ya WordPress yakozwe, ub
 Shyiraho inshingano uhereye ku isoko y'ububiko bwayo n'ibyo ikenera byo mu matsinda:
 
 ```bash
-ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git
+ansible-galaxy role install git+https://github.com/somethingwithproof/ansible-wordpress-enterprise.git,HEAD,wordpress_enterprise
 ansible-galaxy collection install -r requirements.yml
 ```
 
@@ -54,13 +54,13 @@ Koresha itegeko ry'itsinda uhereye kuri iyi kopi y'ububiko. Suzuma [defaults/mai
   become: true
   vars:
     wordpress_web_server: nginx
-    wordpress_site_url: "https://wordpress.example.com"
+    wordpress_site_url: "http://wordpress.example.com"
     wordpress_server_name: wordpress.example.com
     wordpress_admin_password: "{{ vault_wordpress_admin_password }}"
     wordpress_db_password: "{{ vault_wordpress_db_password }}"
     wordpress_db_root_password: "{{ vault_wordpress_db_root_password }}"
   roles:
-    - ansible-wordpress-enterprise
+    - wordpress_enterprise
 ```
 
 Tanga amabanga yavuzwe binyuze muri Ansible Vault cyangwa igikoresho gisanzwe gicunga amabanga. Tegura ibyemezo by'umutekano n'isobanura ry'izina ry'imashini igamijwe mbere yo gutangiza ishyirwa mu bikorwa. Gumisha amatsinda y'ibiranga atuzuye afunze.
@@ -93,7 +93,7 @@ ukoresheje `sudo apt install ./ansible-wordpress-enterprise_2.22.1_all.deb` kuri
 Rocky Linux 9. Zombi zishyira inshingano muri
 `/usr/share/ansible/roles/wordpress_enterprise`; tanga umugenzuzi wa Ansible
 wemewe kandi ushyireho `requirements.yml` ukwayo. Dosiye y'ububiko ishobora
-gushyirwaho ukoresheje `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz`.
+gushyirwaho ukoresheje `ansible-galaxy role install ./ansible-wordpress-enterprise-2.22.1.tar.gz,,wordpress_enterprise`.
 Paki gakondo zirimo inkomoko y'inshingano n'inyandiko kandi ntizikoresha inyandiko zo gushyira mu bikorwa
 mu gihe cyo gushyiraho. CI ishyiraho, ikagenzura kandi igakuraho uburyo bwombi.
 
